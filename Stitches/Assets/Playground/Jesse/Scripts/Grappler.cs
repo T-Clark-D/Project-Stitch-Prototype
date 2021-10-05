@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,6 +9,7 @@ public class Grappler : MonoBehaviour
     public LineRenderer lineRend;
     public DistanceJoint2D distJoint;
     public Rigidbody2D rigidBod;
+    public GameObject needlePrefab;
 
     bool pullUp = false;
     bool tethered = false;
@@ -32,7 +34,7 @@ public class Grappler : MonoBehaviour
 
             mousePos = (Vector2)mainCamera.ScreenToWorldPoint(Input.mousePosition);
             print(forceDirection);
-
+           // Vector2 anchorPos = ThrowNeedle(mousePos);
             lineRend.SetPosition(0, mousePos);
             lineRend.SetPosition(1, transform.position);
 
@@ -44,6 +46,7 @@ public class Grappler : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Mouse1) && tethered)
         {
             pullUp = true;
+            tethered = false;
         }
         if(pullUp)
         {
@@ -59,4 +62,16 @@ public class Grappler : MonoBehaviour
             lineRend.SetPosition(1, transform.position);
         }
     }
+    /*
+    private Vector2 ThrowNeedle(Vector2 mousePos)
+    {
+        Vector2 needleDirection = (mousePos - (Vector2)transform.position).normalized;
+
+
+        GameObject needle = Instantiate(needlePrefab, transform.position, Quaternion.LookRotation(needleDirection));
+        needle.transform.Translate(needleDirection);
+        needle.GetComponent<CapsuleCollider2D>();
+     
+    }*/
+   
 }
