@@ -18,8 +18,11 @@ public class HookController : MonoBehaviour
     void Start()
     {
         m_grapplingHookRenderer = GetComponent<LineRenderer>();
-        m_hookCollider = GetComponent<BoxCollider2D>();
+        m_hookCollider = GetComponentInChildren<BoxCollider2D>();
         m_hookCollider.enabled = false;
+
+        m_currentPosition = new Vector3(0, 0, 0);
+        m_clickPosition = new Vector3(0, 0, 0);
     }
 
     // Update is called once per frame
@@ -38,29 +41,31 @@ public class HookController : MonoBehaviour
 
             // Reset hook display
             m_grapplingHookRenderer.positionCount = 0;
-            m_currentPosition = transform.position;
+            m_currentPosition = new Vector3(0, 0, 0);
             m_clickPosition = new Vector3(0, 0, 0);
 
             // Retracting hook
             m_grapplingHookOut = false;
+            m_hookCollider.transform.position = transform.TransformPoint(transform.position) + new Vector3(0, m_grapplingStartHeightOffset, 0);
         }
         else
         {
             // Launching grappling hook
 
             // Changing Z value of mouse pos to a positive value, to avoid the object showing behind the near clip plane of the camera.
-            pMouseClickPosition.z = Camera.main.nearClipPlane;
+            pMouseClickPosition.z = 1;
 
             Vector3 worldPosition = Camera.main.ScreenToWorldPoint(pMouseClickPosition);
+
             // Setting worldpos z to 1 so it doesnt draw behind the background.
-            worldPosition.z = 0;
+            worldPosition.z = 1;
 
             m_clickPosition = worldPosition;
-            m_currentPosition = transform.position + new Vector3(0, m_grapplingStartHeightOffset, 0);
+            m_currentPosition = transform.TransformPoint(transform.position) + new Vector3(0, m_grapplingStartHeightOffset, 0);
 
             m_grapplingHookOut = true;
 
-            m_hookCollider.offset = m_currentPosition;
+            m_hookCollider.transform.position = m_currentPosition;
             m_hookCollider.size = m_hookColliderSize;
 
             m_hookCollider.enabled = true;
@@ -82,21 +87,27 @@ public class HookController : MonoBehaviour
         {
             // Making a unit vector
             Vector3 unitPosition = m_clickPosition / m_clickPosition.magnitude;
+            // Resetting Z pos to make sure we dont cumulate z later down the line.
+            unitPosition.z = 0;
 
             // Making a line
             m_grapplingHookRenderer.positionCount = 2;
 
-            // We add the vector 0, 0, 1 to make the points have a z position of 1, making them show up on our screen in front of the background.
+            // We make the z position be 1 to make the points have a z position of 1, making them show up on our screen in front of the background.
             // We also add the vector 0, offset, 0 to make the grappling hook start above our character.
-            m_grapplingHookRenderer.SetPosition(0, transform.position + new Vector3(0, m_grapplingStartHeightOffset, 1));
+            Vector3 firstPointPosition = transform.TransformPoint(transform.position) + new Vector3(0, m_grapplingStartHeightOffset, 0);
+            firstPointPosition.z = 1;
+            m_grapplingHookRenderer.SetPosition(0,  firstPointPosition);
 
             // Increasing the length of the whole line
             m_currentPosition = m_currentPosition + (unitPosition * m_grappleSpeed * Time.deltaTime);
 
-            m_grapplingHookRenderer.SetPosition(1, m_currentPosition + new Vector3(0, 0, 1));
+            Vector3 secondPointPosition = m_currentPosition;
+            secondPointPosition.z = 1;
+            m_grapplingHookRenderer.SetPosition(1, secondPointPosition);
 
             // Handle Hook Collision
-            m_hookCollider.offset = m_currentPosition;
+            m_hookCollider.transform.position = m_currentPosition;
         }
     }
 }
