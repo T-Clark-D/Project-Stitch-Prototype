@@ -50,7 +50,9 @@ public class HookController : MonoBehaviour
 
             // Retracting hook
             m_grapplingHookOut = false;
-            m_hookCollider.gameObject.transform.position = m_player.transform.position + new Vector3(0, m_grapplingStartHeightOffset, 0);
+
+            Vector3 position = m_player.transform.position + new Vector3(0, m_grapplingStartHeightOffset, 0);
+            m_hookCollider.gameObject.transform.position = new Vector3(position.x, position.y, 0);
         }
         else
         {
@@ -73,21 +75,21 @@ public class HookController : MonoBehaviour
 
             m_grapplingHookOut = true;
 
-            m_hookCollider.gameObject.transform.position = m_player.transform.position + new Vector3(0, m_grapplingStartHeightOffset, 0);
+            Vector3 position = m_player.transform.position + new Vector3(0, m_grapplingStartHeightOffset, 0);
+            m_hookCollider.gameObject.transform.position = new Vector3(position.x, position.y, 0);
             m_hookCollider.size = m_hookColliderSize;
 
             m_hookCollider.enabled = true;
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    public void HandleCollision(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Platform"))
         {
             Debug.Log("Hit!");
         }
     }
-
     void HandleGrapplingHook()
     {        
         // Handling display and collision
@@ -110,7 +112,8 @@ public class HookController : MonoBehaviour
             m_grapplingHookRenderer.SetPosition(1, secondPointPosition);
 
             // Handle Hook Collision
-            m_hookCollider.transform.position = secondPointPosition;
+            Vector3 position = new Vector3(secondPointPosition.x, secondPointPosition.y, 0);
+            m_hookCollider.transform.position = position;
         }
     }
 }
