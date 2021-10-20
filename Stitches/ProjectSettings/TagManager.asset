@@ -4,7 +4,8 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Platform
+  - Needle
+  - Enemy
   layers:
   - Default
   - TransparentFX
