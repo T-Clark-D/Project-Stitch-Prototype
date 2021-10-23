@@ -7,6 +7,7 @@ public class HookController : MonoBehaviour
     public float m_grappleSpeed = 1;
     public float m_grapplingStartHeightOffset = 1;
     public Vector3 m_hookColliderSize = new Vector3(0.5f, 0.5f, 0.5f);
+    public bool m_tethered = true;
 
     private bool m_grapplingHookOut = false;
     private LineRenderer m_grapplingHookRenderer;
@@ -14,6 +15,7 @@ public class HookController : MonoBehaviour
     private Vector3 m_currentPosition;
     private Vector3 m_directionUnitVector;
     private BoxCollider2D m_hookCollider;
+    private DistanceJoint2D m_distJoint;
 
     [SerializeField] private GameObject m_player;
 
@@ -22,7 +24,9 @@ public class HookController : MonoBehaviour
     {
         m_grapplingHookRenderer = GetComponent<LineRenderer>();
         m_hookCollider = GetComponentInChildren<BoxCollider2D>();
+        m_distJoint = GetComponent<DistanceJoint2D>();
         m_hookCollider.enabled = false;
+        m_distJoint.enabled = false;
 
         m_currentPosition = new Vector3(0, 0, 0);
         m_clickPosition = new Vector3(0, 0, 0);
@@ -41,18 +45,7 @@ public class HookController : MonoBehaviour
 
         if (m_grapplingHookOut)
         {
-            m_hookCollider.enabled = false;
-
-            // Reset hook display
-            m_grapplingHookRenderer.positionCount = 0;
-            m_currentPosition = new Vector3(0, 0, 0);
-            m_clickPosition = new Vector3(0, 0, 0);
-
-            // Retracting hook
-            m_grapplingHookOut = false;
-
-            Vector3 position = m_player.transform.position + new Vector3(0, m_grapplingStartHeightOffset, 0);
-            m_hookCollider.gameObject.transform.position = new Vector3(position.x, position.y, 0);
+            RetractHook();
         }
         else
         {
@@ -83,17 +76,49 @@ public class HookController : MonoBehaviour
         }
     }
 
+    public void RetractHook()
+    {
+        m_hookCollider.enabled = false;
+
+        // Reset hook display
+        m_grapplingHookRenderer.positionCount = 0;
+        m_currentPosition = new Vector3(0, 0, 0);
+        m_clickPosition = new Vector3(0, 0, 0);
+
+        // Retracting hook
+        m_grapplingHookOut = false;
+
+        Vector3 position = m_player.transform.position + new Vector3(0, m_grapplingStartHeightOffset, 0);
+        m_hookCollider.gameObject.transform.position = new Vector3(position.x, position.y, 0);
+
+        m_tethered = false;
+        m_distJoint.enabled = false;
+    }
+
+    public void PullUp()
+    {
+        if(m_tethered)
+        {
+            // We have to be tethered to pull up.
+            RetractHook();
+        }
+    }
+
     public void HandleCollision(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Platform"))
         {
             Debug.Log("Hit!");
+            m_tethered = true;
+
+            m_distJoint.enabled = true;
+            m_distJoint.connectedAnchor = m_hookCollider.transform.position;
         }
     }
     void HandleGrapplingHook()
     {        
         // Handling display and collision
-        if (m_grapplingHookOut)
+        if (m_grapplingHookOut && !m_tethered)
         {
             // Making a line
             m_grapplingHookRenderer.positionCount = 2;
@@ -111,7 +136,7 @@ public class HookController : MonoBehaviour
             secondPointPosition.z = 1;
             m_grapplingHookRenderer.SetPosition(1, secondPointPosition);
 
-            // Handle Hook Collision
+            // Handle Hook Collider
             Vector3 position = new Vector3(secondPointPosition.x, secondPointPosition.y, 0);
             m_hookCollider.transform.position = position;
         }

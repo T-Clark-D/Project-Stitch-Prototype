@@ -33,6 +33,10 @@ public class PlayerController : MonoBehaviour
         {
             m_grapplingHookController.LaunchHook(Input.mousePosition);
         }
+        if(Input.GetMouseButtonDown(1))
+        {
+            m_grapplingHookController.PullUp();
+        }
     }
 
     
