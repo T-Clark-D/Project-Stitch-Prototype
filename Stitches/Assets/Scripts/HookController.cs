@@ -7,7 +7,9 @@ public class HookController : MonoBehaviour
     public float m_grappleSpeed = 1;
     public float m_grapplingStartHeightOffset = 1;
     public Vector3 m_hookColliderSize = new Vector3(0.5f, 0.5f, 0.5f);
-    public bool m_tethered = true;
+    public bool m_tethered = false;
+    public float m_pullUpForce = 10f;
+    public bool m_pullingUp = false;
 
     private bool m_grapplingHookOut = false;
     private LineRenderer m_grapplingHookRenderer;
@@ -15,18 +17,23 @@ public class HookController : MonoBehaviour
     private Vector3 m_currentPosition;
     private Vector3 m_directionUnitVector;
     private BoxCollider2D m_hookCollider;
-    private DistanceJoint2D m_distJoint;
 
-    [SerializeField] private GameObject m_player;
+    [SerializeField] private PlayerController m_player;
+    private Rigidbody2D m_playerRigidBody;
+    private DistanceJoint2D m_distJoint;
 
     // Start is called before the first frame update
     void Start()
     {
         m_grapplingHookRenderer = GetComponent<LineRenderer>();
         m_hookCollider = GetComponentInChildren<BoxCollider2D>();
-        m_distJoint = GetComponent<DistanceJoint2D>();
+        m_distJoint = m_player.GetComponent<DistanceJoint2D>();
+        m_playerRigidBody = m_player.GetComponent<Rigidbody2D>();
+
         m_hookCollider.enabled = false;
         m_distJoint.enabled = false;
+        m_grapplingHookOut = false;
+        m_tethered = false;
 
         m_currentPosition = new Vector3(0, 0, 0);
         m_clickPosition = new Vector3(0, 0, 0);
@@ -36,7 +43,12 @@ public class HookController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+    }
+
+    private void FixedUpdate()
+    {
         HandleGrapplingHook();
+        RefreshHookPosition();
     }
 
     public void LaunchHook(Vector3 pMouseClickPosition)
@@ -57,7 +69,7 @@ public class HookController : MonoBehaviour
             Vector3 worldPosition = Camera.main.ScreenToWorldPoint(pMouseClickPosition);
 
             // Setting worldpos z to 1 so it doesnt draw behind the background.
-            worldPosition.z = 1;
+            worldPosition.z = 0;
 
             // Calculating direction vector
             Vector3 direction = worldPosition - (m_player.transform.position + new Vector3(0, m_grapplingStartHeightOffset, 0));
@@ -73,6 +85,7 @@ public class HookController : MonoBehaviour
             m_hookCollider.size = m_hookColliderSize;
 
             m_hookCollider.enabled = true;
+            m_pullingUp = false;
         }
     }
 
@@ -93,6 +106,8 @@ public class HookController : MonoBehaviour
 
         m_tethered = false;
         m_distJoint.enabled = false;
+
+        m_player.ResetGravity();
     }
 
     public void PullUp()
@@ -100,7 +115,12 @@ public class HookController : MonoBehaviour
         if(m_tethered)
         {
             // We have to be tethered to pull up.
-            RetractHook();
+            Vector3 direction = m_clickPosition - (m_player.transform.position + new Vector3(0, m_grapplingStartHeightOffset, 0));
+            direction = direction / direction.magnitude;
+
+            m_playerRigidBody.velocity = new Vector2(0, 0); // Resetting velocity
+
+            m_pullingUp = true;
         }
     }
 
@@ -123,22 +143,36 @@ public class HookController : MonoBehaviour
             // Making a line
             m_grapplingHookRenderer.positionCount = 2;
 
-            // We make the z position be 1 to make the points have a z position of 1, making them show up on our screen in front of the background.
-            // We also add the vector 0, offset, 0 to make the grappling hook start above our character.
-            Vector3 firstPointPosition = m_player.transform.position + new Vector3(0, m_grapplingStartHeightOffset, 0);
-            firstPointPosition.z = 1;
-            m_grapplingHookRenderer.SetPosition(0,  firstPointPosition);
+            RefreshHookPosition();
 
             // Increasing the length of the whole line
-            m_currentPosition = m_currentPosition + (new Vector3(m_directionUnitVector.x, m_directionUnitVector.y, 0) * m_grappleSpeed * Time.deltaTime);
+            m_currentPosition = m_currentPosition + (new Vector3(m_directionUnitVector.x, m_directionUnitVector.y, 0) * m_grappleSpeed * Time.fixedDeltaTime);
 
             Vector3 secondPointPosition = m_currentPosition;
-            secondPointPosition.z = 1;
+            secondPointPosition.z = 0;
             m_grapplingHookRenderer.SetPosition(1, secondPointPosition);
 
             // Handle Hook Collider
             Vector3 position = new Vector3(secondPointPosition.x, secondPointPosition.y, 0);
-            m_hookCollider.transform.position = position;
+            m_hookCollider.attachedRigidbody.MovePosition(position);
         }
+    }
+
+    void RefreshHookPosition()
+    {
+        if(m_grapplingHookOut)
+        {
+            // We also add the vector 0, offset, 0 to make the grappling hook start above our character.
+
+            Vector3 firstPointPosition = m_player.transform.position + new Vector3(0, m_grapplingStartHeightOffset, 0);
+            firstPointPosition.z = 0;
+            m_grapplingHookRenderer.SetPosition(0, firstPointPosition);
+        }
+    }
+
+    public Vector3 GetHookDirection()
+    {
+        Vector3 direction = m_hookCollider.gameObject.transform.position - (m_player.transform.position + new Vector3(0, m_grapplingStartHeightOffset, 0));
+        return direction.normalized;
     }
 }

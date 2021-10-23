@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Needle
   - Enemy
+  - Platform
   layers:
   - Default
   - TransparentFX
@@ -13,8 +14,8 @@ TagManager:
   - Game
   - Water
   - UI
-  - 
-  - 
+  - Hook
+  - Player
   - 
   - 
   - 

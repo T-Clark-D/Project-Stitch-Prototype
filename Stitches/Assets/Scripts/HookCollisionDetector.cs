@@ -9,7 +9,7 @@ public class HookCollisionDetector : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        m_hookController = GetComponentInParent<HookController>();
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
