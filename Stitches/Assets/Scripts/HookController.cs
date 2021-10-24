@@ -8,7 +8,6 @@ public class HookController : MonoBehaviour
     public float m_grapplingStartHeightOffset = 1;
     public Vector3 m_hookColliderSize = new Vector3(0.5f, 0.5f, 0.5f);
     public bool m_tethered = false;
-    public float m_pullUpForce = 10f;
     public bool m_pullingUp = false;
 
     private bool m_grapplingHookOut = false;
@@ -17,10 +16,12 @@ public class HookController : MonoBehaviour
     private Vector3 m_currentPosition;
     private Vector3 m_directionUnitVector;
     private BoxCollider2D m_hookCollider;
+    private Vector3 m_enemyHitLocationOffset;
 
     [SerializeField] private PlayerController m_player;
     private Rigidbody2D m_playerRigidBody;
     private DistanceJoint2D m_distJoint;
+    private Flubber m_enemy;
 
     // Start is called before the first frame update
     void Start()
@@ -107,7 +108,12 @@ public class HookController : MonoBehaviour
         m_tethered = false;
         m_distJoint.enabled = false;
 
+        m_pullingUp = false;
+
         m_player.ResetGravity();
+
+        m_enemy = null;
+        m_enemyHitLocationOffset = new Vector3();
     }
 
     public void PullUp()
@@ -133,6 +139,25 @@ public class HookController : MonoBehaviour
 
             m_distJoint.enabled = true;
             m_distJoint.connectedAnchor = m_hookCollider.transform.position;
+
+            m_distJoint.distance = GetHookDirection(false).magnitude;
+        }
+        else if(collision.gameObject.CompareTag("Enemy"))
+        {
+            Debug.Log("Hit an enemy!");
+            m_tethered = true;
+
+            m_distJoint.enabled = true;
+            m_distJoint.connectedAnchor = m_hookCollider.transform.position;
+
+            m_distJoint.distance = GetHookDirection(false).magnitude;
+
+            m_enemy = collision.gameObject.GetComponent<Flubber>();
+
+            Vector3 enemyHitLocation = m_hookCollider.transform.position;
+            m_enemyHitLocationOffset = enemyHitLocation - collision.gameObject.transform.position;
+
+
         }
     }
     void HandleGrapplingHook()
@@ -167,12 +192,55 @@ public class HookController : MonoBehaviour
             Vector3 firstPointPosition = m_player.transform.position + new Vector3(0, m_grapplingStartHeightOffset, 0);
             firstPointPosition.z = 0;
             m_grapplingHookRenderer.SetPosition(0, firstPointPosition);
+
+            if(m_enemy != null)
+            {
+                Vector3 enemyPos = m_enemy.transform.position + m_enemyHitLocationOffset;
+
+                m_hookCollider.transform.position = enemyPos;
+
+                Vector3 secondPointPosition = enemyPos;
+                secondPointPosition.z = 0;
+                m_grapplingHookRenderer.SetPosition(1, secondPointPosition);
+
+                m_distJoint.connectedAnchor = enemyPos;
+            }
         }
     }
 
-    public Vector3 GetHookDirection()
+    /// <summary>
+    /// Returns the vector from the player to the hook collider.
+    /// </summary>
+    /// <param name="pWithOffset">If true, will return the vector with the offset on the player. If false, will return vector from the center of the player to the hook.</param>
+    /// <returns></returns>
+    public Vector3 GetHookDirection(bool pWithOffset = false)
     {
-        Vector3 direction = m_hookCollider.gameObject.transform.position - (m_player.transform.position + new Vector3(0, m_grapplingStartHeightOffset, 0));
-        return direction.normalized;
+        Vector3 direction;
+        if (pWithOffset)
+        {
+            if(m_enemy != null)
+            {
+                direction = (m_enemy.transform.position + m_enemyHitLocationOffset) - (m_player.transform.position + new Vector3(0, m_grapplingStartHeightOffset, 0));
+            }
+            else
+            {
+                direction = m_hookCollider.gameObject.transform.position - (m_player.transform.position + new Vector3(0, m_grapplingStartHeightOffset, 0));
+            }
+            
+        }
+        else
+        {
+            // If there is an enemy, we always apply offset.
+            if (m_enemy != null)
+            {
+                direction =  (m_enemy.transform.position + m_enemyHitLocationOffset) - (m_player.transform.position);
+            }
+            else
+            {
+                direction = m_hookCollider.gameObject.transform.position - (m_player.transform.position);
+            }
+        }
+
+        return direction;
     }
 }

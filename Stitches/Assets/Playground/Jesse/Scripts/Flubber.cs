@@ -39,9 +39,9 @@ public class Flubber : MonoBehaviour
         LayerMask mask = LayerMask.GetMask("Player");
         Collider2D player = Physics2D.OverlapCircle((Vector2)transform.position, agroRadius, mask);
         Vector2 targetPoint = worldPoint;
-        if (Physics2D.OverlapCircle((Vector2)transform.position, agroRadius, mask) != null) 
+        if (player != null) 
         {
-            if ((player.transform.position - this.transform.position).magnitude < 20)
+            if ((player.transform.position - this.transform.position).magnitude < agroRadius)
             {
                 targetPoint = player.transform.position;
             }
