@@ -202,8 +202,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 10874418}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 27.13, y: 13.65, z: 0}
-  m_LocalScale: {x: 0.6602, y: 0.6602, z: 0.6602}
+  m_LocalPosition: {x: 30.2, y: 13.8, z: 0}
+  m_LocalScale: {x: 0.24275555, y: 0.24275555, z: 0.24275555}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 4
@@ -223,7 +223,7 @@ Rigidbody2D:
   m_Mass: 0.6
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 0.5
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -257,10 +257,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3921c39352c67e24f89021ab3be50920, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  interval: 0
+  worldPoint: {x: 27, y: 13}
+  agroRadius: 30
+  interval: 1
   force: 10
-  player: {fileID: 543201255}
-  SR: {fileID: 0}
 --- !u!1 &438953170
 GameObject:
   m_ObjectHideFlags: 0
@@ -407,7 +407,7 @@ GameObject:
   - component: {fileID: 543201262}
   - component: {fileID: 543201261}
   - component: {fileID: 543201260}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Stompy
   m_TagString: Player
   m_Icon: {fileID: 0}
