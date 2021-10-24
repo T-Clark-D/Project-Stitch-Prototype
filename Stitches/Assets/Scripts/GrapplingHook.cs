@@ -24,6 +24,7 @@ public class GrapplingHook : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
         if(Input.GetMouseButtonDown(0))
         {
 
@@ -36,14 +37,21 @@ public class GrapplingHook : MonoBehaviour
             if(hit.collider != null && hit.collider.gameObject.GetComponent<Rigidbody2D>() != null)
             {
                 joint.enabled = true;
-                joint.connectedBody = hit.collider.gameObject.GetComponent<Rigidbody2D>();
-                joint.connectedAnchor = hit.point - new Vector2(hit.collider.transform.position.x, hit.collider.transform.position.y);      // Line will grapple to the surface the raycast hits rather than anchor to the center of the object.
-                // joint.distance = Vector2.Distance(transform.position, hit.point);        // Uncomment if you want the player to remain in the same position when they grapple something but this would require implementing actual controls to the player like jumping and moving.
-                                                                                            
+
+                Vector2 connectPoint = hit.point - new Vector2(hit.collider.transform.position.x, hit.collider.transform.position.y);
+                connectPoint.x = connectPoint.x / hit.collider.transform.localScale.x;
+                connectPoint.y = connectPoint.y / hit.collider.transform.localScale.y;
+                joint.connectedAnchor = connectPoint;
+
+                joint.connectedBody = hit.collider.gameObject.GetComponent<Rigidbody2D>();      // Line will grapple to the surface the raycast hits rather than anchor to the center of the object.
+                                                                                                //joint.connectedAnchor = hit.point - new Vector2(hit.collider.transform.position.x, hit.collider.transform.position.y);      
+                                                                                                // joint.distance = Vector2.Distance(transform.position, hit.point);        // Uncomment if you want the player to remain in the same position when they grapple something but this would require implementing actual controls to the player like jumping and moving.
+
 
                 line.enabled = true;
                 line.SetPosition(0, transform.position);        // Set the initial point of the line.
                 line.SetPosition(1, hit.point);                 // Set the end point of the line.
+
             }
         }
 
