@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Derek_PC : MonoBehaviour
 {
-
     public LineRenderer line;
     DistanceJoint2D joint;
     Vector3 mousPos;
@@ -79,7 +78,6 @@ public class Derek_PC : MonoBehaviour
     public void Die()
     {
         Instantiate(mDeathParticles, transform.position, transform.rotation);
-        Destroy(gameObject);
     }
 
     public void TakeDamage(int dmg)

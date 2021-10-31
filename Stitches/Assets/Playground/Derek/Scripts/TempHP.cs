@@ -31,7 +31,7 @@ public class TempHP : MonoBehaviour
     {
         if(mHP < mFullHP)
         {
-            mHP++;
+            mHP += x;
         }
     }
 

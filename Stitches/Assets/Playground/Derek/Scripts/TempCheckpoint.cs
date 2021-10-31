@@ -7,7 +7,7 @@ public class TempCheckpoint : MonoBehaviour
     SpriteRenderer mSpriteRenderer;
     [SerializeField] Transform mRespawnPoint;
     [SerializeField] TempHP health;
-    [SerializeField] GameObject playerPrefab;
+    [SerializeField] Transform mPlayer;
 
     void Start()
     {
@@ -33,6 +33,7 @@ public class TempCheckpoint : MonoBehaviour
 
     void Respawn()
     {
-        Instantiate(playerPrefab, mRespawnPoint.position, mRespawnPoint.rotation);
+        health.AddHealth(3);
+        mPlayer.position = mRespawnPoint.position;
     }
 }
