@@ -11,6 +11,7 @@ public class TempHP : MonoBehaviour
     [SerializeField] int mFullHP;
     int mHP; 
     public Text healthText;
+    public bool mPlayerDead;
     Derek_PC mPlayer;
 
     // Start is called before the first frame update
@@ -18,6 +19,7 @@ public class TempHP : MonoBehaviour
     {
         mPlayer = GameObject.Find("Player").GetComponent<Derek_PC>();
         mHP = mFullHP;
+        mPlayerDead = false;
     }
 
     void Update() // Temp
@@ -38,6 +40,7 @@ public class TempHP : MonoBehaviour
         if(mHP <= 0)
         {
             mPlayer.Die();
+            mPlayerDead = true;
         }
         else
         {

@@ -12,6 +12,7 @@ public class Derek_PC : MonoBehaviour
     public float maxRopeLength = 10f;       // Max rope length
     public LayerMask mask;                  // Put the player on a different layer using a mask as to not grapple yourself and control which objects you can grapple.
 
+    [SerializeField] GameObject mDeathParticles;
     [SerializeField] TempHP health; // For HP
 
     // Start is called before the first frame update
@@ -77,6 +78,7 @@ public class Derek_PC : MonoBehaviour
 
     public void Die()
     {
+        Instantiate(mDeathParticles, transform.position, transform.rotation);
         Destroy(gameObject);
     }
 
