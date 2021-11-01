@@ -112,7 +112,13 @@ public class HookController : MonoBehaviour
 
         m_player.ResetGravity();
 
-        m_enemy = null;
+        if(m_enemy != null)
+        {
+            // If we unhook the enemy, we flag it as unhooked.
+            m_enemy.ToggleHook();
+            m_enemy = null;
+        }
+
         m_enemyHitLocationOffset = new Vector3();
     }
 
@@ -157,7 +163,7 @@ public class HookController : MonoBehaviour
             Vector3 enemyHitLocation = m_hookCollider.transform.position;
             m_enemyHitLocationOffset = enemyHitLocation - collision.gameObject.transform.position;
 
-
+            m_enemy.ToggleHook();
         }
     }
     void HandleGrapplingHook()

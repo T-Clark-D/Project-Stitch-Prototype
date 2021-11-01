@@ -9,8 +9,11 @@ public class PlayerController : MonoBehaviour
     public float m_baseMass = 1f;
     public float m_minimumRopeLength = 0.5f;
     public float m_pullingUpPlayerMass = 0.25f;
+    public float m_boostSpeed = 2f;
 
     private bool m_firstTimePullingUp = true;
+    // Set to true when we boost.
+    private bool m_justBoosted = false;
 
     [SerializeField] private GameObject m_grapplingHookObject;
     private HookController m_grapplingHookController;
@@ -59,9 +62,17 @@ public class PlayerController : MonoBehaviour
         // Letting go of the left click.
         if(Input.GetMouseButtonUp(0))
         {
-            m_grapplingHookController.LaunchHook(Input.mousePosition);
+            // If we just boosted, ignore the let go.
+            if(!m_justBoosted)
+            {
+                m_grapplingHookController.LaunchHook(Input.mousePosition);
 
-            m_firstTimePullingUp = true;
+                m_firstTimePullingUp = true;
+            }
+            else
+            {
+                m_justBoosted = false;
+            }
         }
 
         if(Input.GetMouseButton(1))
@@ -120,5 +131,16 @@ public class PlayerController : MonoBehaviour
     {
         m_rigidBody.gravityScale = m_baseGravityScale;
         m_rigidBody.mass = m_baseMass;
+    }
+
+    public void Boost()
+    {
+        m_rigidBody.AddForce(m_rigidBody.velocity.normalized * m_boostSpeed, ForceMode2D.Impulse);
+
+        // Unhook
+        m_grapplingHookController.RetractHook();
+
+        m_firstTimePullingUp = true;
+        m_justBoosted = true;
     }
 }
