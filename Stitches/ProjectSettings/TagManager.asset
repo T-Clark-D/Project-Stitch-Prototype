@@ -8,6 +8,7 @@ TagManager:
   - Enemy
   - Platform
   - LifeMeter
+  - Body
   layers:
   - Default
   - TransparentFX
@@ -17,8 +18,8 @@ TagManager:
   - UI
   - Hook
   - Player
-  - 
-  - 
+  - PlayerBody
+  - Enemies
   - 
   - 
   - 
