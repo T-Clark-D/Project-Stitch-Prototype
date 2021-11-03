@@ -5,15 +5,19 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public float m_pullUpSpeed = 15f;
+    public float m_initialPullUpSpeed = 15f;
     public float m_baseGravityScale = 1f;
     public float m_baseMass = 1f;
     public float m_minimumRopeLength = 0.5f;
     public float m_pullingUpPlayerMass = 0.25f;
     public float m_boostSpeed = 2f;
+    public float m_gravityOffTimeForBoost = 1.5f;
 
     private bool m_firstTimePullingUp = true;
     // Set to true when we boost.
     private bool m_justBoosted = false;
+    private float m_gravityOffTimeElapsed = 0f;
+    private bool m_gravityIsOffAndOnTimer = false;
 
     [SerializeField] private GameObject m_grapplingHookObject;
     private HookController m_grapplingHookController;
@@ -36,6 +40,14 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         HandleMovement();
+
+        if(m_gravityIsOffAndOnTimer)
+            m_gravityOffTimeElapsed += Time.deltaTime;
+
+        if(m_gravityOffTimeElapsed >= m_gravityOffTimeForBoost)
+        {
+            m_rigidBody.gravityScale = m_baseGravityScale;
+        }
     }
 
     private void FixedUpdate()
@@ -77,7 +89,18 @@ public class PlayerController : MonoBehaviour
 
         if(Input.GetMouseButton(1))
         {
-            if(m_grapplingHookController.m_tethered && m_distJoint.distance >= m_minimumRopeLength)
+            if(m_grapplingHookController.m_isHookedToAnEnemy)
+            {
+                // Starting a timer for the zero gravity.
+                m_gravityOffTimeElapsed = 0f;
+                m_rigidBody.gravityScale = 0f;
+                m_gravityIsOffAndOnTimer = true;
+
+                m_grapplingHookController.StartVulnerabilityTimer();
+
+                Boost();
+            }
+            else if(m_grapplingHookController.m_tethered && m_distJoint.distance >= m_minimumRopeLength)
             {
                 if(m_firstTimePullingUp)
                 {
@@ -89,6 +112,12 @@ public class PlayerController : MonoBehaviour
                     //m_rigidBody.velocity = new Vector2(0, 0);
                     //m_rigidBody.angularVelocity = 0f;
                     m_rigidBody.mass = m_pullingUpPlayerMass;
+
+                    // Giving an initial boost to the player
+                    Vector3 direction = m_grapplingHookController.GetHookDirection(false);
+                    m_hookDirection = direction.normalized;
+                    m_rigidBody.AddForce(m_hookDirection * m_initialPullUpSpeed * Time.fixedDeltaTime, ForceMode2D.Force);
+                    m_distJoint.distance = direction.magnitude;
 
                     m_firstTimePullingUp = false;
                 }
@@ -135,12 +164,19 @@ public class PlayerController : MonoBehaviour
 
     public void Boost()
     {
-        m_rigidBody.AddForce(m_rigidBody.velocity.normalized * m_boostSpeed, ForceMode2D.Impulse);
+        //m_rigidBody.AddForce(m_rigidBody.velocity.normalized * m_boostSpeed, ForceMode2D.Impulse);
+        m_rigidBody.AddForce(m_grapplingHookController.GetHookDirection() * m_boostSpeed, ForceMode2D.Impulse);
 
         // Unhook
         m_grapplingHookController.RetractHook();
 
         m_firstTimePullingUp = true;
         m_justBoosted = true;
+    }
+
+    public void RetractHook()
+    {
+        m_grapplingHookController.RetractHook();
+        m_firstTimePullingUp = true;
     }
 }

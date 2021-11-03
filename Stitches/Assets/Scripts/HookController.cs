@@ -9,6 +9,7 @@ public class HookController : MonoBehaviour
     public Vector3 m_hookColliderSize = new Vector3(0.5f, 0.5f, 0.5f);
     public bool m_tethered = false;
     public bool m_pullingUp = false;
+    public bool m_isHookedToAnEnemy = false;
 
     private bool m_grapplingHookOut = false;
     private LineRenderer m_grapplingHookRenderer;
@@ -22,6 +23,7 @@ public class HookController : MonoBehaviour
     private Rigidbody2D m_playerRigidBody;
     private DistanceJoint2D m_distJoint;
     private Flubber m_enemy;
+    private Flubber m_lastEnemyHooked;
 
     // Start is called before the first frame update
     void Start()
@@ -120,6 +122,7 @@ public class HookController : MonoBehaviour
         }
 
         m_enemyHitLocationOffset = new Vector3();
+        m_isHookedToAnEnemy = false;
     }
 
     public void PullUp()
@@ -159,11 +162,14 @@ public class HookController : MonoBehaviour
             m_distJoint.distance = GetHookDirection(false).magnitude;
 
             m_enemy = collision.gameObject.GetComponent<Flubber>();
+            m_lastEnemyHooked = m_enemy;
 
             Vector3 enemyHitLocation = m_hookCollider.transform.position;
             m_enemyHitLocationOffset = enemyHitLocation - collision.gameObject.transform.position;
 
             m_enemy.ToggleHook();
+
+            m_isHookedToAnEnemy = true;
         }
     }
     void HandleGrapplingHook()
@@ -248,5 +254,13 @@ public class HookController : MonoBehaviour
         }
 
         return direction;
+    }
+
+    public void StartVulnerabilityTimer()
+    {
+        if(m_lastEnemyHooked != null)
+        {
+            m_lastEnemyHooked.StartVulnerabilityTimer();
+        }
     }
 }

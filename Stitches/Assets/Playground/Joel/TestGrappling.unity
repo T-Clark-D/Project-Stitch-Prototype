@@ -4382,6 +4382,11 @@ MonoBehaviour:
   interval: 1
   force: 10
   m_isHooked: 0
+  m_isVulnerable: 0
+  m_aiIsOff: 0
+  m_frozen: 1
+  m_freezeTime: 2
+  m_vulnerabilityTime: 2
   m_explosionEffectSystem: {fileID: 899026512}
 --- !u!50 &836313470
 Rigidbody2D:
@@ -4403,7 +4408,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 7
+  m_Constraints: 4
 --- !u!58 &836313471
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -10861,12 +10866,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff81d56a1800f3547b1e12de88b8cb08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_pullUpSpeed: 25
+  m_pullUpSpeed: 30
+  m_initialPullUpSpeed: 15
   m_baseGravityScale: 1
   m_baseMass: 1
   m_minimumRopeLength: 0.5
   m_pullingUpPlayerMass: 0.05
-  m_boostSpeed: 2
+  m_boostSpeed: 8
+  m_gravityOffTimeForBoost: 1.5
   m_grapplingHookObject: {fileID: 1535027132}
 --- !u!232 &1211288568
 DistanceJoint2D:
@@ -12552,6 +12559,7 @@ MonoBehaviour:
   m_hookColliderSize: {x: 0.25, y: 0.25, z: 0}
   m_tethered: 1
   m_pullingUp: 0
+  m_isHookedToAnEnemy: 0
   m_player: {fileID: 1211288567}
 --- !u!120 &1535027134
 LineRenderer:
