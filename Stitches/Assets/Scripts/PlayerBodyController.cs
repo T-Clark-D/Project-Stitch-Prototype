@@ -25,13 +25,6 @@ public class PlayerBodyController : MonoBehaviour
         float angle = Mathf.Atan2(moveDirection.y, moveDirection.x) * Mathf.Rad2Deg - 90;
         transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
       
-        if (m_rigidBody.velocity.x > 0)
-        {
-            m_spriteRenderer.flipX = false;
-        }
-        else
-        {
-            m_spriteRenderer.flipX = true;
-        }
+        
     }
 }
