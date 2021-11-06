@@ -29,7 +29,7 @@ public class Enemy : MonoBehaviour
         m_collider = GetComponent<CircleCollider2D>();
     }
     public void Update()
-    {s
+    {
         if (m_frozen && m_thawing)
             m_freezeElapsedTime += Time.deltaTime;
 
