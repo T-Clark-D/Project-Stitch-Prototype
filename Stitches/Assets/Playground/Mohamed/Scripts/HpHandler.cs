@@ -7,13 +7,19 @@ public class HpHandler : MonoBehaviour
     // Start is called before the first frame update
 
     //TODO: Find an object to store a UI element like an image
-    [SerializeField] private Image Life;
+    [SerializeField] private GameObject LifeMeter; 
     [SerializeField] private int maxLives;
+
+    private Image[] lives;
+    private int livesLeft;
+
     void Start()
     {
+        LifeMeter = GameObject.FindGameObjectWithTag("LifeMeter");
+        lives = LifeMeter.GetComponentsInChildren<Image>();
+        livesLeft = maxLives;
         //intialize the UI object or get it
-        Image[] lives = GameObject.FindGameObjectWithTag("LifeMeter").GetComponentsInChildren<Image>();
-        for (int i = 0; i <= maxLives; i++)
+        for (int i = 0; i < maxLives; i++)
         {
             lives[i].enabled = true;
         }
@@ -23,6 +29,23 @@ public class HpHandler : MonoBehaviour
     void Update()
     {
         //change the image on space spressed
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            loseLife(1);
+        }
+
+    }
+
+    void loseLife(int amount)
+    {
+        if (lives[0].enabled == true)
+        {
+            for (int i = 0; i < amount; i++)
+            {
+                lives[livesLeft - 1].enabled = false;
+                livesLeft--;
+            }
+        }
 
     }
 }
