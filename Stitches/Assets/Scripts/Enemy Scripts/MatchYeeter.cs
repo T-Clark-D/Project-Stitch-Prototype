@@ -2,22 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MatchYeeter : MonoBehaviour
+public class MatchYeeter : Enemy
 {
     // Start is called before the first frame update
     public float interval;
     public GameObject match;
-    private Rigidbody2D RB;
-    private CircleCollider2D m_collider;
     private float lastYeet;
     private int throwForce = 20;
-    private SpriteRenderer SR;
     public GameObject player;
     bool lookingLeft;
     private int mod;
-    void Start()
+
+    new void Start()
     {
-        SR = GetComponent<SpriteRenderer>();
+        base.Start();
         interval = 1.0f;
         lookingLeft = true;
     }
@@ -41,14 +39,14 @@ public class MatchYeeter : MonoBehaviour
             m_match.GetComponent<Rigidbody2D>().AddForceAtPosition(Vector2.right, new Vector2(-2.77f, -3.51f), ForceMode2D.Impulse);
             lastYeet = Time.timeSinceLevelLoad;
         }
-        flipDirection();
+        FlipDirection();
        
     }
-    private void flipDirection()
+    private void FlipDirection()
     {
         if (player.transform.position.x - this.transform.position.x > 0 && lookingLeft)
         {
-              SR.flipX = true;
+              m_SR.flipX = true;
             lookingLeft = false;
             Transform[] fires = GetComponentsInChildren<Transform>();
             foreach (Transform f in fires)
@@ -59,7 +57,7 @@ public class MatchYeeter : MonoBehaviour
         }
         else if (player.transform.position.x - this.transform.position.x < 0 && !lookingLeft)
         {
-             SR.flipX = false;
+             m_SR.flipX = false;
             lookingLeft = true;
             Transform[] fires = GetComponentsInChildren<Transform>();
             foreach (Transform f in fires)

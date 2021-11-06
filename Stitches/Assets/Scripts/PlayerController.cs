@@ -1,6 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+
 
 public class PlayerController : MonoBehaviour
 {
@@ -24,10 +27,12 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D m_rigidBody;
     private Vector3 m_hookDirection;
     private DistanceJoint2D m_distJoint;
+    private SpriteRenderer[] m_SR;
 
     // Start is called before the first frame update
     void Start()
     {
+        m_SR = GetComponentsInChildren<SpriteRenderer>();
         m_grapplingHookController = m_grapplingHookObject.GetComponent<HookController>();
         m_distJoint = GetComponent<DistanceJoint2D>();
         m_rigidBody = GetComponent<Rigidbody2D>();
@@ -39,6 +44,21 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(Math.Abs(m_rigidBody.velocity.x) > 0.1)
+        {
+            foreach (SpriteRenderer sr in m_SR)
+            {
+                if (m_rigidBody.velocity.x > 0)
+                {
+                    sr.flipX = false;
+                }
+                else
+                {
+                    sr.flipX = true;
+                }
+            }
+        }
+     
         HandleMovement();
 
         if(m_gravityIsOffAndOnTimer)

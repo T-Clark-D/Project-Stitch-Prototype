@@ -22,8 +22,8 @@ public class HookController : MonoBehaviour
     [SerializeField] private PlayerController m_player;
     private Rigidbody2D m_playerRigidBody;
     private DistanceJoint2D m_distJoint;
-    private Flubber m_enemy;
-    private Flubber m_lastEnemyHooked;
+    private Enemy m_enemy;
+    private Enemy m_lastEnemyHooked;
 
     // Start is called before the first frame update
     void Start()
@@ -161,7 +161,7 @@ public class HookController : MonoBehaviour
 
             m_distJoint.distance = GetHookDirection(false).magnitude;
 
-            m_enemy = collision.gameObject.GetComponent<Flubber>();
+            m_enemy = collision.gameObject.GetComponent<Enemy>();
             m_lastEnemyHooked = m_enemy;
 
             Vector3 enemyHitLocation = m_hookCollider.transform.position;
