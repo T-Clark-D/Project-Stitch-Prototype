@@ -20,7 +20,7 @@ public class Enemy : MonoBehaviour
     public float m_freezeTime = 1f;
     public float m_vulnerabilityTime = 2f;
 
-    public void Start()
+    protected virtual void Start()
     {
         m_explosionEffectSystem =  GameObject.Find("ExplosionEffect").GetComponent<ParticleSystem>();
         m_SR = GetComponent<SpriteRenderer>();
@@ -28,7 +28,7 @@ public class Enemy : MonoBehaviour
         m_anim = GetComponent<Animator>();
         m_collider = GetComponent<CircleCollider2D>();
     }
-    public void Update()
+    protected virtual void Update()
     {
         if (m_frozen && m_thawing)
             m_freezeElapsedTime += Time.deltaTime;
@@ -48,7 +48,7 @@ public class Enemy : MonoBehaviour
             m_vulnerabilityIsOnTimer = false;
         }
     }
-    public void ToggleHook()
+    public virtual void ToggleHook()
     {
         if (m_isHooked)
         {
@@ -98,7 +98,7 @@ public class Enemy : MonoBehaviour
             m_RB.constraints = RigidbodyConstraints2D.FreezeRotation;
         }
 
-    public void ToggleVulnerability()
+    public virtual void ToggleVulnerability()
     {
         m_isVulnerable = !m_isVulnerable;
 
@@ -113,7 +113,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    public void StartVulnerabilityTimer()
+    public virtual void StartVulnerabilityTimer()
     {
         m_vulnerabilityElapsedTime = 0f;
         m_vulnerabilityIsOnTimer = true;

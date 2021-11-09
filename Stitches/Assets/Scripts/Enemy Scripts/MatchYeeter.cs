@@ -13,7 +13,7 @@ public class MatchYeeter : Enemy
     bool lookingLeft;
     private int mod;
 
-    new void Start()
+    protected override void Start()
     {
         base.Start();
         interval = 1.0f;
@@ -21,8 +21,10 @@ public class MatchYeeter : Enemy
     }
 
     // Update is called once per frame
-    void Update()
+    protected override void Update()
     {
+        base.Update();
+
         if (lookingLeft)
         {
             mod = -1;
