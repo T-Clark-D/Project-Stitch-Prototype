@@ -28,12 +28,12 @@ public class WallCrawler : Enemy
     // Update is called once per frame
     protected override void Update()
     {
-        base.Update();
-        HandleCrawl();
+        base.Update();        
     }
 
     private void FixedUpdate()
     {
+        HandleCrawl();
         Movement();
     }
 
@@ -71,15 +71,15 @@ public class WallCrawler : Enemy
         Vector3 downVector = -transform.up.normalized * (m_enemySize.y / 2);
         Vector3 rightVector = transform.right.normalized * (m_enemySize.x / 2);
 
-        Vector3 rightCorner = transform.position + new Vector3(rightVector.x + 0.02f, downVector.y, m_enemySize.z / 2); // Adding 0.02f to the y value so that we dont clip with the ground and detect nothing on our raycast.
-        Vector3 leftCorner = transform.position + new Vector3(-(rightVector.x + 0.02f), downVector.y, m_enemySize.z / 2); // Adding 0.02f to the y value so that we dont clip with the ground and detect nothing on our raycast.
+        Vector3 rightCorner = transform.position + rightVector + (rightVector * 0.02f) + downVector; // Adding 0.02f to the y value so that we dont clip with the ground and detect nothing on our raycast.
+        Vector3 leftCorner = transform.position - rightVector - (rightVector * 0.02f) + downVector; // Adding 0.02f to the y value so that we dont clip with the ground and detect nothing on our raycast.
 
-        if(m_direction == Direction.Right)
+        if (m_direction == Direction.Right)
         {
             // Going right.
 
-            Debug.DrawRay(rightCorner, transform.right * m_wallCheckDistance, Color.yellow);
-            RaycastHit2D hit = Physics2D.Raycast(rightCorner, transform.right, m_wallCheckDistance, ~LayerMask.GetMask("Enemy", "Player"));
+            Debug.DrawRay(rightCorner, transform.right, Color.red);
+            RaycastHit2D hit = Physics2D.Raycast(rightCorner, transform.right, m_wallCheckDistance, ~LayerMask.GetMask("Enemies", "Player"));
 
             if (hit.collider != null && hit.collider.CompareTag("Platform"))
             {
@@ -91,7 +91,8 @@ public class WallCrawler : Enemy
         else if(m_direction == Direction.Left)
         {
             // Going left.
-            RaycastHit2D hit = Physics2D.Raycast(leftCorner, -transform.right, m_wallCheckDistance, ~LayerMask.GetMask("Enemy", "Player"));
+            Debug.DrawRay(leftCorner, -transform.right, Color.red);
+            RaycastHit2D hit = Physics2D.Raycast(leftCorner, -transform.right, m_wallCheckDistance, ~LayerMask.GetMask("Enemies", "Player"));
 
             if (hit.collider != null && hit.collider.CompareTag("Platform"))
             {
