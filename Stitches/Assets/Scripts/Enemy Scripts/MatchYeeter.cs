@@ -5,17 +5,21 @@ using UnityEngine;
 public class MatchYeeter : Enemy
 {
     // Start is called before the first frame update
-    public float interval;
     public GameObject match;
+    public GameObject player;
+
+    public float interval;
+    
     private float lastYeet;
     private int throwForce = 20;
-    public GameObject player;
-    bool lookingLeft;
     private int mod;
+
+    bool lookingLeft;
 
     protected override void Start()
     {
         base.Start();
+        player = FindObjectOfType<PlayerController>().gameObject;
         interval = 1.0f;
         lookingLeft = true;
     }
@@ -40,9 +44,16 @@ public class MatchYeeter : Enemy
             m_match.GetComponent<Rigidbody2D>().AddForce(new Vector2(mod*1,1)* throwForce, ForceMode2D.Impulse);
             m_match.GetComponent<Rigidbody2D>().AddForceAtPosition(Vector2.right, new Vector2(-2.77f, -3.51f), ForceMode2D.Impulse);
             lastYeet = Time.timeSinceLevelLoad;
+            StartCoroutine(DestroyMatch(m_match));
         }
         FlipDirection();
        
+    }
+
+    IEnumerator DestroyMatch(GameObject m_match)
+    {
+        yield return new WaitForSeconds(5);
+        Destroy(m_match);
     }
     private void FlipDirection()
     {
