@@ -16,6 +16,11 @@ public class WallCrawler : Enemy
     public float m_wallCheckDistance = 0.02f;
     public float m_groundCheckDistance = 0.2f;
     public float m_pauseTimer = 2f;
+    /// <summary>
+    /// Determines whether the crawler will be placed in the scene originally using gravity or not.
+    /// If true, the crawler will have gravity enabled for its initial placement.
+    /// </summary>
+    public bool m_placeWithGravity = false;
 
     [SerializeField] private PlayerController m_player;
     private Vector3 m_enemySize;
@@ -24,6 +29,7 @@ public class WallCrawler : Enemy
     private bool m_hasBeenPlaced = false;
     private float m_pauseTimeElapsed = 0f;
     private bool m_isPaused = false;
+    private bool m_hasTurned = false;
 
     // Start is called before the first frame update
     protected override void Start()
@@ -31,10 +37,18 @@ public class WallCrawler : Enemy
         base.Start();
         m_enemySize = m_collider.bounds.size;
 
-        if(!m_hasBeenPlaced)
+        if(m_placeWithGravity)
         {
-            m_RB.gravityScale = 1f;
+            if (!m_hasBeenPlaced)
+            {
+                m_RB.gravityScale = 1f;
+            }
         }
+        else
+        {
+            m_hasBeenPlaced = true;
+        }
+        
     }
 
     // Update is called once per frame
@@ -52,11 +66,17 @@ public class WallCrawler : Enemy
     }
 
     protected void OnCollisionEnter2D(Collision2D collision)
-    {        
-        if(collision.collider.CompareTag("Platform"))
+    {    
+        if(!m_hasBeenPlaced)
         {
-            m_hasBeenPlaced = true;
-            m_RB.gravityScale = 0f;
+            if (collision.collider.CompareTag("Platform"))
+            {
+                m_hasBeenPlaced = true;
+                m_RB.gravityScale = 0f;
+
+                m_pauseTimeElapsed = 0f;
+                m_isPaused = true;
+            }
         }
     }
 
@@ -64,91 +84,68 @@ public class WallCrawler : Enemy
     {
         if(m_hasBeenPlaced)
         {
+            m_hasTurned = false;
+
             HandleFall();
-            HandleCrawl();
+
+            if(!m_hasTurned)
+                HandleCrawl();
+
             Movement();
+
+            if ( !m_isPaused &&
+                (m_direction == Direction.Left && m_lastDirection == Direction.Right
+                || m_direction == Direction.Right && m_lastDirection == Direction.Left ))
+            {
+                m_isPaused = true;
+                m_pauseTimeElapsed = 0f;
+            }
         }
     }
 
     private void HandleFall()
     {
-        // Calculating where our collider corners are, at the base of our enemy.
-        Vector3 downVector = -transform.up.normalized * (m_enemySize.y / 2);
-        Vector3 rightVector = transform.right.normalized * (m_enemySize.x / 2);
+        if (IsGrounded())
+            return;
 
-        Vector3 rightCorner = transform.position + rightVector + (rightVector * 0.02f) + downVector; // Adding 0.02f to the y value so that we dont clip with the ground and detect nothing on our raycast.
-        Vector3 leftCorner = transform.position - rightVector - (rightVector * 0.02f) + downVector; // Adding 0.02f to the y value so that we dont clip with the ground and detect nothing on our raycast.
+        if (m_isPaused)
+            return;
+
+        // We are dangling in the void. Time to turn!
 
         if (m_direction == Direction.Right)
         {
             // Going right.
+            transform.Rotate(new Vector3(0, 0, -90));
+            m_RB.MoveRotation(Quaternion.Euler(0, 0, -90));
 
-            Debug.DrawRay(leftCorner, -transform.up * m_groundCheckDistance, Color.yellow);
-            // Casting a ray downwards, to detect ground.
-            RaycastHit2D hit = Physics2D.Raycast(leftCorner, -transform.up, m_groundCheckDistance, ~LayerMask.GetMask("Enemies", "Player"));
-
-            if(hit.collider == null)
-            {
-                // Check if our other foot is set on ground.
-                // Casting a ray downwards, to detect ground.
-                Debug.DrawRay(rightCorner, -transform.up * m_groundCheckDistance, Color.yellow);
-                RaycastHit2D hit2 = Physics2D.Raycast(rightCorner, -transform.up, m_groundCheckDistance, ~LayerMask.GetMask("Enemies", "Player"));
-
-                if (hit2.collider == null)
-                {
-                    // We are dangling in the void. Time to turn!
-                    transform.Rotate(new Vector3(0, 0, 90));
-                    m_RB.MoveRotation(Quaternion.Euler(0, 0, 90));
-                }
-            }
+            m_hasTurned = true;
         }
         else if (m_direction == Direction.Left)
         {
             // Going left.
-            Debug.DrawRay(rightCorner, -transform.up * m_groundCheckDistance, Color.yellow);
-            // Casting a ray downwards, to detect ground.
-            RaycastHit2D hit = Physics2D.Raycast(rightCorner, -transform.up, m_groundCheckDistance, ~LayerMask.GetMask("Enemies", "Player"));
+            transform.Rotate(new Vector3(0, 0, 90));
+            m_RB.MoveRotation(Quaternion.Euler(0, 0, 90));
 
-            if (hit.collider == null)
-            {
-                // Check if our other foot is set on ground.
-                // Casting a ray downwards, to detect ground.
-                Debug.DrawRay(leftCorner, -transform.up * m_groundCheckDistance, Color.yellow);
-                RaycastHit2D hit2 = Physics2D.Raycast(leftCorner, -transform.up, m_groundCheckDistance, ~LayerMask.GetMask("Enemies", "Player"));
-
-                if (hit2.collider == null)
-                {
-                    // We are dangling in the void. Time to turn!
-                    transform.Rotate(new Vector3(0, 0, -90));
-                    m_RB.MoveRotation(Quaternion.Euler(0, 0, -90));
-                }
-            }
+            m_hasTurned = true;                        
         }
         else if (m_direction == Direction.None)
         {
-            Debug.DrawRay(leftCorner, -transform.up * m_groundCheckDistance, Color.yellow);
-            // Casting a ray downwards, to detect ground.
-            RaycastHit2D hit = Physics2D.Raycast(leftCorner, -transform.up, m_groundCheckDistance, ~LayerMask.GetMask("Enemies", "Player"));
+            // We are dangling in the void. Time to turn!
+            transform.Rotate(new Vector3(0, 0, 180));
+            m_RB.MoveRotation(Quaternion.Euler(0, 0, 180));
 
-            if (hit.collider == null)
-            {
-                // Check if our other foot is set on ground.
-                // Casting a ray downwards, to detect ground.
-                Debug.DrawRay(rightCorner, -transform.up * m_groundCheckDistance, Color.yellow);
-                RaycastHit2D hit2 = Physics2D.Raycast(rightCorner, -transform.up, m_groundCheckDistance, ~LayerMask.GetMask("Enemies", "Player"));
-
-                if(hit2.collider == null)
-                {
-                    // We are dangling in the void. Time to turn!
-                    transform.Rotate(new Vector3(0, 0, 180));
-                    m_RB.MoveRotation(Quaternion.Euler(0, 0, 180));
-                }
-            }
+            m_hasTurned = true;
         }
+
+        ConnectToGround();
     }
 
     private void Movement()
     {
+        if (m_isPaused)
+            return;
+
         float originalDistanceToPlayer = (m_player.gameObject.transform.position - gameObject.transform.position).magnitude;
 
         if(originalDistanceToPlayer <= m_aggroRange)
@@ -179,6 +176,9 @@ public class WallCrawler : Enemy
 
     private void HandleCrawl()
     {
+        if (m_isPaused)
+            return;
+
         // Calculating where our collider corners are, at the base of our enemy.
         Vector3 downVector = -transform.up.normalized * (m_enemySize.y / 2);
         Vector3 rightVector = transform.right.normalized * (m_enemySize.x / 2);
@@ -190,44 +190,133 @@ public class WallCrawler : Enemy
         {
             // Going right.
 
-            Debug.DrawRay(rightCorner, transform.right, Color.red);
+            Debug.DrawRay(rightCorner, transform.right * m_wallCheckDistance, Color.red);
             RaycastHit2D hit = Physics2D.Raycast(rightCorner, transform.right, m_wallCheckDistance, ~LayerMask.GetMask("Enemies", "Player"));
 
             if (hit.collider != null && hit.collider.CompareTag("Platform"))
             {
-                if(m_lastDirection == Direction.Left)
-                {
-                    m_isPaused = true;
-                    m_pauseTimeElapsed = 0f;
-                }
-                if(!m_isPaused)
-                {
-                    // We hit a platform, so we hit a wall!
-                    transform.Rotate(new Vector3(0, 0, 90));
-                    m_RB.MoveRotation(Quaternion.Euler(0, 0, 90));
-                }
+                // We hit a platform, so we hit a wall!
+                transform.Rotate(new Vector3(0, 0, 90));
+                m_RB.MoveRotation(Quaternion.Euler(0, 0, 90));
+
+                m_hasTurned = true;
             }
         }
         else if(m_direction == Direction.Left)
         {
             // Going left.
-            Debug.DrawRay(leftCorner, -transform.right, Color.red);
+            Debug.DrawRay(leftCorner, -transform.right * m_wallCheckDistance, Color.red);
             RaycastHit2D hit = Physics2D.Raycast(leftCorner, -transform.right, m_wallCheckDistance, ~LayerMask.GetMask("Enemies", "Player"));
 
             if (hit.collider != null && hit.collider.CompareTag("Platform"))
             {
-                if (m_lastDirection == Direction.Right)
+                // We hit a platform, so we hit a wall!
+                transform.Rotate(new Vector3(0, 0, -90));
+                m_RB.MoveRotation(Quaternion.Euler(0, 0, -90));
+
+                m_hasTurned = true;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Moves the crawler slightly and checks for ground. Repeats until ground is found.
+    /// </summary>
+    private void ConnectToGround()
+    {
+        if (m_direction == Direction.None)
+            return;
+
+        Vector3 moveVector = m_direction == Direction.Left ? -transform.right.normalized : transform.right.normalized;
+
+        // Failsafe. Should never, ever happen.
+        int maxCount = 100;
+        int count = 0;
+
+        // Check for grounded. If not grounded, we move again.
+        while(!IsGrounded() && count < maxCount)
+        {
+            // Move the crawler a bit.
+            Vector2 newPoint = gameObject.transform.position + (moveVector * m_speed * Time.fixedDeltaTime);
+            gameObject.transform.position = newPoint;
+
+            count++;
+        }
+    }
+
+    public bool IsGrounded()
+    {
+        // Calculating where our collider corners are, at the base of our enemy.
+        Vector3 downVector = -transform.up.normalized * (m_enemySize.y / 2);
+        Vector3 rightVector = transform.right.normalized * (m_enemySize.x / 2);
+
+        Vector3 rightCorner = transform.position + rightVector + (rightVector * 0.02f) + downVector; // Adding 0.02f to the y value so that we dont clip with the ground and detect nothing on our raycast.
+        Vector3 leftCorner = transform.position - rightVector - (rightVector * 0.02f) + downVector; // Adding 0.02f to the y value so that we dont clip with the ground and detect nothing on our raycast.
+
+        if (m_direction == Direction.Right)
+        {
+            // Going right.
+
+            Debug.DrawRay(leftCorner, -transform.up * m_groundCheckDistance, Color.yellow);
+            // Casting a ray downwards, to detect ground.
+            RaycastHit2D hit = Physics2D.Raycast(leftCorner, -transform.up, m_groundCheckDistance, ~LayerMask.GetMask("Enemies", "Player"));
+
+            if (hit.collider == null)
+            {
+                // Check if our other foot is set on ground.
+                // Casting a ray downwards, to detect ground.
+                Debug.DrawRay(rightCorner, -transform.up * m_groundCheckDistance, Color.yellow);
+                RaycastHit2D hit2 = Physics2D.Raycast(rightCorner, -transform.up, m_groundCheckDistance, ~LayerMask.GetMask("Enemies", "Player"));
+
+                if (hit2.collider == null)
                 {
-                    m_isPaused = true;
-                    m_pauseTimeElapsed = 0f;
-                }
-                if (!m_isPaused)
-                {
-                    // We hit a platform, so we hit a wall!
-                    transform.Rotate(new Vector3(0, 0, -90));
-                    m_RB.MoveRotation(Quaternion.Euler(0, 0, -90));
+                    // We are dangling in the void. 
+                    return false;
                 }
             }
         }
+        else if (m_direction == Direction.Left)
+        {
+            // Going left.
+            Debug.DrawRay(rightCorner, -transform.up * m_groundCheckDistance, Color.yellow);
+            // Casting a ray downwards, to detect ground.
+            RaycastHit2D hit = Physics2D.Raycast(rightCorner, -transform.up, m_groundCheckDistance, ~LayerMask.GetMask("Enemies", "Player"));
+
+            if (hit.collider == null)
+            {
+                // Check if our other foot is set on ground.
+                // Casting a ray downwards, to detect ground.
+                Debug.DrawRay(leftCorner, -transform.up * m_groundCheckDistance, Color.yellow);
+                RaycastHit2D hit2 = Physics2D.Raycast(leftCorner, -transform.up, m_groundCheckDistance, ~LayerMask.GetMask("Enemies", "Player"));
+
+                if (hit2.collider == null)
+                {
+                    // We are dangling in the void.
+                    return false;
+                }
+            }
+        }
+        else if (m_direction == Direction.None)
+        {
+            Debug.DrawRay(leftCorner, -transform.up * m_groundCheckDistance, Color.yellow);
+            // Casting a ray downwards, to detect ground.
+            RaycastHit2D hit = Physics2D.Raycast(leftCorner, -transform.up, m_groundCheckDistance, ~LayerMask.GetMask("Enemies", "Player"));
+
+            if (hit.collider == null)
+            {
+                // Check if our other foot is set on ground.
+                // Casting a ray downwards, to detect ground.
+                Debug.DrawRay(rightCorner, -transform.up * m_groundCheckDistance, Color.yellow);
+                RaycastHit2D hit2 = Physics2D.Raycast(rightCorner, -transform.up, m_groundCheckDistance, ~LayerMask.GetMask("Enemies", "Player"));
+
+                if (hit2.collider == null)
+                {
+                    // We are dangling in the void.
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 }
