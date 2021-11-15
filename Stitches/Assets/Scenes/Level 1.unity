@@ -2094,6 +2094,7 @@ MonoBehaviour:
   m_wallCheckDistance: 0.02
   m_groundCheckDistance: 0.2
   m_pauseTimer: 2
+  m_placeWithGravity: 0
   m_player: {fileID: 1740927047}
 --- !u!61 &101037896
 BoxCollider2D:
@@ -32617,6 +32618,7 @@ MonoBehaviour:
   m_wallCheckDistance: 0.02
   m_groundCheckDistance: 0.2
   m_pauseTimer: 2
+  m_placeWithGravity: 1
   m_player: {fileID: 1740927047}
 --- !u!61 &1545411726
 BoxCollider2D:
