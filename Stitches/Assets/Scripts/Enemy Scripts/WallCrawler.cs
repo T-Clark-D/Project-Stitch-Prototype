@@ -228,8 +228,9 @@ public class WallCrawler : Enemy
             return;
 
         Vector3 moveVector = m_direction == Direction.Left ? -transform.right.normalized : transform.right.normalized;
+        Vector3 originalPosition = gameObject.transform.position;
 
-        // Failsafe. Should never, ever happen.
+        // If this count is reached, we are in the complete void. We should fall.
         int maxCount = 100;
         int count = 0;
 
@@ -241,6 +242,17 @@ public class WallCrawler : Enemy
             gameObject.transform.position = newPoint;
 
             count++;
+        }
+
+        if(count >= maxCount)
+        {
+            // We are in the complete void.
+            // Returning to first position, and falling.
+            gameObject.transform.position = originalPosition;
+
+            m_RB.gravityScale = 1f;
+            m_hasBeenPlaced = false;
+            m_placeWithGravity = true;
         }
     }
 
