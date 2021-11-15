@@ -171,6 +171,12 @@ public class HookController : MonoBehaviour
 
             m_isHookedToAnEnemy = true;
         }
+        else if (collision.gameObject.CompareTag("Ungrapplable"))
+        {
+            Debug.Log("Hit an ungrapplable target!");
+            RetractHook();
+            FindObjectOfType<PlayerController>().m_ungrapplableBuffer = true;
+        }
     }
     void HandleGrapplingHook()
     {        

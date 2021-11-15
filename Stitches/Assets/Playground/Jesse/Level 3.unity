@@ -11259,7 +11259,7 @@ GameObject:
   - component: {fileID: 972779078}
   m_Layer: 0
   m_Name: Untitled-Artwork (15)_34 (56)
-  m_TagString: Platform
+  m_TagString: Ungrapplable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -11287,7 +11287,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 972779076}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 8b08994fd7b9b6446ac1fb69eb3ed734, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
@@ -22197,7 +22197,7 @@ GameObject:
   - component: {fileID: 1841566735}
   m_Layer: 0
   m_Name: Untitled-Artwork (15)_34 (52)
-  m_TagString: Platform
+  m_TagString: Ungrapplable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

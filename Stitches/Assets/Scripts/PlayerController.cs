@@ -16,6 +16,9 @@ public class PlayerController : MonoBehaviour
     public float m_boostSpeed = 2f;
     public float m_gravityOffTimeForBoost = 1.5f;
 
+    //Used to fix bug where grappling hook fires again when releasing mouse button after hitting ungrapplable object
+    public bool m_ungrapplableBuffer = false;
+
     private bool m_firstTimePullingUp = true;
     // Set to true when we boost.
     private bool m_justBoosted = false;
@@ -95,7 +98,7 @@ public class PlayerController : MonoBehaviour
         if(Input.GetMouseButtonUp(0))
         {
             // If we just boosted, ignore the let go.
-            if(!m_justBoosted)
+            if(!m_justBoosted && !m_ungrapplableBuffer)
             {
                 m_grapplingHookController.LaunchHook(Input.mousePosition);
 
@@ -104,6 +107,7 @@ public class PlayerController : MonoBehaviour
             else
             {
                 m_justBoosted = false;
+                m_ungrapplableBuffer = false;
             }
         }
 
