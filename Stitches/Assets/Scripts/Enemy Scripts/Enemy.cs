@@ -7,7 +7,7 @@ public class Enemy : MonoBehaviour
     public SpriteRenderer m_SR;
     public Rigidbody2D m_RB;
     public Animator m_anim;
-    public CircleCollider2D m_collider;
+    public Collider2D m_collider;
     public bool m_isHooked = false;
     public bool m_isVulnerable = false;
     public bool m_aiIsOff = false;
@@ -26,7 +26,7 @@ public class Enemy : MonoBehaviour
         m_SR = GetComponent<SpriteRenderer>();
         m_RB = GetComponent<Rigidbody2D>();
         m_anim = GetComponent<Animator>();
-        m_collider = GetComponent<CircleCollider2D>();
+        m_collider = GetComponent<Collider2D>();
     }
     protected virtual void Update()
     {
