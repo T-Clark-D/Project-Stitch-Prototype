@@ -12,7 +12,12 @@ public class Bungus : Enemy
 
     public void OnCollisionEnter2D(Collision2D collision)
     {
-        m_RB.AddForce(m_RB.velocity.normalized*1000);
+        
+       if(m_RB.velocity.magnitude < 10)
+        {
+           m_RB.AddForce(m_RB.velocity.normalized * 1000);
+        }
+       // m_RB.AddForce(m_RB.velocity.normalized * 1000);
         transform.up = collision.GetContact(0).normal;
         m_anim.SetTrigger("Bounce");
     }
