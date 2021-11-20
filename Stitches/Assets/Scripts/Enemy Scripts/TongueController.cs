@@ -7,7 +7,7 @@ public class TongueController : MonoBehaviour
     public float m_tongueSpeed = 1;
     public float m_tongueStartHeightOffset = 1;
     public bool m_tongueOut = false;
-    public float m_tongueMaxLength = 2f;
+    public float m_tongueMaxLength;
 
     private LineRenderer m_tongueRenderer;
     private Vector3 m_currentPosition;
@@ -33,6 +33,8 @@ public class TongueController : MonoBehaviour
 
         m_currentPosition = new Vector3(0, 0, 0);
         m_directionUnitVector = new Vector3(0, 0, 0);
+
+        m_tongueMaxLength = m_crawler.m_attackRange;
     }
 
     // Update is called once per frame
