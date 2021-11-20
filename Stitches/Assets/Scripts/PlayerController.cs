@@ -67,9 +67,10 @@ public class PlayerController : MonoBehaviour
         if(m_gravityIsOffAndOnTimer)
             m_gravityOffTimeElapsed += Time.deltaTime;
 
-        if(m_gravityOffTimeElapsed >= m_gravityOffTimeForBoost)
+        if(m_gravityIsOffAndOnTimer && m_gravityOffTimeElapsed >= m_gravityOffTimeForBoost)
         {
             m_rigidBody.gravityScale = m_baseGravityScale;
+            m_gravityIsOffAndOnTimer = false;
         }
     }
 
