@@ -143,7 +143,7 @@ public class HookController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Platform"))
         {
-            Debug.Log("Hit!");
+            //Debug.Log("Hit!");
             m_tethered = true;
 
             m_distJoint.enabled = true;
@@ -153,7 +153,7 @@ public class HookController : MonoBehaviour
         }
         else if(collision.gameObject.CompareTag("Enemy"))
         {
-            Debug.Log("Hit an enemy!");
+            //Debug.Log("Hit an enemy!");
             m_tethered = true;
 
             m_distJoint.enabled = true;

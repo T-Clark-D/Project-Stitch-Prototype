@@ -13,9 +13,12 @@ public class WallCrawler : Enemy
     public bool m_isVertical = false;
     public float m_speed = 1f;
     public float m_aggroRange = 10f;
+
+    public float m_attackRange = 1f;
     public float m_wallCheckDistance = 0.02f;
     public float m_groundCheckDistance = 0.2f;
     public float m_pauseTimer = 2f;
+    public float m_attackPauseTimer = 1f;
     /// <summary>
     /// Determines whether the crawler will be placed in the scene originally using gravity or not.
     /// If true, the crawler will have gravity enabled for its initial placement.
@@ -23,6 +26,7 @@ public class WallCrawler : Enemy
     public bool m_placeWithGravity = false;
 
     [SerializeField] private PlayerController m_player;
+    [SerializeField] private TongueController m_tongue;
     private Vector3 m_enemySize;
     private Direction m_direction = Direction.None;
     private Direction m_lastDirection = Direction.None;
@@ -31,10 +35,16 @@ public class WallCrawler : Enemy
     private bool m_isPaused = false;
     private bool m_hasTurned = false;
 
+    private bool m_hasAttacked = false;
+    private float m_attackPauseTimeElapsed = 0f;
+
     // Start is called before the first frame update
     protected override void Start()
     {
         base.Start();
+
+        m_tongue = this.GetComponentInChildren<TongueController>();
+
         m_enemySize = m_collider.bounds.size;
 
         if(m_placeWithGravity)
@@ -59,10 +69,21 @@ public class WallCrawler : Enemy
         if (m_isPaused)
             m_pauseTimeElapsed += Time.deltaTime;
 
-        if(m_pauseTimeElapsed >= m_pauseTimer)
+        if(m_isPaused && m_pauseTimeElapsed >= m_pauseTimer)
         {
             m_isPaused = false;
         }
+
+        if (m_hasAttacked)
+            m_attackPauseTimeElapsed += Time.deltaTime;
+
+        if(m_hasAttacked && m_attackPauseTimeElapsed >= m_attackPauseTimer)
+        {
+            m_hasAttacked = false;
+        }
+
+        if(!m_hasAttacked)
+            HandleAttack();
     }
 
     protected void OnCollisionEnter2D(Collision2D collision)
@@ -91,7 +112,8 @@ public class WallCrawler : Enemy
             if(!m_hasTurned)
                 HandleCrawl();
 
-            Movement();
+            if(!m_tongue.m_tongueOut)
+                Movement();
 
             if ( !m_isPaused &&
                 (m_direction == Direction.Left && m_lastDirection == Direction.Right
@@ -253,6 +275,22 @@ public class WallCrawler : Enemy
             m_RB.gravityScale = 1f;
             m_hasBeenPlaced = false;
             m_placeWithGravity = true;
+        }
+    }
+
+    private void HandleAttack()
+    {
+        float distanceToPlayer = (m_player.gameObject.transform.position - gameObject.transform.position).magnitude;
+
+        if (distanceToPlayer <= m_attackRange)
+        {
+            // Can't attack if our tongue is already out
+            if(!m_tongue.m_tongueOut)
+            {
+                //Debug.Log("Attacking. TongueOut is " + m_tongue.m_tongueOut);
+                m_tongue.LaunchTongue(m_player.gameObject.transform.position);
+                m_attackPauseTimeElapsed = 0f;
+            }
         }
     }
 

@@ -22,7 +22,7 @@ TagManager:
   - PlayerBody
   - Enemies
   - BounceOff
-  - 
+  - Weapons
   - 
   - 
   - 
@@ -46,6 +46,27 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: backround
+    uniqueID: 1920182655
+    locked: 0
+  - name: Backround Smoke
+    uniqueID: 1359096513
+    locked: 0
+  - name: GameArea
+    uniqueID: 1260959575
+    locked: 0
+  - name: ambient occlusion
+    uniqueID: 131433523
+    locked: 0
+  - name: GameAreaOnTop
+    uniqueID: 669225563
+    locked: 0
+  - name: Wall Gradient
+    uniqueID: 2664477061
+    locked: 0
+  - name: New Layer
+    uniqueID: 4202659745
     locked: 0
   - name: Top
     uniqueID: 2079082399
