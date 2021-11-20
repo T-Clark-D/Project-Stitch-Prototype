@@ -4,10 +4,6 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    public SpriteRenderer m_SR;
-    public Rigidbody2D m_RB;
-    public Animator m_anim;
-    public Collider2D m_collider;
     public bool m_isHooked = false;
     public bool m_isVulnerable = false;
     public bool m_aiIsOff = false;
@@ -19,6 +15,11 @@ public class Enemy : MonoBehaviour
     protected ParticleSystem m_explosionEffectSystem;
     public float m_freezeTime = 1f;
     public float m_vulnerabilityTime = 2f;
+
+    protected SpriteRenderer m_SR;
+    protected Rigidbody2D m_RB;
+    protected Animator m_anim;
+    protected Collider2D m_collider;
 
     protected virtual void Start()
     {
