@@ -47,6 +47,7 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //flips both the body and head
         if(Math.Abs(m_rigidBody.velocity.x) > 0.1)
         {
             foreach (SpriteRenderer sr in m_SR)

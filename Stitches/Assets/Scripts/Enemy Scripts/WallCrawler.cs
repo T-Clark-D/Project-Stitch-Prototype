@@ -38,10 +38,14 @@ public class WallCrawler : Enemy
     private bool m_hasAttacked = false;
     private float m_attackPauseTimeElapsed = 0f;
 
+    SpriteRenderer rendererSR;
+
     // Start is called before the first frame update
     protected override void Start()
     {
         base.Start();
+        rendererSR = gameObject.GetComponentInChildren<SpriteRenderer>();
+        print(rendererSR);
 
         m_tongue = this.GetComponentInChildren<TongueController>();
 
@@ -65,6 +69,7 @@ public class WallCrawler : Enemy
     protected override void Update()
     {
         base.Update();
+     
 
         if (m_isPaused)
             m_pauseTimeElapsed += Time.deltaTime;
@@ -103,7 +108,9 @@ public class WallCrawler : Enemy
 
     private void FixedUpdate()
     {
-        if(m_hasBeenPlaced)
+
+       
+        if (m_hasBeenPlaced)
         {
             m_hasTurned = false;
 
@@ -211,6 +218,9 @@ public class WallCrawler : Enemy
         if (m_direction == Direction.Right)
         {
             // Going right.
+            if (rendererSR.flipX == true)
+                rendererSR.flipX = false;
+
 
             Debug.DrawRay(rightCorner, transform.right * m_wallCheckDistance, Color.red);
             RaycastHit2D hit = Physics2D.Raycast(rightCorner, transform.right, m_wallCheckDistance, ~LayerMask.GetMask("Enemies", "Player"));
@@ -226,6 +236,11 @@ public class WallCrawler : Enemy
         }
         else if(m_direction == Direction.Left)
         {
+            if (rendererSR.flipX == false)
+                rendererSR.flipX = true;
+
+            // GetComponentInChildren<Transform>().position = new Vector3(-GetComponentInChildren<Transform>().localScale.x, GetComponentInChildren<Transform>().localScale.y, GetComponentInChildren<Transform>().localScale.z);
+
             // Going left.
             Debug.DrawRay(leftCorner, -transform.right * m_wallCheckDistance, Color.red);
             RaycastHit2D hit = Physics2D.Raycast(leftCorner, -transform.right, m_wallCheckDistance, ~LayerMask.GetMask("Enemies", "Player"));
@@ -284,12 +299,14 @@ public class WallCrawler : Enemy
 
         if (distanceToPlayer <= m_attackRange)
         {
+            gameObject.GetComponentInChildren<Animator>().SetTrigger("Attack");
             // Can't attack if our tongue is already out
-            if(!m_tongue.m_tongueOut)
+            if (!m_tongue.m_tongueOut)
             {
                 //Debug.Log("Attacking. TongueOut is " + m_tongue.m_tongueOut);
                 m_tongue.LaunchTongue(m_player.gameObject.transform.position);
                 m_attackPauseTimeElapsed = 0f;
+                gameObject.GetComponentInChildren<Animator>().ResetTrigger("Attack");
             }
         }
     }
