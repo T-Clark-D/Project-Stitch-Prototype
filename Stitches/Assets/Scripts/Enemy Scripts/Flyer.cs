@@ -46,7 +46,7 @@ public class Flyer : Enemy
             m_RB.freezeRotation = false;
             float flyAngle = Vector2.Angle(Vector2.up, attackDirection);
             if (attackDirection.x > 0) flyAngle = -flyAngle;
-            m_RB.SetRotation(flyAngle);
+            m_RB.SetRotation(flyAngle - 135);
             m_RB.velocity = attackDirection*flySpeed*5;
         }
         
