@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Flubber : Enemy
 {
-    [SerializeField] public Vector2 worldPoint;
+    Vector3 worldPoint;
     [SerializeField] public float interval;
     public float agroRadius;
 
@@ -20,12 +20,20 @@ public class Flubber : Enemy
     /// 
     private float lastForce = 0;
 
+
     [SerializeField] Transform mTarget;
     [SerializeField] float mFollowSpeed;
     [SerializeField] float mFollowRange;
     [SerializeField] float mStopRange;
     [SerializeField] GameObject mGustPrefab;
     [SerializeField] float mGustRecoil;
+
+    [SerializeField] float frequency;
+    [SerializeField] float magnitude;
+    [SerializeField] float distance;
+    bool idleRight = false;
+    Vector3 currentPos;
+    bool idle = true;
 
     bool mInRange;
     bool gustShot;
@@ -34,12 +42,15 @@ public class Flubber : Enemy
     Rigidbody2D mRigidBody2D; // Temporary
 
     Vector2 mFacingDirection;
+    bool mChasing;
 
     // Start is called before the first frame update
     protected override void Start()
     {
         base.Start();
         mRigidBody2D = GetComponent<Rigidbody2D>();
+        worldPoint = transform.position;
+        currentPos = transform.position;
         /*if (m_frozen)
             Freeze();*/
     }
@@ -58,18 +69,15 @@ public class Flubber : Enemy
             //flys around world point until player comes in proximity
             FlubberFour();
         }
-        FlipDirection();
         if (mTarget != null)
         {
             FollowPlayer();
         }
         if (mInRange)
         {
-            mTime += Time.deltaTime;
             GustPlayer();
-            
         }
-        if(gustShot)
+        if (gustShot)
         {
             mTime += Time.deltaTime;
             if (mTime > gustDuration)
@@ -79,7 +87,20 @@ public class Flubber : Enemy
                 gustShot = false;
             }
         }
+        if (idle)
+        {
+            CheckDirection();
+            IdleMove();
+        }
 
+        if (!mChasing && !idle)
+        {
+            transform.position = Vector2.MoveTowards(transform.position, worldPoint, mFollowSpeed * Time.deltaTime);
+            if(transform.position.x == worldPoint.x && transform.position.y == worldPoint.y)
+            {
+                idle = true;
+            }
+        }
     }
 
     private void FollowPlayer()
@@ -87,7 +108,10 @@ public class Flubber : Enemy
         if ((Vector3.Distance(transform.position, mTarget.position)) <= mFollowRange && (Vector3.Distance(transform.position, mTarget.position)) >= mStopRange)
         {
             transform.position = Vector2.MoveTowards(transform.position, mTarget.position, mFollowSpeed * Time.deltaTime);
-            
+            FlipDirection();
+            idle = false;
+            mChasing = true;
+            mTime = 0.0f;
         }
         if ((Vector3.Distance(transform.position, mTarget.position)) <= mStopRange)
         {
@@ -95,8 +119,13 @@ public class Flubber : Enemy
         }
         else
         {
+            mTime += Time.deltaTime;
             mInRange = false;
-            
+            if (mTime > interval)
+            {
+                mChasing = false;
+                mTime = 0.0f;
+            }
         }
     }
 
@@ -120,29 +149,6 @@ public class Flubber : Enemy
         GetComponent<SpriteRenderer>().flipX = direction != Vector2.right;
     }
 
-    private void FlubberFour()
-    {
-        LayerMask mask = LayerMask.GetMask("Player");
-        Collider2D player = Physics2D.OverlapCircle((Vector2)transform.position, agroRadius, mask);
-        Vector2 targetPoint = worldPoint;
-        if (player != null)
-        {
-            if ((player.transform.position - this.transform.position).magnitude < agroRadius)
-            {
-                targetPoint = player.transform.position;
-            }
-        }
-        // If we are hooked by the player, we cant move.
-        if (!m_isHooked)
-        {
-            if (Time.timeSinceLevelLoad - lastForce >= interval)
-            {
-                m_RB.AddForce((targetPoint - (Vector2)this.transform.position).normalized * force, ForceMode2D.Impulse);
-                lastForce = Time.timeSinceLevelLoad;
-            }
-        }
-    }
-
     private void FlipDirection()
     {
 
@@ -164,6 +170,59 @@ public class Flubber : Enemy
             m_SR.flipX = false;
         }*/
     }
+
+    private void CheckDirection()
+    {
+        if (transform.position.x - worldPoint.x <= -distance)
+        {
+            FaceDirection(-Vector2.right);
+            idleRight = true;
+        }
+        else if (transform.position.x - worldPoint.x >= distance)
+        {
+            FaceDirection(Vector2.right);
+            idleRight = false;
+        }
+    }
+
+    private void IdleMove()
+    {
+        if (idleRight)
+        {
+            currentPos += transform.right * Time.deltaTime * mFollowSpeed;
+            transform.position = currentPos + transform.up * Mathf.Sin(Time.time * frequency) * magnitude;
+        }
+        else
+        {
+            currentPos -= transform.right * Time.deltaTime * mFollowSpeed;
+            transform.position = currentPos + transform.up * Mathf.Sin(Time.time * frequency) * magnitude;
+        }
+    }
+
+    private void FlubberFour()
+    {
+        LayerMask mask = LayerMask.GetMask("Player");
+        Collider2D player = Physics2D.OverlapCircle((Vector2)transform.position, agroRadius, mask);
+        Vector2 targetPoint = new Vector2(worldPoint.x, worldPoint.y);
+        if (player != null)
+        {
+            if ((player.transform.position - this.transform.position).magnitude < agroRadius)
+            {
+                targetPoint = player.transform.position;
+            }
+        }
+        // If we are hooked by the player, we cant move.
+        if (!m_isHooked)
+        {
+            if (Time.timeSinceLevelLoad - lastForce >= interval)
+            {
+                m_RB.AddForce((targetPoint - (Vector2)this.transform.position).normalized * force, ForceMode2D.Impulse);
+                lastForce = Time.timeSinceLevelLoad;
+            }
+        }
+    }
+
+
 
 
 
