@@ -638,7 +638,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6186889958353268394, guid: f6d8ad759fd4a814f9e668c797589d68, type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6186889958353268394, guid: f6d8ad759fd4a814f9e668c797589d68, type: 3}
       propertyPath: m_LocalScale.x
@@ -924,7 +924,6 @@ GameObject:
   - component: {fileID: 275654274}
   - component: {fileID: 275654273}
   - component: {fileID: 275654272}
-  - component: {fileID: 275654277}
   m_Layer: 9
   m_Name: Flubber
   m_TagString: Enemy
@@ -944,20 +943,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3921c39352c67e24f89021ab3be50920, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SR: {fileID: 0}
-  m_RB: {fileID: 0}
-  m_anim: {fileID: 0}
-  m_collider: {fileID: 0}
   m_isHooked: 0
   m_isVulnerable: 0
   m_aiIsOff: 0
   m_frozen: 1
   m_freezeTime: 2
   m_vulnerabilityTime: 2
-  worldPoint: {x: 44.86, y: 2.21}
-  agroRadius: 15
+  worldPoint: {x: -28.56, y: 130.69}
   interval: 1
+  agroRadius: 20
   force: 10
+  mTarget: {fileID: 1352530432}
+  mFollowSpeed: 5
+  mFollowRange: 20
+  mStopRange: 10
+  mGustPrefab: {fileID: 703714098427268190, guid: e1b2630b856774647aa62367973d21d6, type: 3}
+  mGustRecoil: 20
 --- !u!50 &275654273
 Rigidbody2D:
   serializedVersion: 4
@@ -966,7 +967,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 275654271}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -978,7 +979,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 4
+  m_Constraints: 0
 --- !u!58 &275654274
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -1054,27 +1055,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 275654271}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -39.9, y: 134.1, z: 0}
+  m_LocalPosition: {x: -24.7, y: 129.2, z: 0}
   m_LocalScale: {x: 0.18353197, y: 0.18353197, z: 0.18353197}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &275654277
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 275654271}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a7ae8fa85db507f459eceb2d9e6f7375, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mTarget: {fileID: 1352530432}
-  mFollowSpeed: 5
-  mFollowRange: 15
 --- !u!1 &291156819
 GameObject:
   m_ObjectHideFlags: 0
@@ -3503,7 +3489,6 @@ GameObject:
   - component: {fileID: 816739610}
   - component: {fileID: 816739609}
   - component: {fileID: 816739608}
-  - component: {fileID: 816739613}
   m_Layer: 0
   m_Name: Flubber (4)
   m_TagString: Enemy
@@ -3523,20 +3508,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3921c39352c67e24f89021ab3be50920, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SR: {fileID: 0}
-  m_RB: {fileID: 0}
-  m_anim: {fileID: 0}
-  m_collider: {fileID: 0}
   m_isHooked: 0
   m_isVulnerable: 0
   m_aiIsOff: 0
   m_frozen: 0
   m_freezeTime: 1
   m_vulnerabilityTime: 2
-  worldPoint: {x: 44.86, y: 2.21}
-  agroRadius: 15
+  worldPoint: {x: -21.71, y: 142.47}
   interval: 1
+  agroRadius: 15
   force: 10
+  mTarget: {fileID: 1352530432}
+  mFollowSpeed: 5
+  mFollowRange: 10
+  mStopRange: 5
+  mGustPrefab: {fileID: 703714098427268190, guid: e1b2630b856774647aa62367973d21d6, type: 3}
+  mGustRecoil: 20
 --- !u!50 &816739609
 Rigidbody2D:
   serializedVersion: 4
@@ -3633,28 +3620,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 816739607}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -21.71, y: 142.47, z: 0}
+  m_LocalPosition: {x: 9.6, y: 148.4, z: 0}
   m_LocalScale: {x: 0.104797564, y: 0.104797564, z: 0.104797564}
   m_Children:
   - {fileID: 490232910}
   m_Father: {fileID: 0}
   m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &816739613
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 816739607}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a7ae8fa85db507f459eceb2d9e6f7375, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mTarget: {fileID: 1352530432}
-  mFollowSpeed: 5
-  mFollowRange: 15
 --- !u!1001 &848487180
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3684,11 +3656,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3415570425008114226, guid: 15e24d1fdb600b848ad082d1a27c7988, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -20.1
+      value: -48.53
       objectReference: {fileID: 0}
     - target: {fileID: 3415570425008114226, guid: 15e24d1fdb600b848ad082d1a27c7988, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 97.5
+      value: 140.23
       objectReference: {fileID: 0}
     - target: {fileID: 3415570425008114226, guid: 15e24d1fdb600b848ad082d1a27c7988, type: 3}
       propertyPath: m_LocalPosition.z
@@ -4698,11 +4670,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1002095343}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -20.1, y: 97.5, z: -7}
+  m_LocalPosition: {x: -48.53, y: 140.23, z: -7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1043036974
 GameObject:
@@ -9018,7 +8990,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2092601783}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -20.1, y: 97.5, z: -7}
+  m_LocalPosition: {x: -48.53, y: 140.23, z: -7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 653768809}
