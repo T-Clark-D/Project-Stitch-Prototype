@@ -20,16 +20,20 @@ public class TongueController : MonoBehaviour
     private float m_tongueHitTimeElapsed = 0f;
     private bool m_tongueHasHit = false;
 
+    private SpriteRenderer m_tongueTipRenderer;
+
     // Start is called before the first frame update
     void Start()
     {
         m_tongueRenderer = GetComponent<LineRenderer>();
         m_tipCollider = GetComponent<BoxCollider2D>();
         m_tipRigidBody = GetComponent<Rigidbody2D>();
+        m_tongueTipRenderer = GetComponent<SpriteRenderer>();
 
         m_tipCollider.enabled = false;
         m_tipRigidBody.isKinematic = true;
         m_tongueOut = false;
+        m_tongueTipRenderer.enabled = false;
 
         m_currentPosition = new Vector3(0, 0, 0);
         m_directionUnitVector = new Vector3(0, 0, 0);
@@ -87,6 +91,9 @@ public class TongueController : MonoBehaviour
         Vector3 secondPointPosition = m_currentPosition;
         secondPointPosition.z = 0;
         m_tongueRenderer.SetPosition(1, secondPointPosition);
+
+        m_tongueTipRenderer.enabled = true;
+        m_tipRigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
     }
 
     public void RetractTongue()
@@ -102,15 +109,20 @@ public class TongueController : MonoBehaviour
         m_tongueOut = false;
         m_tongueHasHit = false;
         m_tongueHitTimeElapsed = 0f;
+        m_tongueTipRenderer.enabled = false;
 
         Vector3 position = m_crawler.transform.position + new Vector3(0, m_tongueStartHeightOffset, 0);
         m_tipCollider.gameObject.transform.position = new Vector3(position.x, position.y, 0);
 
+        m_tipRigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
         //Debug.Log("Finished Retracting tongue.");
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        m_tipRigidBody.isKinematic = true;
+        m_tipRigidBody.constraints = RigidbodyConstraints2D.FreezeRotation | RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezePositionY;
+
         if (collision.gameObject.CompareTag("Player"))
         {
             //Debug.Log("Hit the player with the tongue!");
@@ -153,6 +165,7 @@ public class TongueController : MonoBehaviour
         if (m_tongueOut && (m_currentPosition - crawlerPos).magnitude >= m_tongueMaxLength)
         {
             m_tongueHasHit = true;
+            m_tipRigidBody.constraints = RigidbodyConstraints2D.FreezeRotation | RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezePositionY;
         }
     }
 
