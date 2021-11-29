@@ -20,6 +20,7 @@ public class WallCrawler : Enemy
     public float m_groundCheckDistance = 0.2f;
     public float m_pauseTimer = 2f;
     public float m_attackPauseTimer = 1f;
+    public float m_timeBetweenAttacks = 2f;
     /// <summary>
     /// Determines whether the crawler will be placed in the scene originally using gravity or not.
     /// If true, the crawler will have gravity enabled for its initial placement.
@@ -42,7 +43,8 @@ public class WallCrawler : Enemy
     private bool m_hasAttacked = false;
     private float m_attackPauseTimeElapsed = 0f;
 
-    SpriteRenderer m_spriteRenderer;
+    private SpriteRenderer m_spriteRenderer;
+    private Animator m_animator;
 
     // Start is called before the first frame update
     protected override void Start()
@@ -50,6 +52,7 @@ public class WallCrawler : Enemy
         base.Start();
         m_spriteRenderer = gameObject.GetComponentInChildren<SpriteRenderer>();
         m_tongue = this.GetComponentInChildren<TongueController>();
+        m_animator = gameObject.GetComponentInChildren<Animator>();
 
         m_groundCheckCollider = GetComponentsInChildren<BoxCollider2D>().Where(x => x.CompareTag("GroundCheck")).FirstOrDefault();
         m_groundCheckCollider.size = new Vector3(m_groundCheckCollider.bounds.size.x, m_collider.bounds.size.y, m_groundCheckCollider.bounds.size.z);
@@ -500,14 +503,14 @@ public class WallCrawler : Enemy
 
         if (distanceToPlayer <= m_attackRange)
         {
-            gameObject.GetComponentInChildren<Animator>().SetTrigger("Attack");
+            m_animator.SetTrigger("Attack");
             // Can't attack if our tongue is already out
-            if (!m_tongue.m_tongueOut)
+            if (!m_tongue.m_tongueOut && m_tongue.m_canAttack)
             {
                 //Debug.Log("Attacking. TongueOut is " + m_tongue.m_tongueOut);
                 m_tongue.LaunchTongue(m_player.gameObject.transform.position);
                 m_attackPauseTimeElapsed = 0f;
-                gameObject.GetComponentInChildren<Animator>().ResetTrigger("Attack");
+                //m_animator.ResetTrigger("Attack");
             }
         }
     }

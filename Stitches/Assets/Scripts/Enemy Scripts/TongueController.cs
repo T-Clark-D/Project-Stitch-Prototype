@@ -9,6 +9,11 @@ public class TongueController : MonoBehaviour
     public bool m_tongueOut = false;
     public float m_tongueMaxLength;
 
+    public bool m_canAttack = true;
+    private float m_attackDoneTimeElapsed = 0f;
+    private bool m_attackDone = false;
+
+
     private LineRenderer m_tongueRenderer;
     private Vector3 m_currentPosition;
     private Vector3 m_directionUnitVector;
@@ -21,6 +26,7 @@ public class TongueController : MonoBehaviour
     private bool m_tongueHasHit = false;
 
     private SpriteRenderer m_tongueTipRenderer;
+    private Animator m_crawlerAnimator;
 
     // Start is called before the first frame update
     void Start()
@@ -29,6 +35,7 @@ public class TongueController : MonoBehaviour
         m_tipCollider = GetComponent<BoxCollider2D>();
         m_tipRigidBody = GetComponent<Rigidbody2D>();
         m_tongueTipRenderer = GetComponent<SpriteRenderer>();
+        m_crawlerAnimator = m_crawler.GetComponentInChildren<Animator>();
 
         m_tipCollider.enabled = false;
         m_tipRigidBody.isKinematic = true;
@@ -50,6 +57,15 @@ public class TongueController : MonoBehaviour
         if (m_tongueHasHit && m_tongueHitTimeElapsed >= m_crawler.m_attackPauseTimer)
         {
             RetractTongue();
+        }
+
+        if (m_attackDone)
+            m_attackDoneTimeElapsed += Time.deltaTime;
+
+        if (m_attackDone && m_attackDoneTimeElapsed >= m_crawler.m_timeBetweenAttacks)
+        {
+            m_attackDone = false;
+            m_canAttack = true;
         }
     }
 
@@ -94,6 +110,15 @@ public class TongueController : MonoBehaviour
 
         m_tongueTipRenderer.enabled = true;
         m_tipRigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
+
+        // Launching animation
+        m_crawlerAnimator.SetBool("IsOpened", true);
+        m_crawlerAnimator.SetBool("IsClosed", false);
+
+        // Preventing subsequent attacks
+        m_canAttack = false;
+        m_attackDone = false;
+        m_attackDoneTimeElapsed = 0f;
     }
 
     public void RetractTongue()
@@ -116,6 +141,12 @@ public class TongueController : MonoBehaviour
 
         m_tipRigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
         //Debug.Log("Finished Retracting tongue.");
+
+        // Launching animation
+        m_crawlerAnimator.SetBool("IsOpened", false);
+        m_crawlerAnimator.SetBool("IsClosed", true);
+
+        m_attackDone = true;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
