@@ -224,8 +224,8 @@ public class WallCrawler : Enemy
         Vector3 downVector = -transform.up.normalized * (m_enemySize.y / 2);
         Vector3 rightVector = transform.right.normalized * (m_enemySize.x / 2);
 
-        Vector3 rightCorner = transform.position + rightVector + (rightVector * 0.02f) + downVector; // Adding 0.02f to the y value so that we dont clip with the ground and detect nothing on our raycast.
-        Vector3 leftCorner = transform.position - rightVector - (rightVector * 0.02f) + downVector; // Adding 0.02f to the y value so that we dont clip with the ground and detect nothing on our raycast.
+        Vector3 rightEdge = transform.position + rightVector + (rightVector * 0.02f); // Adding 0.02f to the y value so that we dont clip with the ground and detect nothing on our raycast.
+        Vector3 leftEdge = transform.position - rightVector - (rightVector * 0.02f); // Adding 0.02f to the y value so that we dont clip with the ground and detect nothing on our raycast.
 
         if (m_direction == Direction.Right)
         {
@@ -240,8 +240,8 @@ public class WallCrawler : Enemy
                 m_spriteRenderer.transform.localPosition = new Vector3(-origX, m_spriteRenderer.transform.localPosition.y, m_spriteRenderer.transform.localPosition.z);
             }
 
-            Debug.DrawRay(rightCorner, transform.right * m_wallCheckDistance, Color.red);
-            RaycastHit2D hit = Physics2D.Raycast(rightCorner, transform.right, m_wallCheckDistance, ~LayerMask.GetMask("Enemies", "Player"));
+            Debug.DrawRay(rightEdge, transform.right * m_wallCheckDistance, Color.red);
+            RaycastHit2D hit = Physics2D.Raycast(rightEdge, transform.right, m_wallCheckDistance, ~LayerMask.GetMask("Enemies", "Player"));
 
             if (hit.collider != null && hit.collider.CompareTag("Platform"))
             {
@@ -267,8 +267,8 @@ public class WallCrawler : Enemy
             // GetComponentInChildren<Transform>().position = new Vector3(-GetComponentInChildren<Transform>().localScale.x, GetComponentInChildren<Transform>().localScale.y, GetComponentInChildren<Transform>().localScale.z);
 
             // Going left.
-            Debug.DrawRay(leftCorner, -transform.right * m_wallCheckDistance, Color.red);
-            RaycastHit2D hit = Physics2D.Raycast(leftCorner, -transform.right, m_wallCheckDistance, ~LayerMask.GetMask("Enemies", "Player"));
+            Debug.DrawRay(leftEdge, -transform.right * m_wallCheckDistance, Color.red);
+            RaycastHit2D hit = Physics2D.Raycast(leftEdge, -transform.right, m_wallCheckDistance, ~LayerMask.GetMask("Enemies", "Player"));
 
             if (hit.collider != null && hit.collider.CompareTag("Platform"))
             {
