@@ -10,6 +10,7 @@ TagManager:
   - LifeMeter
   - Body
   - Ungrapplable
+  - GroundCheck
   layers:
   - Default
   - TransparentFX
@@ -23,7 +24,7 @@ TagManager:
   - Enemies
   - BounceOff
   - Weapons
-  - 
+  - GroundCheck
   - 
   - 
   - 

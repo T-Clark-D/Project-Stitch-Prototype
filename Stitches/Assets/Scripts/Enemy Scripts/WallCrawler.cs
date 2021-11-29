@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class WallCrawler : Enemy
 {
@@ -27,6 +28,7 @@ public class WallCrawler : Enemy
 
     [SerializeField] private PlayerController m_player;
     [SerializeField] private TongueController m_tongue;
+    private BoxCollider2D m_groundCheckCollider;
     private Vector3 m_enemySize;
     private Direction m_direction = Direction.None;
     private Direction m_lastDirection = Direction.None;
@@ -34,22 +36,25 @@ public class WallCrawler : Enemy
     private float m_pauseTimeElapsed = 0f;
     private bool m_isPaused = false;
     private bool m_hasTurned = false;
+    private float m_nudgeAmount = 0.02f;
+    private int m_maxNudgeCount = 100;
 
     private bool m_hasAttacked = false;
     private float m_attackPauseTimeElapsed = 0f;
 
-    SpriteRenderer rendererSR;
+    SpriteRenderer m_spriteRenderer;
 
     // Start is called before the first frame update
     protected override void Start()
     {
         base.Start();
-        rendererSR = gameObject.GetComponentInChildren<SpriteRenderer>();
-        print(rendererSR);
-
+        m_spriteRenderer = gameObject.GetComponentInChildren<SpriteRenderer>();
         m_tongue = this.GetComponentInChildren<TongueController>();
 
-        m_enemySize = m_collider.bounds.size;
+        m_groundCheckCollider = GetComponentsInChildren<BoxCollider2D>().Where(x => x.CompareTag("GroundCheck")).FirstOrDefault();
+        m_groundCheckCollider.size = new Vector3(m_groundCheckCollider.bounds.size.x, m_collider.bounds.size.y, m_groundCheckCollider.bounds.size.z);
+
+        m_enemySize = m_groundCheckCollider.bounds.size;
 
         if(m_placeWithGravity)
         {
@@ -61,6 +66,8 @@ public class WallCrawler : Enemy
         else
         {
             m_hasBeenPlaced = true;
+            m_RB.isKinematic = true;
+            PreventOverlap();
         }
         
     }
@@ -102,6 +109,9 @@ public class WallCrawler : Enemy
 
                 m_pauseTimeElapsed = 0f;
                 m_isPaused = true;
+
+                m_RB.isKinematic = true;
+                PreventOverlap();
             }
         }
     }
@@ -146,7 +156,7 @@ public class WallCrawler : Enemy
         {
             // Going right.
             transform.Rotate(new Vector3(0, 0, -90));
-            m_RB.MoveRotation(Quaternion.Euler(0, 0, -90));
+            //m_RB.MoveRotation(Quaternion.Euler(0, 0, -90));
 
             m_hasTurned = true;
         }
@@ -154,7 +164,7 @@ public class WallCrawler : Enemy
         {
             // Going left.
             transform.Rotate(new Vector3(0, 0, 90));
-            m_RB.MoveRotation(Quaternion.Euler(0, 0, 90));
+            //m_RB.MoveRotation(Quaternion.Euler(0, 0, 90));
 
             m_hasTurned = true;                        
         }
@@ -162,12 +172,13 @@ public class WallCrawler : Enemy
         {
             // We are dangling in the void. Time to turn!
             transform.Rotate(new Vector3(0, 0, 180));
-            m_RB.MoveRotation(Quaternion.Euler(0, 0, 180));
+            //m_RB.MoveRotation(Quaternion.Euler(0, 0, 180));
 
             m_hasTurned = true;
         }
 
         ConnectToGround();
+        PreventOverlap();
     }
 
     private void Movement()
@@ -198,7 +209,8 @@ public class WallCrawler : Enemy
                 Vector3 newPoint = distanceToPlayerFromLeft < distanceToPlayerFromRight ? newPointLeft : newPointRight;
                 m_direction = distanceToPlayerFromLeft < distanceToPlayerFromRight ? Direction.Left : Direction.Right;
 
-                m_RB.MovePosition(new Vector2(newPoint.x, newPoint.y));
+                transform.position = newPoint;
+                //m_RB.MovePosition(new Vector2(newPoint.x, newPoint.y));
             }
         }       
     }
@@ -218,9 +230,15 @@ public class WallCrawler : Enemy
         if (m_direction == Direction.Right)
         {
             // Going right.
-            if (rendererSR.flipX == true)
-                rendererSR.flipX = false;
+            if (m_spriteRenderer.flipX == true)
+            {
+                float origX = m_spriteRenderer.transform.localPosition.x;
 
+                m_spriteRenderer.flipX = false;
+
+                // Recentering the renderer, as it is off centered.
+                m_spriteRenderer.transform.localPosition = new Vector3(-origX, m_spriteRenderer.transform.localPosition.y, m_spriteRenderer.transform.localPosition.z);
+            }
 
             Debug.DrawRay(rightCorner, transform.right * m_wallCheckDistance, Color.red);
             RaycastHit2D hit = Physics2D.Raycast(rightCorner, transform.right, m_wallCheckDistance, ~LayerMask.GetMask("Enemies", "Player"));
@@ -229,15 +247,22 @@ public class WallCrawler : Enemy
             {
                 // We hit a platform, so we hit a wall!
                 transform.Rotate(new Vector3(0, 0, 90));
-                m_RB.MoveRotation(Quaternion.Euler(0, 0, 90));
+                //m_RB.MoveRotation(Quaternion.Euler(0, 0, 90));
 
                 m_hasTurned = true;
             }
         }
         else if(m_direction == Direction.Left)
         {
-            if (rendererSR.flipX == false)
-                rendererSR.flipX = true;
+            if (m_spriteRenderer.flipX == false)
+            {
+                float origX = m_spriteRenderer.transform.localPosition.x;
+
+                m_spriteRenderer.flipX = true;
+
+                // Recentering the renderer, as it is off centered.
+                m_spriteRenderer.transform.localPosition = new Vector3(-origX, m_spriteRenderer.transform.localPosition.y, m_spriteRenderer.transform.localPosition.z);
+            }
 
             // GetComponentInChildren<Transform>().position = new Vector3(-GetComponentInChildren<Transform>().localScale.x, GetComponentInChildren<Transform>().localScale.y, GetComponentInChildren<Transform>().localScale.z);
 
@@ -249,7 +274,7 @@ public class WallCrawler : Enemy
             {
                 // We hit a platform, so we hit a wall!
                 transform.Rotate(new Vector3(0, 0, -90));
-                m_RB.MoveRotation(Quaternion.Euler(0, 0, -90));
+                //m_RB.MoveRotation(Quaternion.Euler(0, 0, -90));
 
                 m_hasTurned = true;
             }
@@ -268,15 +293,20 @@ public class WallCrawler : Enemy
         Vector3 originalPosition = gameObject.transform.position;
 
         // If this count is reached, we are in the complete void. We should fall.
-        int maxCount = 100;
+        int maxCount = m_maxNudgeCount;
         int count = 0;
 
+        Vector3 newPoint = gameObject.transform.position;
+
         // Check for grounded. If not grounded, we move again.
-        while(!IsGrounded() && count < maxCount)
+        while (!IsGrounded() && count < maxCount)
         {
             // Move the crawler a bit.
-            Vector2 newPoint = gameObject.transform.position + (moveVector * m_speed * Time.fixedDeltaTime);
+            newPoint = newPoint + (moveVector * m_nudgeAmount);
             gameObject.transform.position = newPoint;
+            m_collider.transform.position = newPoint;
+            m_groundCheckCollider.transform.position = newPoint;
+            m_collider.attachedRigidbody.position = newPoint;
 
             count++;
         }
@@ -286,10 +316,181 @@ public class WallCrawler : Enemy
             // We are in the complete void.
             // Returning to first position, and falling.
             gameObject.transform.position = originalPosition;
+            m_collider.transform.position = originalPosition;
+            m_groundCheckCollider.transform.position = originalPosition;
+            m_collider.attachedRigidbody.position = originalPosition;
 
             m_RB.gravityScale = 1f;
             m_hasBeenPlaced = false;
             m_placeWithGravity = true;
+        }
+    }
+
+    /// <summary>
+    /// Prevents the collider from overlapping the platform.
+    /// </summary>
+    private void PreventOverlap()
+    {
+        if (!IsGrounded())
+        {
+            return;
+        }
+
+        Vector3 originalPosition = gameObject.transform.position;
+        Vector3 moveVector = transform.up.normalized * (m_enemySize.y / 2);
+        float idealDistanceFromPlatform = 0.2f;
+
+        // If this count is reached, we are unable to prevent overlap.
+        int maxCount = m_maxNudgeCount;
+        int count = 0;
+
+        bool hasBeenNudgedInOppositeDirection = false;
+        bool lastMoveWasUp = false;
+        bool isAtProperDistanceFromPlatform = false;
+
+        // Calculating where our collider corners are, at the base of our enemy.
+        Vector3 downVector = -transform.up.normalized * (m_enemySize.y / 2);
+        Vector3 rightVector = transform.right.normalized * (m_enemySize.x / 2);
+
+        Vector3 rightCorner = transform.position + rightVector + (rightVector * 0.02f) + downVector; // Adding 0.02f to the y value so that we dont clip with the ground and detect nothing on our raycast.
+        Vector3 leftCorner = transform.position - rightVector - (rightVector * 0.02f) + downVector; // Adding 0.02f to the y value so that we dont clip with the ground and detect nothing on our raycast.
+        Vector3 center = transform.position + (downVector * 0.02f) + downVector; // Adding 0.02f to the y value so that we dont clip with the ground and detect nothing on our raycast.;
+
+        // Casting a ray downwards, to detect ground.
+        RaycastHit2D hit = Physics2D.Raycast(leftCorner, -transform.up, m_groundCheckDistance, ~LayerMask.GetMask("Enemies", "Player"));
+
+        if (hit.collider == null)
+        {
+            // Check if our other foot is set on ground.
+            // Casting a ray downwards, to detect ground.
+            hit = Physics2D.Raycast(rightCorner, -transform.up, m_groundCheckDistance, ~LayerMask.GetMask("Enemies", "Player"));
+
+            if (hit.collider == null)
+            {
+                // Check if our center is on the ground
+                // Casting a ray downwards, to detect ground.
+                hit = Physics2D.Raycast(center, -transform.up, m_groundCheckDistance, ~LayerMask.GetMask("Enemies", "Player"));
+
+                if (hit.collider == null)
+                {
+                    // We are dangling in the void. 
+                    // This should never happen, as we are grounded.
+                    throw new Exception("PreventOverlap error: Enemy was not grounded.");
+                }
+            }
+        }
+
+        if (hit.distance != idealDistanceFromPlatform)
+        {
+            isAtProperDistanceFromPlatform = false;
+        }
+        else
+        {
+            isAtProperDistanceFromPlatform = true;
+        }
+
+        Vector3 newPoint = gameObject.transform.position;
+
+        while(!isAtProperDistanceFromPlatform && count < maxCount)
+        {
+            if(hit.distance > idealDistanceFromPlatform)
+            {
+                if(lastMoveWasUp)
+                {
+                    // This is our last move. Bring it back down and leave it there.
+                    // Move the crawler a bit downwards.
+                    newPoint = newPoint + (downVector.normalized * m_nudgeAmount / 2);
+                    gameObject.transform.position = newPoint;
+                    m_collider.transform.position = newPoint;
+                    m_groundCheckCollider.transform.position = newPoint;
+                    m_collider.attachedRigidbody.position = newPoint;
+
+                    hasBeenNudgedInOppositeDirection = true;
+                }
+                else
+                {
+                    // Move the crawler a bit downwards.
+                    newPoint = newPoint + (downVector.normalized * m_nudgeAmount);
+                    gameObject.transform.position = newPoint;
+                    m_collider.transform.position = newPoint;
+                    m_groundCheckCollider.transform.position = newPoint;
+                    m_collider.attachedRigidbody.position = newPoint;
+                }
+                lastMoveWasUp = false;
+            }
+            else if(hit.distance < idealDistanceFromPlatform)
+            {
+                if (!lastMoveWasUp)
+                {
+                    // This is our last move. Bring it back up a bit and leave it there.
+                    // Move the crawler a bit upwards.
+                    newPoint = newPoint + (-downVector.normalized * m_nudgeAmount / 2);
+                    gameObject.transform.position = newPoint;
+                    m_collider.transform.position = newPoint;
+                    m_groundCheckCollider.transform.position = newPoint;
+                    m_collider.attachedRigidbody.position = newPoint;
+
+                    hasBeenNudgedInOppositeDirection = true;
+                }
+                else
+                {
+                    // Move the crawler a bit upwards.
+                    newPoint = newPoint + (-downVector.normalized * m_nudgeAmount);
+                    gameObject.transform.position = newPoint;
+                    m_collider.transform.position = newPoint;
+                    m_groundCheckCollider.transform.position = newPoint;
+                    m_collider.attachedRigidbody.position = newPoint;
+                }
+
+                lastMoveWasUp = true;
+            }
+
+            count++;
+
+            if(!hasBeenNudgedInOppositeDirection)
+            {
+                // Casting a ray downwards, to detect ground.
+                hit = Physics2D.Raycast(leftCorner, -transform.up, m_groundCheckDistance, ~LayerMask.GetMask("Enemies", "Player"));
+
+                if (hit.collider == null)
+                {
+                    // Check if our other foot is set on ground.
+                    // Casting a ray downwards, to detect ground.
+                    hit = Physics2D.Raycast(rightCorner, -transform.up, m_groundCheckDistance, ~LayerMask.GetMask("Enemies", "Player"));
+
+                    if (hit.collider == null)
+                    {
+                        // Check if our center is on the ground
+                        // Casting a ray downwards, to detect ground.
+                        hit = Physics2D.Raycast(center, -transform.up, m_groundCheckDistance, ~LayerMask.GetMask("Enemies", "Player"));
+
+                        if (hit.collider == null)
+                        {
+                            // We are dangling in the void. 
+                            // This should never happen, as we are grounded.
+                            throw new Exception("PreventOverlap error: Enemy was not grounded.");
+                        }
+                    }
+                }
+
+                if (hit.distance != idealDistanceFromPlatform)
+                {
+                    isAtProperDistanceFromPlatform = false;
+                }
+                else
+                {
+                    isAtProperDistanceFromPlatform = true;
+                }
+            }
+        }
+
+        if (count >= maxCount)
+        {
+            // We failed to place back our crawler. We make it go back to its original position.
+            gameObject.transform.position = originalPosition;
+            m_collider.transform.position = originalPosition;
+            m_groundCheckCollider.transform.position = originalPosition;
+            m_collider.attachedRigidbody.position = originalPosition;
         }
     }
 
@@ -319,6 +520,7 @@ public class WallCrawler : Enemy
 
         Vector3 rightCorner = transform.position + rightVector + (rightVector * 0.02f) + downVector; // Adding 0.02f to the y value so that we dont clip with the ground and detect nothing on our raycast.
         Vector3 leftCorner = transform.position - rightVector - (rightVector * 0.02f) + downVector; // Adding 0.02f to the y value so that we dont clip with the ground and detect nothing on our raycast.
+        Vector3 center = transform.position + (downVector * 0.02f) + downVector; // Adding 0.02f to the y value so that we dont clip with the ground and detect nothing on our raycast.;
 
         if (m_direction == Direction.Right)
         {
@@ -337,8 +539,16 @@ public class WallCrawler : Enemy
 
                 if (hit2.collider == null)
                 {
-                    // We are dangling in the void. 
-                    return false;
+                    // Check if our center is on the ground
+                    // Casting a ray downwards, to detect ground.
+                    Debug.DrawRay(center, -transform.up * m_groundCheckDistance, Color.yellow);
+                    RaycastHit2D hit3 = Physics2D.Raycast(center, -transform.up, m_groundCheckDistance, ~LayerMask.GetMask("Enemies", "Player"));
+
+                    if(hit3.collider == null)
+                    {
+                        // We are dangling in the void. 
+                        return false;
+                    }
                 }
             }
         }
@@ -358,8 +568,16 @@ public class WallCrawler : Enemy
 
                 if (hit2.collider == null)
                 {
-                    // We are dangling in the void.
-                    return false;
+                    // Check if our center is on the ground
+                    // Casting a ray downwards, to detect ground.
+                    Debug.DrawRay(center, -transform.up * m_groundCheckDistance, Color.yellow);
+                    RaycastHit2D hit3 = Physics2D.Raycast(center, -transform.up, m_groundCheckDistance, ~LayerMask.GetMask("Enemies", "Player"));
+
+                    if (hit3.collider == null)
+                    {
+                        // We are dangling in the void. 
+                        return false;
+                    }
                 }
             }
         }
@@ -378,8 +596,16 @@ public class WallCrawler : Enemy
 
                 if (hit2.collider == null)
                 {
-                    // We are dangling in the void.
-                    return false;
+                    // Check if our center is on the ground
+                    // Casting a ray downwards, to detect ground.
+                    Debug.DrawRay(center, -transform.up * m_groundCheckDistance, Color.yellow);
+                    RaycastHit2D hit3 = Physics2D.Raycast(center, -transform.up, m_groundCheckDistance, ~LayerMask.GetMask("Enemies", "Player"));
+
+                    if (hit3.collider == null)
+                    {
+                        // We are dangling in the void. 
+                        return false;
+                    }
                 }
             }
         }
