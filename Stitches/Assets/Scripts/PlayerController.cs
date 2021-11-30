@@ -19,6 +19,8 @@ public class PlayerController : MonoBehaviour
     //Used to fix bug where grappling hook fires again when releasing mouse button after hitting ungrapplable object
     public bool m_ungrapplableBuffer = false;
 
+    public float m_dustOffsetMultiplier = 0.5f;
+
     private bool m_firstTimePullingUp = true;
     // Set to true when we boost.
     private bool m_justBoosted = false;
@@ -31,6 +33,10 @@ public class PlayerController : MonoBehaviour
     private Vector3 m_hookDirection;
     private DistanceJoint2D m_distJoint;
     private SpriteRenderer[] m_SR;
+    [SerializeField] private DustController m_referenceDustSystem;
+    private DustController m_currentDustSystem;
+
+    private bool m_spawnDust = false;
 
     // Start is called before the first frame update
     void Start()
@@ -72,6 +78,15 @@ public class PlayerController : MonoBehaviour
         {
             m_rigidBody.gravityScale = m_baseGravityScale;
             m_gravityIsOffAndOnTimer = false;
+        }
+
+        // Creating dust
+
+        if(m_spawnDust)
+        {
+            m_spawnDust = false;
+
+            m_currentDustSystem.PlayAndDestroy();
         }
     }
 
@@ -179,6 +194,19 @@ public class PlayerController : MonoBehaviour
             {
                 m_rigidBody.gravityScale = m_baseGravityScale;
             }
+        }
+
+        if(!pCollision.collider.CompareTag("Enemy"))
+        {
+            m_spawnDust = true;
+
+            // Move the particle system to the right position
+            ContactPoint2D contact = pCollision.GetContact(0);
+            Quaternion rotation = Quaternion.FromToRotation(Vector3.up, contact.normal);
+            Vector3 position = contact.point + contact.normal * m_dustOffsetMultiplier;
+
+            m_currentDustSystem = Instantiate(m_referenceDustSystem, position, rotation);
+            m_currentDustSystem.gameObject.SetActive(true);
         }
     }
 

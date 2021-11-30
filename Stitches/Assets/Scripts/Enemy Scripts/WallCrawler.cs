@@ -503,14 +503,12 @@ public class WallCrawler : Enemy
 
         if (distanceToPlayer <= m_attackRange)
         {
-            m_animator.SetTrigger("Attack");
             // Can't attack if our tongue is already out
             if (!m_tongue.m_tongueOut && m_tongue.m_canAttack)
             {
                 //Debug.Log("Attacking. TongueOut is " + m_tongue.m_tongueOut);
                 m_tongue.LaunchTongue(m_player.gameObject.transform.position);
                 m_attackPauseTimeElapsed = 0f;
-                //m_animator.ResetTrigger("Attack");
             }
         }
     }
