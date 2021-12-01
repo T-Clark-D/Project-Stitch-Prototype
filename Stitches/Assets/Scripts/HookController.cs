@@ -6,7 +6,7 @@ public class HookController : MonoBehaviour
 {
     public float m_grappleSpeed = 1;
     public float m_grapplingStartHeightOffset = 1;
-    public Vector3 m_hookColliderSize = new Vector3(0.5f, 0.5f, 0.5f);
+    public float m_hookColliderSize = 0.05f;
     public bool m_tethered = false;
     public bool m_pullingUp = false;
     public bool m_isHookedToAnEnemy = false;
@@ -16,7 +16,7 @@ public class HookController : MonoBehaviour
     private Vector3 m_clickPosition;
     private Vector3 m_currentPosition;
     private Vector3 m_directionUnitVector;
-    private BoxCollider2D m_hookCollider;
+    private CircleCollider2D m_hookCollider;
     private Vector3 m_enemyHitLocationOffset;
 
     [SerializeField] private PlayerController m_player;
@@ -24,19 +24,23 @@ public class HookController : MonoBehaviour
     private DistanceJoint2D m_distJoint;
     private Enemy m_enemy;
     private Enemy m_lastEnemyHooked;
+    private SpriteRenderer m_needleSpriteRenderer;
+    private Collider2D m_lastCollision;
 
     // Start is called before the first frame update
     void Start()
     {
         m_grapplingHookRenderer = GetComponent<LineRenderer>();
-        m_hookCollider = GetComponentInChildren<BoxCollider2D>();
+        m_hookCollider = GetComponentInChildren<CircleCollider2D>();
         m_distJoint = m_player.GetComponent<DistanceJoint2D>();
         m_playerRigidBody = m_player.GetComponent<Rigidbody2D>();
+        m_needleSpriteRenderer = m_hookCollider.gameObject.GetComponentInChildren<SpriteRenderer>();
 
         m_hookCollider.enabled = false;
         m_distJoint.enabled = false;
         m_grapplingHookOut = false;
         m_tethered = false;
+        m_needleSpriteRenderer.enabled = false;
 
         m_currentPosition = new Vector3(0, 0, 0);
         m_clickPosition = new Vector3(0, 0, 0);
@@ -85,10 +89,19 @@ public class HookController : MonoBehaviour
 
             Vector3 position = m_player.transform.position + new Vector3(0, m_grapplingStartHeightOffset, 0);
             m_hookCollider.gameObject.transform.position = new Vector3(position.x, position.y, 0);
-            m_hookCollider.size = m_hookColliderSize;
+            m_hookCollider.radius = m_hookColliderSize;
 
             m_hookCollider.enabled = true;
             m_pullingUp = false;
+
+            m_needleSpriteRenderer.enabled = true;
+
+
+            // Angling the needle
+            var rotation = Quaternion.FromToRotation(transform.up, m_directionUnitVector).eulerAngles;
+            rotation.x = 0f;
+            rotation.y = 0f;
+            m_needleSpriteRenderer.gameObject.transform.rotation = Quaternion.Euler(rotation.x, rotation.y, rotation.z);
         }
     }
 
@@ -123,6 +136,12 @@ public class HookController : MonoBehaviour
 
         m_enemyHitLocationOffset = new Vector3();
         m_isHookedToAnEnemy = false;
+
+        m_needleSpriteRenderer.enabled = false;
+
+        // Unfreeze Collider
+        m_hookCollider.attachedRigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
+        //Physics2D.IgnoreCollision(m_hookCollider, m_lastCollision, false);
     }
 
     public void PullUp()
@@ -143,6 +162,7 @@ public class HookController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Platform"))
         {
+            m_lastCollision = collision.collider;
             //Debug.Log("Hit!");
             m_tethered = true;
 
@@ -150,6 +170,12 @@ public class HookController : MonoBehaviour
             m_distJoint.connectedAnchor = m_hookCollider.transform.position;
 
             m_distJoint.distance = GetHookDirection(false).magnitude;
+
+            // Freeze position.
+            m_hookCollider.attachedRigidbody.constraints = RigidbodyConstraints2D.FreezeAll;
+
+            // Prevent pushing
+            //Physics2D.IgnoreCollision(m_hookCollider, m_lastCollision, true);
         }
         else if(collision.gameObject.CompareTag("Enemy"))
         {
@@ -191,13 +217,21 @@ public class HookController : MonoBehaviour
             // Increasing the length of the whole line
             m_currentPosition = m_currentPosition + (new Vector3(m_directionUnitVector.x, m_directionUnitVector.y, 0) * m_grappleSpeed * Time.fixedDeltaTime);
 
-            Vector3 secondPointPosition = m_currentPosition;
-            secondPointPosition.z = 0;
+            // Handle Hook Collider
+            Vector3 position = new Vector3(m_currentPosition.x, m_currentPosition.y, 0);
+            m_hookCollider.attachedRigidbody.MovePosition(position);
+
+            Vector3 secondPointPosition = position;
             m_grapplingHookRenderer.SetPosition(1, secondPointPosition);
 
-            // Handle Hook Collider
-            Vector3 position = new Vector3(secondPointPosition.x, secondPointPosition.y, 0);
-            m_hookCollider.attachedRigidbody.MovePosition(position);
+            // Angling the needle
+            Vector3 firstPointPosition = m_player.transform.position + new Vector3(0, m_grapplingStartHeightOffset, 0);
+            var rotation = Quaternion.FromToRotation(transform.up, m_currentPosition - firstPointPosition).eulerAngles;
+            rotation.x = 0f;
+            rotation.y = 0f;
+            m_needleSpriteRenderer.gameObject.transform.rotation = Quaternion.Euler(rotation.x, rotation.y, rotation.z);
+
+            //m_needleSpriteRenderer.transform.position = secondPointPosition;
         }
     }
 
@@ -222,6 +256,12 @@ public class HookController : MonoBehaviour
                 m_grapplingHookRenderer.SetPosition(1, secondPointPosition);
 
                 m_distJoint.connectedAnchor = enemyPos;
+            }
+            else if(m_tethered)
+            {
+                Vector3 secondPointPosition = m_hookCollider.transform.position;
+                secondPointPosition.z = 0;
+                m_grapplingHookRenderer.SetPosition(1, secondPointPosition);
             }
         }
     }
