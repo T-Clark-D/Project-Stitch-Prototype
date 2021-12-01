@@ -222,7 +222,7 @@ MonoBehaviour:
   m_groundCheckDistance: 0.5
   m_pauseTimer: 2
   m_attackPauseTimer: 1
-  m_timeBetweenAttacks: 2
+  m_timeBetweenAttacks: 1
   m_placeWithGravity: 0
   m_player: {fileID: 0}
   m_tongue: {fileID: 3698873715178312924}
@@ -453,6 +453,8 @@ MonoBehaviour:
   m_tongueOut: 0
   m_tongueMaxLength: 2
   m_canAttack: 1
+  m_timeBeforeLaunchingTongue: 1
+  m_timeAfterLaunchingTongue: 1
   m_crawler: {fileID: 3698873713466103081}
 --- !u!120 &3698873715178312925
 LineRenderer:
