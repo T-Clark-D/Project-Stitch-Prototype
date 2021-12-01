@@ -170,6 +170,9 @@ public class PlayerController : MonoBehaviour
                     m_distJoint.distance = direction.magnitude;
 
                     m_firstTimePullingUp = false;
+
+                    // Playing audio clip
+                    m_grapplingHookController.StartPullUpSounds();
                 }
             }
             else
@@ -178,6 +181,8 @@ public class PlayerController : MonoBehaviour
                 m_rigidBody.gravityScale = m_baseGravityScale;
                 m_rigidBody.mass = m_baseMass;
                 m_firstTimePullingUp = true;
+
+                m_grapplingHookController.StopPullUpSounds();
             }
         }
         else
@@ -192,6 +197,8 @@ public class PlayerController : MonoBehaviour
 
                 m_firstTimePullingUp = true;
             }
+
+            m_grapplingHookController.StopPullUpSounds();
         }
     }
 

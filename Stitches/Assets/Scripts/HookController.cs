@@ -13,8 +13,10 @@ public class HookController : MonoBehaviour
     public AudioClip[] m_platformHitSounds;
     public AudioClip[] m_ungrappleAbleHitSounds;
     public AudioClip[] m_needleThrowSounds;
+    public AudioClip[] m_pullUpSounds;
     public AudioSource m_needleHitAudioSource;
     public AudioSource m_throwAudioSource;
+    public AudioSource m_pullUpAudioSource;
 
     private bool m_grapplingHookOut = false;
     private LineRenderer m_grapplingHookRenderer;
@@ -98,6 +100,7 @@ public class HookController : MonoBehaviour
 
             m_hookCollider.enabled = true;
             m_pullingUp = false;
+            StopPullUpSounds();
 
             m_needleSpriteRenderer.enabled = true;
 
@@ -151,6 +154,9 @@ public class HookController : MonoBehaviour
         // Unfreeze Collider
         m_hookCollider.attachedRigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
         //Physics2D.IgnoreCollision(m_hookCollider, m_lastCollision, false);
+
+        // Stop pull up sounds
+        StopPullUpSounds();
     }
 
     public void PullUp()
@@ -325,5 +331,21 @@ public class HookController : MonoBehaviour
         {
             m_lastEnemyHooked.StartVulnerabilityTimer();
         }
+    }
+
+    public void StartPullUpSounds()
+    {
+        // Start playing audio clip
+        m_pullUpAudioSource.loop = true;
+
+        int randomIndex = UnityEngine.Random.Range(0, m_pullUpSounds.Length);
+
+        m_pullUpAudioSource.clip = m_pullUpSounds[randomIndex];
+        m_pullUpAudioSource.Play();
+    }
+
+    public void StopPullUpSounds()
+    {
+        m_pullUpAudioSource.Stop();
     }
 }
