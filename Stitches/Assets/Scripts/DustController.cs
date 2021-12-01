@@ -8,6 +8,8 @@ public class DustController : MonoBehaviour
     public AudioClip[] m_dustSounds;
 
     private AudioSource m_audioSource;
+    private float initializationTime;
+
     private ParticleSystem m_particleSystem;
 
     private void Awake()
@@ -19,13 +21,13 @@ public class DustController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        initializationTime = Time.timeSinceLevelLoad;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if (Time.timeSinceLevelLoad - initializationTime > 5) Destroy(this.gameObject);
     }
 
     public void PlayAndDestroy()
