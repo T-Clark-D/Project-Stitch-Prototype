@@ -34,7 +34,7 @@ public class TongueController : MonoBehaviour
         m_tongueRenderer = GetComponent<LineRenderer>();
         m_tipCollider = GetComponent<BoxCollider2D>();
         m_tipRigidBody = GetComponent<Rigidbody2D>();
-        m_tongueTipRenderer = GetComponent<SpriteRenderer>();
+        m_tongueTipRenderer = GetComponentInChildren<SpriteRenderer>();
         m_crawlerAnimator = m_crawler.GetComponentInChildren<Animator>();
 
         m_tipCollider.enabled = false;
@@ -119,6 +119,13 @@ public class TongueController : MonoBehaviour
         m_canAttack = false;
         m_attackDone = false;
         m_attackDoneTimeElapsed = 0f;
+
+        m_tongueTipRenderer.enabled = true;
+        // Angling the needle
+        var rotation = Quaternion.FromToRotation(transform.up, m_directionUnitVector).eulerAngles;
+        rotation.x = 0f;
+        rotation.y = 0f;
+        m_tongueTipRenderer.gameObject.transform.rotation = Quaternion.Euler(rotation.x, rotation.y, rotation.z);
     }
 
     public void RetractTongue()
@@ -147,6 +154,8 @@ public class TongueController : MonoBehaviour
         m_crawlerAnimator.SetBool("IsClosed", true);
 
         m_attackDone = true;
+
+        m_tongueTipRenderer.enabled = false;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -182,13 +191,20 @@ public class TongueController : MonoBehaviour
             // Increasing the length of the whole line
             m_currentPosition = m_currentPosition + (new Vector3(m_directionUnitVector.x, m_directionUnitVector.y, 0) * m_tongueSpeed * Time.fixedDeltaTime);
 
-            Vector3 secondPointPosition = m_currentPosition;
+            // Handle tongue Collider
+            Vector3 position = new Vector3(m_currentPosition.x, m_currentPosition.y, 0);
+            m_tipCollider.attachedRigidbody.MovePosition(position);
+
+            Vector3 secondPointPosition = position;
             secondPointPosition.z = 0;
             m_tongueRenderer.SetPosition(1, secondPointPosition);
 
-            // Handle tongue Collider
-            Vector3 position = new Vector3(secondPointPosition.x, secondPointPosition.y, 0);
-            m_tipCollider.attachedRigidbody.MovePosition(position);
+            // Angling the needle
+            Vector3 firstPointPosition = m_crawler.transform.position + new Vector3(0, m_tongueStartHeightOffset, 0);
+            var rotation = Quaternion.FromToRotation(Vector3.up, m_currentPosition - firstPointPosition).eulerAngles;
+            rotation.x = 0f;
+            rotation.y = 0f;
+            m_tongueTipRenderer.gameObject.transform.rotation = Quaternion.Euler(rotation.x, rotation.y, rotation.z);
         }
 
         Vector3 crawlerPos = m_crawler.transform.position + new Vector3(0, m_tongueStartHeightOffset, 0);

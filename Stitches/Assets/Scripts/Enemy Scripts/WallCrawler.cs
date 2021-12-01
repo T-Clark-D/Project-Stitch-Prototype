@@ -123,7 +123,7 @@ public class WallCrawler : Enemy
     {
 
        
-        if (m_hasBeenPlaced)
+        if (m_hasBeenPlaced && !m_tongue.m_tongueOut)
         {
             m_hasTurned = false;
 
