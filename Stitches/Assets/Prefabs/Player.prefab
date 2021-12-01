@@ -326,7 +326,7 @@ MonoBehaviour:
   m_baseMass: 1
   m_minimumRopeLength: 0.5
   m_pullingUpPlayerMass: 0.05
-  m_boostSpeed: 4
+  m_boostSpeed: 40
   m_gravityOffTimeForBoost: 1.5
   m_ungrapplableBuffer: 0
   m_dustOffsetMultiplier: 0.25
