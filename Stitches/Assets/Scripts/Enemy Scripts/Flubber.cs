@@ -82,9 +82,15 @@ public class Flubber : Enemy
             mTime += Time.deltaTime;
             if (mTime > gustDuration)
             {
-                mRigidBody2D.velocity = Vector3.zero;
-                mRigidBody2D.Sleep();
-                gustShot = false;
+                mRigidBody2D.velocity = mRigidBody2D.velocity * 0.0001f * Time.deltaTime;
+                Debug.Log(mRigidBody2D.velocity.magnitude);
+                if (mRigidBody2D.velocity.magnitude <= 0.0f)
+                {
+                    mRigidBody2D.velocity = Vector3.zero;
+                    mRigidBody2D.Sleep();
+                    gustShot = false;
+                    mTime = 0.0f;
+                }
             }
         }
         if (idle)
@@ -98,7 +104,11 @@ public class Flubber : Enemy
             transform.position = Vector2.MoveTowards(transform.position, worldPoint, mFollowSpeed * Time.deltaTime);
             if(transform.position.x == worldPoint.x && transform.position.y == worldPoint.y)
             {
-                idle = true;
+                mTime += Time.deltaTime;
+                if (mTime > 1.0f) {
+                    idle = true;
+                    mTime = 0.0f;
+                }
             }
         }
     }
