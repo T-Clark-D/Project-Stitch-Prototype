@@ -203,6 +203,7 @@ public class PlayerController : MonoBehaviour
             // Move the particle system to the right position
             ContactPoint2D contact = pCollision.GetContact(0);
             Quaternion rotation = Quaternion.FromToRotation(Vector3.up, contact.normal);
+            rotation = Quaternion.Euler(rotation.eulerAngles.x, rotation.eulerAngles.y, rotation.eulerAngles.z + 90);
             Vector3 position = contact.point + contact.normal * m_dustOffsetMultiplier;
 
             m_currentDustSystem = Instantiate(m_referenceDustSystem, position, rotation);
