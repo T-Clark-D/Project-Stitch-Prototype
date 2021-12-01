@@ -13,18 +13,23 @@ public class Armordillo : MonoBehaviour
     [SerializeField] private GameObject m_topLeftBouncePad;
     [SerializeField] private GameObject m_topRightBouncePad;
 
-    private Vector3 m_bottomPadEmerged = new Vector3(0, -44, 310);
-    private Vector3 m_topLeftPadEmerged = new Vector3(38, 22, 310);
-    private Vector3 m_topRightPadEmerged = new Vector3(-38, 22, 310);
+    [SerializeField] private GameObject m_bottomStunLock;
+    [SerializeField] private GameObject m_topLeftStunLock;
+    [SerializeField] private GameObject m_topRightStunLock;
 
-    private Vector3 m_bottomPadHidden = new Vector3(0, -47, 310);
-    private Vector3 m_topLeftPadHidden = new Vector3(41, 23, 310);
-    private Vector3 m_topRightPadHidden = new Vector3(-41, 23, 310);
+    [SerializeField] private GameObject m_weakPoint;
+
+    private Vector3 m_bottomPadShift = new Vector3(0, -3, 0);
+    private Vector3 m_topLeftPadShift = new Vector3(3, 1, 0);
+    private Vector3 m_topRightPadShift = new Vector3(-3, 1, 0);
 
     private GameObject m_moveTo = null;
 
     [SerializeField] private float m_inverseBounceSpeed = 0.2f;
     [SerializeField] private float m_rollSpeed = 75f;
+
+    [SerializeField] private int m_stunLockedPosition;
+    private int m_health = 3;
 
     [SerializeField] private bool m_moveToTopPlatform = false;
     [SerializeField] private bool m_moveToRightPlatform = false;
@@ -35,7 +40,10 @@ public class Armordillo : MonoBehaviour
     [SerializeField] private bool m_moveToTopRightPad = false;
 
     [SerializeField] private bool m_padsEmerging = false;
+    [SerializeField] private bool m_stunLocked = false;
+
     [SerializeField] private bool m_padsHidden = false;
+    [SerializeField] private bool m_stunLocksHidden = false;
 
     [SerializeField] private bool m_bottomOrigin = false;
     [SerializeField] private bool m_topLeftOrigin = false;
@@ -47,31 +55,46 @@ public class Armordillo : MonoBehaviour
     {
         m_RB = GetComponent<Rigidbody2D>();
         m_RB.velocity = new Vector2(1,-1) * 10;
-        HideEmergePads();
+        TogglePadsAndStunLocks(true, true);
     }
 
-    private void HideEmergePads()
+    private void TogglePadsAndStunLocks(bool hideStunLocks, bool hidePads)
     {
-        if (m_padsHidden)
+        if (hidePads && m_padsHidden)
         {
-            m_bottomBouncePad.transform.localPosition = m_bottomPadEmerged;
-            m_topLeftBouncePad.transform.localPosition = m_topLeftPadEmerged;
-            m_topRightBouncePad.transform.localPosition = m_topRightPadEmerged;
+            m_bottomBouncePad.transform.localPosition -= m_bottomPadShift;
+            m_topLeftBouncePad.transform.localPosition -= m_topLeftPadShift;
+            m_topRightBouncePad.transform.localPosition -= m_topRightPadShift;
+            m_padsHidden = false;
         }
-        else if (!m_padsHidden)
+        else if (hidePads && !m_padsHidden)
         {
-            m_bottomBouncePad.transform.localPosition = m_bottomPadHidden;
-            m_topLeftBouncePad.transform.localPosition = m_topLeftPadHidden;
-            m_topRightBouncePad.transform.localPosition = m_topRightPadHidden;
+            m_bottomBouncePad.transform.localPosition += m_bottomPadShift;
+            m_topLeftBouncePad.transform.localPosition += m_topLeftPadShift;
+            m_topRightBouncePad.transform.localPosition += m_topRightPadShift;
+            m_padsHidden = true;
         }
-        m_padsHidden = !m_padsHidden;
+        if (hideStunLocks && m_stunLocksHidden)
+        {
+            m_bottomStunLock.transform.localPosition -= m_bottomPadShift;
+            m_topLeftStunLock.transform.localPosition -= m_topLeftPadShift;
+            m_topRightStunLock.transform.localPosition -= m_topRightPadShift;
+            m_stunLocksHidden = false;
+        }
+        else if (hideStunLocks && !m_stunLocksHidden)
+        {
+            m_bottomStunLock.transform.localPosition += m_bottomPadShift;
+            m_topLeftStunLock.transform.localPosition += m_topLeftPadShift;
+            m_topRightStunLock.transform.localPosition += m_topRightPadShift;
+            m_stunLocksHidden = true;
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
         MoveTowardPoint();
-        if(!m_padsEmerging) StartCoroutine(PadsEmerge());
+        if(!m_padsEmerging && !m_stunLocked) StartCoroutine(PadsEmerge());
 
     }
 
@@ -79,9 +102,10 @@ public class Armordillo : MonoBehaviour
     {
         m_padsEmerging = true;
         yield return new WaitForSeconds(Random.Range(4,7));
-        HideEmergePads();
+        TogglePadsAndStunLocks(true, true);
         yield return new WaitForSeconds(Random.Range(6, 12));
-        HideEmergePads();
+        TogglePadsAndStunLocks(false, true);
+        yield return new WaitForSeconds(3);
         m_padsEmerging = false;
     }
 
@@ -126,16 +150,12 @@ public class Armordillo : MonoBehaviour
 
     private void HandleCollisions(Collision2D collision)
     {
-        m_moveToTopPlatform = false;
-        m_moveToLeftPlatform = false;
-        m_moveToRightPlatform = false;
-        m_moveToBottomPad = false;
-        m_moveToTopLeftPad = false;
-        m_moveToTopRightPad = false;
+        
 
         switch (collision.gameObject.name)
         {
             case "Bounce_Pad_Bottom":
+                ResetMoveToBooleans();
                 if (transform.localPosition.x > 0 || m_topRightOrigin)
                 {
                     m_moveToRightPlatform = true;
@@ -155,6 +175,7 @@ public class Armordillo : MonoBehaviour
                 m_RB.velocity = Vector3.zero;
                 break;
             case "Bounce_Pad_TopRight":
+                ResetMoveToBooleans();
                 if (m_bottomOrigin || m_topLeftOrigin || transform.localPosition.x < -38)
                 {
                     m_moveToTopPlatform = true;
@@ -171,10 +192,11 @@ public class Armordillo : MonoBehaviour
                     m_topRightOrigin = true;
                     m_hitFromLeft = true;
                 }
-                
+
                 m_RB.velocity = Vector3.zero;
                 break;
             case "Bounce_Pad_TopLeft":
+                ResetMoveToBooleans();
                 if (m_bottomOrigin || m_topRightOrigin || transform.localPosition.x > 38)
                 {
                     m_moveToTopPlatform = true;
@@ -194,6 +216,7 @@ public class Armordillo : MonoBehaviour
                 m_RB.velocity = Vector3.zero;
                 break;
             case "Top_Platform":
+                ResetMoveToBooleans();
                 if (m_bottomOrigin && m_hitFromLeft)
                 {
                     m_moveToLeftPlatform = true;
@@ -220,6 +243,7 @@ public class Armordillo : MonoBehaviour
                 }
                 break;
             case "Left_Platform":
+                ResetMoveToBooleans();
                 if (m_bottomOrigin && m_hitFromLeft)
                 {
                     m_moveToTopLeftPad = true;
@@ -246,6 +270,7 @@ public class Armordillo : MonoBehaviour
                 }
                 break;
             case "Right_Platform":
+                ResetMoveToBooleans();
                 if (m_bottomOrigin && m_hitFromLeft)
                 {
                     m_moveToTopPlatform = true;
@@ -276,6 +301,16 @@ public class Armordillo : MonoBehaviour
                 //m_RB.gravityScale = 1;
                 break;
         }
+    }
+
+    private void ResetMoveToBooleans()
+    {
+        m_moveToTopPlatform = false;
+        m_moveToLeftPlatform = false;
+        m_moveToRightPlatform = false;
+        m_moveToBottomPad = false;
+        m_moveToTopLeftPad = false;
+        m_moveToTopRightPad = false;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -312,7 +347,52 @@ public class Armordillo : MonoBehaviour
                     m_RB.velocity = new Vector2(-1, -2).normalized * m_rollSpeed;
                 }
                 break;
+            case "StunLock_Bottom":
+                StunLock(new Vector3(0.568f, -0.065f, 0), 0);
+                break;
+            case "StunLock_TopLeft":
+                StunLock(new Vector3(0.335f, 0.4f, 0), 1);
+                break;
+            case "StunLock_TopRight":
+                StunLock(new Vector3(-0.335f, 0.4f, 0), 2);
+                break;
 
+        }
+    }
+
+    // in stunLockedPosition determines which stunLock the boss is stopped at
+    // 0 = bottom, 1 = top left, 2 = top right
+    private void StunLock(Vector3 weakPointPosition, int stunLockedPosition)
+    {
+        m_stunLockedPosition = stunLockedPosition;
+        m_weakPoint.transform.localPosition = weakPointPosition;
+        m_stunLocked = true;
+        m_RB.constraints = RigidbodyConstraints2D.FreezeAll;
+        ResetMoveToBooleans();
+    }
+
+    public void WeakPointHit()
+    {
+        m_stunLocked = false;
+        m_health -= 1;
+        if(m_health == 0)
+        {
+            Destroy(this.gameObject);
+        }
+        TogglePadsAndStunLocks(true, false);
+        m_RB.constraints = RigidbodyConstraints2D.None;
+        m_weakPoint.transform.localPosition = Vector3.zero;
+        switch (m_stunLockedPosition)
+        {
+            case 0:
+                m_RB.velocity = Vector2.right * m_rollSpeed;
+                break;
+            case 1:
+                m_RB.velocity = new Vector2(-1, -1).normalized * m_rollSpeed;
+                break;
+            case 2:
+                m_RB.velocity = new Vector2(1, -1).normalized * m_rollSpeed;
+                break;
         }
     }
 }
