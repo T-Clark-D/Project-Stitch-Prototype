@@ -10,6 +10,11 @@ public class HookController : MonoBehaviour
     public bool m_tethered = false;
     public bool m_pullingUp = false;
     public bool m_isHookedToAnEnemy = false;
+    public AudioClip[] m_platformHitSounds;
+    public AudioClip[] m_ungrappleAbleHitSounds;
+    public AudioClip[] m_needleThrowSounds;
+    public AudioSource m_needleHitAudioSource;
+    public AudioSource m_throwAudioSource;
 
     private bool m_grapplingHookOut = false;
     private LineRenderer m_grapplingHookRenderer;
@@ -102,6 +107,10 @@ public class HookController : MonoBehaviour
             rotation.x = 0f;
             rotation.y = 0f;
             m_needleSpriteRenderer.gameObject.transform.rotation = Quaternion.Euler(rotation.x, rotation.y, rotation.z);
+
+            // Play audio clip
+            int randomIndex = UnityEngine.Random.Range(0, m_needleThrowSounds.Length);
+            m_throwAudioSource.PlayOneShot(m_needleThrowSounds[randomIndex]);
         }
     }
 
@@ -176,6 +185,10 @@ public class HookController : MonoBehaviour
 
             // Prevent pushing
             //Physics2D.IgnoreCollision(m_hookCollider, m_lastCollision, true);
+
+            // Play audio clip
+            int randomIndex = UnityEngine.Random.Range(0, m_platformHitSounds.Length);
+            m_needleHitAudioSource.PlayOneShot(m_platformHitSounds[randomIndex]);
         }
         else if(collision.gameObject.CompareTag("Enemy"))
         {
@@ -202,6 +215,10 @@ public class HookController : MonoBehaviour
             Debug.Log("Hit an ungrapplable target!");
             RetractHook();
             FindObjectOfType<PlayerController>().m_ungrapplableBuffer = true;
+
+            // Play audio clip.
+            int randomIndex = UnityEngine.Random.Range(0, m_ungrappleAbleHitSounds.Length);
+            m_needleHitAudioSource.PlayOneShot(m_ungrappleAbleHitSounds[randomIndex]);
         }
     }
     void HandleGrapplingHook()
