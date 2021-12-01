@@ -15157,8 +15157,9 @@ GameObject:
   - component: {fileID: 326849683}
   - component: {fileID: 326849682}
   - component: {fileID: 326849686}
+  - component: {fileID: 326849687}
   m_Layer: 9
-  m_Name: pototype
+  m_Name: FriendlyFly
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15181,7 +15182,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 5.46, y: 5.49}
+    oldSize: {x: 15.6, y: 14.4}
     newSize: {x: 5.46, y: 5.49}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -15251,7 +15252,7 @@ SpriteRenderer:
   m_SortingLayerID: 1260959575
   m_SortingLayer: 4
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d53f1000f1803ef499a0e640d2ef94f5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b0cf119c9342a234aa73af1c6225eff7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -15285,9 +15286,36 @@ MonoBehaviour:
   m_GameObject: {fileID: 326849681}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4b51625c7bbba24cbc83eaecde3a1fa, type: 3}
+  m_Script: {fileID: 11500000, guid: c169894bdaa8b1545a068f299d4e00d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_isHooked: 0
+  m_isVulnerable: 0
+  m_aiIsOff: 0
+  m_frozen: 0
+  m_freezeTime: 1
+  m_vulnerabilityTime: 2
+  flySpeed: 10
+  flyRadius: 1
+--- !u!95 &326849687
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 326849681}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 7a4b7fd80c292fa4fbf3e007b2baafa8, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &327758724
 GameObject:
   m_ObjectHideFlags: 0
