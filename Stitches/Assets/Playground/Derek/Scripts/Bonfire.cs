@@ -14,11 +14,13 @@ public class Bonfire : MonoBehaviour
         worldPoint = transform.position;
     }
 
-    void OnTriggerEnter(Collider col)
+    void OnTriggerEnter2D(Collider2D col)
     {
-        Debug.Log("Lit");
-        Debug.Log(col.tag);
-        
+        if(!lit && col.tag == "Player")
+        {
+            fire.SetActive(true);
+            lit = true;
+        }
     }
 
 }

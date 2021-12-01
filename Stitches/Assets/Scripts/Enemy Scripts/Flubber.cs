@@ -82,8 +82,7 @@ public class Flubber : Enemy
             mTime += Time.deltaTime;
             if (mTime > gustDuration)
             {
-                mRigidBody2D.velocity = mRigidBody2D.velocity * 0.0001f * Time.deltaTime;
-                Debug.Log(mRigidBody2D.velocity.magnitude);
+                mRigidBody2D.velocity = mRigidBody2D.velocity * 0.001f * Time.deltaTime;
                 if (mRigidBody2D.velocity.magnitude <= 0.0f)
                 {
                     mRigidBody2D.velocity = Vector3.zero;
@@ -129,13 +128,8 @@ public class Flubber : Enemy
         }
         else
         {
-            mTime += Time.deltaTime;
+            mChasing = false;
             mInRange = false;
-            if (mTime > interval)
-            {
-                mChasing = false;
-                mTime = 0.0f;
-            }
         }
     }
 
@@ -148,7 +142,9 @@ public class Flubber : Enemy
         Vector2 shootDir = (targetPoint - (Vector2)this.transform.position).normalized;
         gustRef.SetDirection(shootDir);
 
+        Vector3 force = -shootDir * mGustRecoil;
         //m_RB.velocity = -shootDir * mGustRecoil;
+        //mRigidBody2D.AddForce(force, ForceMode2D.Force);
         mRigidBody2D.velocity = -shootDir * mGustRecoil;
         mTime = 0.0f;
     }
