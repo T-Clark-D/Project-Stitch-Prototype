@@ -12,13 +12,21 @@ public class TongueController : MonoBehaviour
     public bool m_canAttack = true;
     private float m_attackDoneTimeElapsed = 0f;
     private bool m_attackDone = false;
+ 
+    public float m_timeBeforeLaunchingTongue = 1f;
+    private bool m_waitingBeforeLaunchingTongue = false;
+    private float m_timeElapsedBeforeLaunchingTongue = 0f;
 
+    public float m_timeAfterLaunchingTongue = 1f;
+    private bool m_waitingAfterLaunchingTongue = false;
+    private float m_timeElapsedAfterLaunchingTongue = 0f;
 
     private LineRenderer m_tongueRenderer;
     private Vector3 m_currentPosition;
     private Vector3 m_directionUnitVector;
     private Collider2D m_tipCollider;
     private Rigidbody2D m_tipRigidBody;
+    private Vector3 m_passedPosition;
 
     [SerializeField] private WallCrawler m_crawler;
 
@@ -67,12 +75,40 @@ public class TongueController : MonoBehaviour
             m_attackDone = false;
             m_canAttack = true;
         }
+
+        if (m_waitingBeforeLaunchingTongue)
+            m_timeElapsedBeforeLaunchingTongue += Time.deltaTime;
+
+        if(m_waitingBeforeLaunchingTongue && m_timeElapsedBeforeLaunchingTongue >= m_timeBeforeLaunchingTongue)
+        {
+            LaunchTongue(m_passedPosition);
+        }
+
+        if (m_waitingAfterLaunchingTongue)
+            m_timeElapsedAfterLaunchingTongue += Time.deltaTime;
+
+        if (m_waitingAfterLaunchingTongue && m_timeElapsedAfterLaunchingTongue >= m_timeAfterLaunchingTongue)
+        {
+            m_attackDone = true;
+        }
     }
 
     private void FixedUpdate()
     {
         HandleTongueTip();
         RefreshTonguePosition();
+    }
+
+    public void LaunchTongueWhenReady(Vector3 pTargetPosition)
+    {
+        m_waitingBeforeLaunchingTongue = true;
+        m_timeElapsedBeforeLaunchingTongue = 0f;
+
+        m_canAttack = false;
+        m_attackDone = false;
+        m_attackDoneTimeElapsed = 0f;
+
+        m_passedPosition = pTargetPosition;
     }
 
     public void LaunchTongue(Vector3 pTargetPosition)
@@ -119,6 +155,7 @@ public class TongueController : MonoBehaviour
         m_canAttack = false;
         m_attackDone = false;
         m_attackDoneTimeElapsed = 0f;
+        m_waitingBeforeLaunchingTongue = false;
 
         m_tongueTipRenderer.enabled = true;
         // Angling the needle
@@ -142,6 +179,8 @@ public class TongueController : MonoBehaviour
         m_tongueHasHit = false;
         m_tongueHitTimeElapsed = 0f;
         m_tongueTipRenderer.enabled = false;
+        m_waitingBeforeLaunchingTongue = false;
+        m_timeElapsedBeforeLaunchingTongue = 0f;
 
         Vector3 position = m_crawler.transform.position + new Vector3(0, m_tongueStartHeightOffset, 0);
         m_tipCollider.gameObject.transform.position = new Vector3(position.x, position.y, 0);
@@ -153,7 +192,8 @@ public class TongueController : MonoBehaviour
         m_crawlerAnimator.SetBool("IsOpened", false);
         m_crawlerAnimator.SetBool("IsClosed", true);
 
-        m_attackDone = true;
+        m_waitingAfterLaunchingTongue = true;
+        m_timeElapsedAfterLaunchingTongue = 0f;
 
         m_tongueTipRenderer.enabled = false;
     }
