@@ -21,6 +21,15 @@ public class PlayerController : MonoBehaviour
 
     public float m_dustOffsetMultiplier = 0.5f;
 
+    public AudioSource m_bodyThudsSFXAudioSource;
+    public AudioSource m_LifeSFXAudioSource;
+    public AudioSource m_boostSFXAudioSource;
+
+    public AudioClip[] m_bodyThudsSounds;
+    public AudioClip m_lowLifeSound;
+    public AudioClip m_lifePickupSound;
+    public AudioClip m_boostSound;
+
     private bool m_firstTimePullingUp = true;
     // Set to true when we boost.
     private bool m_justBoosted = false;
@@ -209,6 +218,10 @@ public class PlayerController : MonoBehaviour
             m_currentDustSystem = Instantiate(m_referenceDustSystem, position, rotation);
             m_currentDustSystem.gameObject.SetActive(true);
         }
+
+        // Playing body collision sound
+        int randomIndex = UnityEngine.Random.Range(0, m_bodyThudsSounds.Length);
+        m_bodyThudsSFXAudioSource.PlayOneShot(m_bodyThudsSounds[randomIndex]);
     }
 
     public void ResetGravity()
@@ -227,6 +240,9 @@ public class PlayerController : MonoBehaviour
 
         m_firstTimePullingUp = true;
         m_justBoosted = true;
+
+        // Playing sound
+        m_boostSFXAudioSource.PlayOneShot(m_boostSound);
     }
 
     public void RetractHook()
