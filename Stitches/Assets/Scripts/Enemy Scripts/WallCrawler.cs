@@ -27,6 +27,18 @@ public class WallCrawler : Enemy
     /// </summary>
     public bool m_placeWithGravity = false;
 
+    public AudioClip[] m_mouthOpenSounds;
+    public AudioClip[] m_mouthCloseSounds;
+    public AudioSource m_mouthAudioSource;
+
+    public AudioClip[] m_tongueSounds;
+    public AudioSource m_tongueAudioSource;
+
+    public AudioClip[] m_walkSounds;
+    public AudioSource m_walkStartAudioSource;
+    public AudioSource m_walkEndAudioSource;
+    public float m_walkSoundInterval = 0.5f;
+
     [SerializeField] private PlayerController m_player;
     [SerializeField] private TongueController m_tongue;
     private BoxCollider2D m_groundCheckCollider;
@@ -214,6 +226,14 @@ public class WallCrawler : Enemy
 
                 transform.position = newPoint;
                 //m_RB.MovePosition(new Vector2(newPoint.x, newPoint.y));
+
+                // Play move sounds
+                if(!m_walkStartAudioSource.isPlaying && !m_walkEndAudioSource.isPlaying)
+                {
+                    m_walkStartAudioSource.PlayOneShot(m_walkSounds[0]);
+                    m_walkEndAudioSource.clip = m_walkSounds[1];
+                    m_walkEndAudioSource.PlayDelayed(m_walkSoundInterval);
+                }
             }
         }       
     }
@@ -612,5 +632,26 @@ public class WallCrawler : Enemy
         }
 
         return true;
+    }
+
+    public void PlayTongueSound()
+    {
+        // Play the sound.
+        int randomIndex = UnityEngine.Random.Range(0, m_tongueSounds.Length);
+        m_tongueAudioSource.PlayOneShot(m_tongueSounds[randomIndex]);
+    }
+
+    public void PlayMouthOpenSound()
+    {
+        // Play the sound.
+        int randomIndex = UnityEngine.Random.Range(0, m_mouthOpenSounds.Length);
+        m_mouthAudioSource.PlayOneShot(m_mouthOpenSounds[randomIndex]);
+    }
+
+    public void PlayMouthCloseSound()
+    {
+        // Play the sound.
+        int randomIndex = UnityEngine.Random.Range(0, m_mouthCloseSounds.Length);
+        m_mouthAudioSource.PlayOneShot(m_mouthCloseSounds[randomIndex]);
     }
 }

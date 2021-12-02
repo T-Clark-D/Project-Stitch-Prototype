@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class Flyer : Enemy
 {
+    public AudioClip[] m_flyingSounds;
+    public AudioSource m_flyingAudioSource;
+    public AudioClip[] m_attackSounds;
+    public AudioSource m_attackAudioSource;
+
     private Vector2 m_startPosition;
     private float circleFlyAngle = 360;
     private bool circling = true;
@@ -22,11 +27,19 @@ public class Flyer : Enemy
         m_flyerExplosion = GameObject.Find("Flyer_Explosion").GetComponent<ParticleSystem>();
         m_startPosition = transform.position;
         print(m_startPosition);
+
+        // Play audio clip
+        int randomIndex = UnityEngine.Random.Range(0, m_flyingSounds.Length);
+        m_flyingAudioSource.clip = m_flyingSounds[randomIndex];
+        m_flyingAudioSource.loop = true;
+        m_flyingAudioSource.Play();
     }
 
     // Update is called once per frame
     protected override void Update()
     {
+        base.Update();
+
         HandleFlying();
         LayerMask mask = LayerMask.GetMask("Player");
         Collider2D player = Physics2D.OverlapCircle((Vector2)transform.position, agroRadius, mask);
@@ -48,6 +61,10 @@ public class Flyer : Enemy
             if (attackDirection.x > 0) flyAngle = -flyAngle;
             m_RB.SetRotation(flyAngle - 135);
             m_RB.velocity = attackDirection*flySpeed*5;
+
+            // Play audio clip
+            int randomIndex = UnityEngine.Random.Range(0, m_attackSounds.Length);
+            m_attackAudioSource.PlayOneShot(m_attackSounds[randomIndex]);
         }
         
         

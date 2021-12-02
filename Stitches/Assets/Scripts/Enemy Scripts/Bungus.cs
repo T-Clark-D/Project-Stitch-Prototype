@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Bungus : Enemy
 {
+    public AudioClip[] m_bounceSounds;
+    public AudioSource m_bounceAudioSource;
+
     new void Start()
     {
         base.Start();
@@ -20,5 +23,9 @@ public class Bungus : Enemy
        // m_RB.AddForce(m_RB.velocity.normalized * 1000);
         transform.up = collision.GetContact(0).normal;
         m_anim.SetTrigger("Bounce");
+
+        // Play audio clip
+        int randomIndex = UnityEngine.Random.Range(0, m_bounceSounds.Length);
+        m_bounceAudioSource.PlayOneShot(m_bounceSounds[randomIndex]);
     }
 }
