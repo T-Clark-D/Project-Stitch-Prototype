@@ -122,11 +122,15 @@ public class PlayerController : MonoBehaviour
     {
         if(Input.GetMouseButtonDown(0))
         {
-            m_grapplingHookController.LaunchHook(Input.mousePosition);
+            if(m_grapplingHookController.m_hasRetracted)
+            {
+                m_grapplingHookController.LaunchHook(Input.mousePosition);
+                m_grapplingHookController.m_hasRetracted = false;
+            }
         }
 
         // Letting go of the left click.
-        if(Input.GetMouseButtonUp(0))
+        if (Input.GetMouseButtonUp(0) && !m_grapplingHookController.m_hasRetracted)
         {
             // If we just boosted, ignore the let go.
             if(!m_justBoosted && !m_ungrapplableBuffer)
@@ -142,7 +146,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if(Input.GetMouseButton(1))
+        if (Input.GetMouseButton(1))
         {
             if(m_grapplingHookController.m_isHookedToAnEnemy)
             {
@@ -204,6 +208,28 @@ public class PlayerController : MonoBehaviour
             }
 
             m_grapplingHookController.StopPullUpSounds();
+        }
+
+        // Failsafe to unhook the player if no buttons are pressed
+        if(!Input.GetMouseButton(0) && !Input.GetMouseButton(1))
+        {
+            // No mouse buttons are being pressed. Unhook.
+
+            if(!m_grapplingHookController.m_hasRetracted)
+            {
+                // If we just boosted, ignore the let go.
+                if (!m_justBoosted && !m_ungrapplableBuffer)
+                {
+                    m_grapplingHookController.LaunchHook(Input.mousePosition);
+
+                    m_firstTimePullingUp = true;
+                }
+                else
+                {
+                    m_justBoosted = false;
+                    m_ungrapplableBuffer = false;
+                }
+            }
         }
     }
 
