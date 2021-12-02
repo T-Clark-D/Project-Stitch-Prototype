@@ -17,7 +17,9 @@ public class Armordillo : MonoBehaviour
     [SerializeField] private GameObject m_topLeftStunLock;
     [SerializeField] private GameObject m_topRightStunLock;
 
-    [SerializeField] private GameObject m_weakPoint;
+    [SerializeField] private CapsuleCollider2D m_rollingCollider;
+    [SerializeField] private PolygonCollider2D m_stunnedCollider;
+    [SerializeField] private Animator m_anim;
 
     private Vector3 m_bottomPadShift = new Vector3(0, -3, 0);
     private Vector3 m_topLeftPadShift = new Vector3(3, 1, 0);
@@ -29,7 +31,7 @@ public class Armordillo : MonoBehaviour
     [SerializeField] private float m_rollSpeed = 75f;
 
     [SerializeField] private int m_stunLockedPosition;
-    private int m_health = 3;
+    [SerializeField] private int m_health = 1;
 
     [SerializeField] private bool m_moveToTopPlatform = false;
     [SerializeField] private bool m_moveToRightPlatform = false;
@@ -41,6 +43,7 @@ public class Armordillo : MonoBehaviour
 
     [SerializeField] private bool m_padsEmerging = false;
     [SerializeField] private bool m_stunLocked = false;
+    [SerializeField] private bool m_dead = false;
 
     [SerializeField] private bool m_padsHidden = false;
     [SerializeField] private bool m_stunLocksHidden = false;
@@ -55,10 +58,10 @@ public class Armordillo : MonoBehaviour
     {
         m_RB = GetComponent<Rigidbody2D>();
         m_RB.velocity = new Vector2(1,-1) * 10;
-        TogglePadsAndStunLocks(true, true);
+        ToggleStunLocksAndPads(true, true);
     }
 
-    private void TogglePadsAndStunLocks(bool hideStunLocks, bool hidePads)
+    private void ToggleStunLocksAndPads(bool hideStunLocks, bool hidePads)
     {
         if (hidePads && m_padsHidden)
         {
@@ -90,22 +93,23 @@ public class Armordillo : MonoBehaviour
         }
     }
 
+    float timeSinceLastUpdate = 0;
     // Update is called once per frame
     void Update()
     {
         MoveTowardPoint();
-        if(!m_padsEmerging && !m_stunLocked) StartCoroutine(PadsEmerge());
 
+        if(!m_padsEmerging && !m_stunLocked && !m_dead) StartCoroutine(PadsEmerge());
     }
 
     IEnumerator PadsEmerge()
     {
         m_padsEmerging = true;
         yield return new WaitForSeconds(Random.Range(4,7));
-        TogglePadsAndStunLocks(true, true);
+        ToggleStunLocksAndPads(false, true);
         yield return new WaitForSeconds(Random.Range(6, 12));
-        TogglePadsAndStunLocks(false, true);
-        yield return new WaitForSeconds(3);
+        ToggleStunLocksAndPads(true, true);
+        yield return new WaitForSeconds(5);
         m_padsEmerging = false;
     }
 
@@ -140,7 +144,10 @@ public class Armordillo : MonoBehaviour
             m_moveTo = null;
         }
 
-        if (m_moveTo != null) transform.position = Vector3.MoveTowards(transform.position, m_moveTo.transform.position, m_inverseBounceSpeed);
+        if (!m_stunLocked)
+        {
+            if (m_moveTo != null) transform.position = Vector3.MoveTowards(transform.position, m_moveTo.transform.position, Time.deltaTime* m_inverseBounceSpeed);
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -296,9 +303,11 @@ public class Armordillo : MonoBehaviour
                     m_moveToLeftPlatform = true;
                 }
                 break;
-            case "Player":
-            case "GrapplingHook":
-                //m_RB.gravityScale = 1;
+            case "HookCollider":
+                if (m_stunLocked)
+                {
+                    DamageOrNaw(true);
+                }
                 break;
         }
     }
@@ -318,45 +327,66 @@ public class Armordillo : MonoBehaviour
         switch (collision.gameObject.name)
         {
             case "Top_Boost":
-                if (m_RB.velocity.x > 0)
+                if (!m_dead)
                 {
-                    m_RB.velocity = Vector2.right * m_rollSpeed;
-                }
-                else 
-                {
-                    m_RB.velocity = Vector2.left * m_rollSpeed;
+                    if (m_RB.velocity.x > 0)
+                    {
+                        m_RB.velocity = Vector2.right * m_rollSpeed;
+                    }
+                    else
+                    {
+                        m_RB.velocity = Vector2.left * m_rollSpeed;
+                    }
                 }
                 break;
             case "BottomLeft_Boost":
-                if (m_RB.velocity.x > 0)
+                if (!m_dead)
                 {
-                    m_RB.velocity = new Vector2(1, -2).normalized * m_rollSpeed;
-                }
-                else
-                {
-                    m_RB.velocity = new Vector2(-1, 1).normalized * m_rollSpeed;
+                    if (m_RB.velocity.x > 0)
+                    {
+                        m_RB.velocity = new Vector2(1, -2).normalized * m_rollSpeed;
+                    }
+                    else
+                    {
+                        m_RB.velocity = new Vector2(-1, 1).normalized * m_rollSpeed;
+                    }
                 }
                 break;
             case "BottomRight_Boost":
-                if (m_RB.velocity.x > 0)
+                if (!m_dead)
                 {
-                    m_RB.velocity = new Vector2(1, 1).normalized * m_rollSpeed;
-                }
-                else
-                {
-                    m_RB.velocity = new Vector2(-1, -2).normalized * m_rollSpeed;
+                    if (m_RB.velocity.x > 0)
+                    {
+                        m_RB.velocity = new Vector2(1, 1).normalized * m_rollSpeed;
+                    }
+                    else
+                    {
+                        m_RB.velocity = new Vector2(-1, -2).normalized * m_rollSpeed;
+                    }
                 }
                 break;
             case "StunLock_Bottom":
                 StunLock(new Vector3(0.568f, -0.065f, 0), 0);
+                StartCoroutine(DoTheThing());
                 break;
             case "StunLock_TopLeft":
                 StunLock(new Vector3(0.335f, 0.4f, 0), 1);
+                StartCoroutine(DoTheThing());
                 break;
             case "StunLock_TopRight":
-                StunLock(new Vector3(-0.335f, 0.4f, 0), 2);
+                StunLock(new Vector3(7.47f, -0.71f, 0), 2);
+                StartCoroutine(DoTheThing());
                 break;
 
+        }
+    }
+
+    IEnumerator DoTheThing()
+    {
+        yield return new WaitForSeconds(2);
+        if (m_stunLocked)
+        {
+            DamageOrNaw(false);
         }
     }
 
@@ -365,34 +395,87 @@ public class Armordillo : MonoBehaviour
     private void StunLock(Vector3 weakPointPosition, int stunLockedPosition)
     {
         m_stunLockedPosition = stunLockedPosition;
-        m_weakPoint.transform.localPosition = weakPointPosition;
         m_stunLocked = true;
+        switch (m_stunLockedPosition)
+        {
+            case 0:
+                m_RB.transform.localPosition = new Vector3(-1.45f, -39.75f, 325);
+                m_RB.transform.localEulerAngles = new Vector3(0, -180, 1.45f);
+                break;
+            case 1:
+                transform.localScale = new Vector3(-1, 1, 1);
+                m_RB.transform.localPosition = new Vector3(33.5f, 21.2f, 325);
+                m_RB.transform.localEulerAngles = new Vector3(0, -180, -125);
+                break;
+            case 2:
+                m_RB.transform.localPosition = new Vector3(-33.7f, 21.4f, 325);
+                m_RB.transform.localEulerAngles = new Vector3(0, -180, -237);
+                break;
+        }
+        m_anim.SetBool("stunLocked", m_stunLocked);
+        m_rollingCollider.enabled = false;
+        m_stunnedCollider.enabled = true;
         m_RB.constraints = RigidbodyConstraints2D.FreezeAll;
         ResetMoveToBooleans();
     }
 
-    public void WeakPointHit()
+    public void DamageOrNaw(bool damageYe)
     {
-        m_stunLocked = false;
-        m_health -= 1;
-        if(m_health == 0)
+        if (damageYe)
         {
-            Destroy(this.gameObject);
+            m_health -= 1;
+            m_anim.SetInteger("bossHP", m_health);
         }
-        TogglePadsAndStunLocks(true, false);
         m_RB.constraints = RigidbodyConstraints2D.None;
-        m_weakPoint.transform.localPosition = Vector3.zero;
-        switch (m_stunLockedPosition)
+        if (m_health != 0)
         {
-            case 0:
-                m_RB.velocity = Vector2.right * m_rollSpeed;
-                break;
-            case 1:
-                m_RB.velocity = new Vector2(-1, -1).normalized * m_rollSpeed;
-                break;
-            case 2:
-                m_RB.velocity = new Vector2(1, -1).normalized * m_rollSpeed;
-                break;
+            m_stunLocked = false;
+            m_anim.SetBool("stunLocked", m_stunLocked);
+            m_rollingCollider.enabled = true;
+            m_stunnedCollider.enabled = false;
+
+            ToggleStunLocksAndPads(true, false);
+            
+            switch (m_stunLockedPosition)
+            {
+                case 0:
+                    m_RB.transform.localPosition -= m_bottomPadShift * 0.5f;
+                    m_RB.velocity = Vector2.right * m_rollSpeed;
+                    break;
+                case 1:
+                    m_RB.transform.localPosition -= m_topLeftPadShift * 0.5f;
+                    transform.localScale = new Vector3(1, 1, 1);
+                    m_RB.velocity = new Vector2(-1, -1).normalized * m_rollSpeed;
+                    break;
+                case 2:
+                    m_RB.transform.localPosition -= m_topRightPadShift * 0.5f;
+                    m_RB.velocity = new Vector2(1, -1).normalized * m_rollSpeed;
+                    break;
+            }
         }
+        else
+        {
+            m_stunLocked = false;
+            m_dead = true;
+            switch (m_stunLockedPosition)
+            {
+                case 1:
+                    m_RB.velocity = new Vector2(-1, -1).normalized * m_rollSpeed;
+                    break;
+                case 2:
+                    m_RB.velocity = new Vector2(1, -1).normalized * m_rollSpeed;
+                    break;
+            }
+            StartCoroutine(DisableCollidersInSeconds());
+        }
+
+    }
+
+    IEnumerator DisableCollidersInSeconds()
+    {
+        yield return new WaitForSeconds(5);
+        m_RB.constraints = RigidbodyConstraints2D.FreezeAll;
+        m_rollingCollider.enabled = false;
+        m_stunnedCollider.enabled = false;
     }
 }

@@ -216,15 +216,19 @@ public class HookController : MonoBehaviour
 
             m_isHookedToAnEnemy = true;
         }
-        else if (collision.gameObject.CompareTag("Ungrapplable"))
+        else if (collision.gameObject.CompareTag("Ungrapplable") || collision.gameObject.CompareTag("Boss"))
         {
             Debug.Log("Hit an ungrapplable target!");
             RetractHook();
             FindObjectOfType<PlayerController>().m_ungrapplableBuffer = true;
 
             // Play audio clip.
-            int randomIndex = UnityEngine.Random.Range(0, m_ungrappleAbleHitSounds.Length);
-            m_needleHitAudioSource.PlayOneShot(m_ungrappleAbleHitSounds[randomIndex]);
+            if (collision.gameObject.CompareTag("Ungrapplable"))
+            {
+                int randomIndex = UnityEngine.Random.Range(0, m_ungrappleAbleHitSounds.Length);
+                m_needleHitAudioSource.PlayOneShot(m_ungrappleAbleHitSounds[randomIndex]);
+            }
+            
         }
     }
     void HandleGrapplingHook()

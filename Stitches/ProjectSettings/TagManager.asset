@@ -11,6 +11,7 @@ TagManager:
   - Body
   - Ungrapplable
   - GroundCheck
+  - Boss
   layers:
   - Default
   - TransparentFX
