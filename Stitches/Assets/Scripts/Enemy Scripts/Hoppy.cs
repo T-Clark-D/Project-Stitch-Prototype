@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class Hoppy : Enemy
 {
+    public AudioClip[] m_jumpSounds;
+    public AudioSource m_jumpAudioSource;
+    public AudioClip[] m_attackSounds;
+    public AudioSource m_attackAudioSource;
+
     [SerializeField] bool m_isFacingRight = true;
     [SerializeField] float maxJumpHeight;
     [SerializeField] Transform player;
@@ -192,6 +197,10 @@ public class Hoppy : Enemy
         }
 
         m_RB.AddForce(new Vector2(hopDist, hopJumpHeight), ForceMode2D.Impulse);
+
+        // Play audio clip
+        int randomIndex = UnityEngine.Random.Range(0, m_jumpSounds.Length);
+        m_jumpAudioSource.PlayOneShot(m_jumpSounds[randomIndex]);
     }
 
     void checkIfGrounded()
@@ -221,7 +230,11 @@ public class Hoppy : Enemy
 
 
         m_RB.AddForce(new Vector2(distanceToPlayer, distance + offset), ForceMode2D.Impulse);
-        
+
         //hadJumpedCheck();
+
+        // Play audio clip
+        int randomIndex = UnityEngine.Random.Range(0, m_jumpSounds.Length);
+        m_jumpAudioSource.PlayOneShot(m_jumpSounds[randomIndex]);
     }
 }
