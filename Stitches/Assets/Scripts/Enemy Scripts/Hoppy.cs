@@ -9,8 +9,11 @@ public class Hoppy : Enemy
     [SerializeField] Transform player;
     [SerializeField] float jumpCooldown;
     [SerializeField] float agroRange;
-    [SerializeField] float moveSpeed;
+    //[SerializeField] float moveSpeed;
     [SerializeField] Transform groundDetection;
+    [SerializeField] float minHopDist;
+    [SerializeField] float maxHopDist;
+    [SerializeField] float hopJumpHeight;
     private float patrolTimer = 7;
     private float patrolCooldown;
     private float coolDown;
@@ -18,20 +21,31 @@ public class Hoppy : Enemy
     private float distance;
     private bool inRange;
     private bool patrolling = true;
+    //private bool start;
+    private float counter = 0;
     private RaycastHit2D onGround;
 
     protected override void Start()
     {
         m_RB = GetComponent<Rigidbody2D>();
         m_SR = GetComponent<SpriteRenderer>();
+        m_anim = GetComponent<Animator>();
         coolDown = jumpCooldown;
     }
     protected override void Update()
     {
         distance = Vector2.Distance(transform.position, player.position);   // Check distance between hoppy and player.
-        onGround = Physics2D.Raycast(groundDetection.position, Vector2.down, 2);   // Check if hoppy is on the ground before jumping again.
+        onGround = Physics2D.Raycast(groundDetection.position, Vector2.down, 0.5f);   // Check if hoppy is on the ground before jumping again.
+
+        checkIfGrounded();
         rangeCheck();                                                       // If in range then is able to attack, else hoppy must patrol.
         coolDownCheck();                                                    // Check if the jump cooldown is finished.
+
+
+        //if (inRange)
+        //{
+        //    transform.Rotate(0, 0, 0 + (300 * Time.deltaTime), Space.Self);
+        //}
     }
     void FixedUpdate()
     {
@@ -53,7 +67,7 @@ public class Hoppy : Enemy
 
         if (canJump && onGround.collider == true)
         {
-            jumpToPlayer();     // If the jump cooldown is zero and hoppy is grounded, then jump.
+            jumpToPlayer();     // If the jump cooldown is zero and hoppy is grounded, then jump.     
             canJump = false;
         }
         else
@@ -64,10 +78,16 @@ public class Hoppy : Enemy
 
     void patrol()
     {
-        transform.Translate(Vector2.right * moveSpeed * Time.deltaTime);        // hoppy's patrol movement.
+        // transform.Translate(Vector2.right * moveSpeed * Time.deltaTime);        // hoppy's patrol movement.
+        if (canJump && onGround.collider == true)
+        {
+            hop();    // If the jump cooldown is zero and hoppy is grounded, then jump.
+            flip();
+            canJump = false;
+        }
 
         RaycastHit2D isGrounded = Physics2D.Raycast(groundDetection.position, Vector2.down, 2);     // Check if hoppy reached the edge of a platform before moving in the opposite direction.
-        if(isGrounded.collider == false && onGround.collider == true)
+        if (isGrounded.collider == false && onGround.collider == true)
         {
             flip();
         }
@@ -89,14 +109,30 @@ public class Hoppy : Enemy
 
     void coolDownCheck()                // Check if hoppy can jump again.
     {
+ 
         if (coolDown <= 0 && !canJump)
         {
             canJump = true;
-            coolDown = jumpCooldown;          
+            coolDown = jumpCooldown;
         }
         else
         {
             coolDown -= Time.deltaTime;
+
+        }
+    }
+
+    void hadJumpedCheck()                // Check if hoppy can jump again.
+    {
+        counter += Time.deltaTime;
+
+        if (counter < 2)
+        {
+            m_anim.SetBool("HasJumped", true);
+        }
+        else
+        {
+            counter = 0;
 
         }
     }
@@ -146,12 +182,35 @@ public class Hoppy : Enemy
 
     }
 
+    void hop()
+    {
+        float offset = Random.Range(1, 5);
+        float hopDist = Random.Range(minHopDist,maxHopDist);
+        if(m_isFacingRight == false)
+        {
+            hopDist *= -1;
+        }
+
+        m_RB.AddForce(new Vector2(hopDist, hopJumpHeight), ForceMode2D.Impulse);
+    }
+
+    void checkIfGrounded()
+    {
+        if(onGround.collider == true)
+        {
+            m_anim.SetBool("Jump", false);               
+        }
+        else if(onGround.collider == false)
+        {
+           m_anim.SetBool("Jump", true);
+        }
+    }
     void jumpToPlayer()
     {
         float distanceToPlayer = player.position.x - transform.position.x;
         float offset = Random.Range(1, 5);
 
-        if(distance > maxJumpHeight)
+        if (distance > maxJumpHeight)
         {
             distance = maxJumpHeight;
         }
@@ -162,5 +221,7 @@ public class Hoppy : Enemy
 
 
         m_RB.AddForce(new Vector2(distanceToPlayer, distance + offset), ForceMode2D.Impulse);
+        
+        //hadJumpedCheck();
     }
 }
