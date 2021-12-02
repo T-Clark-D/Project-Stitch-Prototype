@@ -10,6 +10,8 @@ public class Armordillo : MonoBehaviour
     public AudioSource m_rollLoopAudioSource;
     public AudioClip[] m_bounceSounds;
     public AudioSource m_bounceAudioSource;
+    public AudioClip[] m_hurtSounds;
+    public AudioSource m_hurtAudioSource;
 
     private Rigidbody2D m_RB;
     [SerializeField] private GameObject m_topPlatform;
@@ -125,10 +127,12 @@ public class Armordillo : MonoBehaviour
 
     private void UpdateAudioSourcesPosition()
     {      
-        m_earthLoopAudioSource.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y, 0);
-        m_rollLoopAudioSource.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y, 0);
+        Vector3 bossPos = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y, 0);
+        m_earthLoopAudioSource.transform.position = bossPos;
+        m_rollLoopAudioSource.transform.position = bossPos;
+        m_hurtAudioSource.transform.position = bossPos;
 
-        if(!m_bounceAudioSource.isPlaying)
+        if (!m_bounceAudioSource.isPlaying)
             m_bounceAudioSource.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y, 0);
     }
 
@@ -470,6 +474,10 @@ public class Armordillo : MonoBehaviour
         {
             m_health -= 1;
             m_anim.SetInteger("bossHP", m_health);
+
+            // Play audio clip
+            int randomIndex = UnityEngine.Random.Range(0, m_hurtSounds.Length);
+            m_hurtAudioSource.PlayOneShot(m_hurtSounds[randomIndex]);
         }
         m_RB.constraints = RigidbodyConstraints2D.None;
         if (m_health != 0)
@@ -524,5 +532,10 @@ public class Armordillo : MonoBehaviour
         m_RB.constraints = RigidbodyConstraints2D.FreezeAll;
         m_rollingCollider.enabled = false;
         m_stunnedCollider.enabled = false;
+    }
+
+    public bool IsStunLocked()
+    {
+        return m_stunLocked;
     }
 }

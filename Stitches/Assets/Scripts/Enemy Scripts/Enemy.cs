@@ -21,6 +21,7 @@ public class Enemy : MonoBehaviour
     protected Rigidbody2D m_RB;
     protected Animator m_anim;
     protected Collider2D m_collider;
+    protected Spike m_spikeScript;
 
     protected virtual void Start()
     {
@@ -29,6 +30,7 @@ public class Enemy : MonoBehaviour
         m_RB = GetComponent<Rigidbody2D>();
         m_anim = GetComponent<Animator>();
         m_collider = GetComponent<Collider2D>();
+        m_spikeScript = GetComponentInChildren<Spike>();
     }
     protected virtual void Update()
     {
@@ -104,6 +106,9 @@ public class Enemy : MonoBehaviour
     public virtual void ToggleVulnerability()
     {
         m_isVulnerable = !m_isVulnerable;
+
+        if (m_spikeScript != null)
+            m_spikeScript.ChangeVulnerablilityStatus(m_isVulnerable);
 
         if (m_isVulnerable)
         {

@@ -15,6 +15,7 @@ public class HookController : MonoBehaviour
     public AudioClip[] m_needleThrowSounds;
     public AudioClip[] m_pullUpSounds;
     public AudioClip[] m_failedHookSounds;
+    public AudioClip[] m_bounceOffArmadilloArmorSounds;
     public AudioSource m_needleHitAudioSource;
     public AudioSource m_throwAudioSource;
     public AudioSource m_pullUpAudioSource;
@@ -227,6 +228,15 @@ public class HookController : MonoBehaviour
             {
                 int randomIndex = UnityEngine.Random.Range(0, m_ungrappleAbleHitSounds.Length);
                 m_needleHitAudioSource.PlayOneShot(m_ungrappleAbleHitSounds[randomIndex]);
+            }
+            else if(collision.gameObject.CompareTag("Boss"))
+            {
+                if(!collision.collider.GetComponent<Armordillo>().IsStunLocked())
+                {
+                    // Play audio clip
+                    int randomIndex = UnityEngine.Random.Range(0, m_bounceOffArmadilloArmorSounds.Length);
+                    m_needleHitAudioSource.PlayOneShot(m_bounceOffArmadilloArmorSounds[randomIndex]);
+                }
             }
             
         }
