@@ -17,6 +17,8 @@ public class HookController : MonoBehaviour
     public AudioSource m_needleHitAudioSource;
     public AudioSource m_throwAudioSource;
     public AudioSource m_pullUpAudioSource;
+    public bool m_hasRetracted = true;
+    public float m_maxGrapplingDistance = 10f;
 
     private bool m_grapplingHookOut = false;
     private LineRenderer m_grapplingHookRenderer;
@@ -159,20 +161,8 @@ public class HookController : MonoBehaviour
 
         // Stop pull up sounds
         StopPullUpSounds();
-    }
 
-    public void PullUp()
-    {
-        if(m_tethered)
-        {
-            // We have to be tethered to pull up.
-            Vector3 direction = m_clickPosition - (m_player.transform.position + new Vector3(0, m_grapplingStartHeightOffset, 0));
-            direction = direction / direction.magnitude;
-
-            m_playerRigidBody.velocity = new Vector2(0, 0); // Resetting velocity
-
-            m_pullingUp = true;
-        }
+        m_hasRetracted = true;
     }
 
     public void HandleCollision(Collision2D collision)

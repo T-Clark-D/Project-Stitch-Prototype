@@ -623,6 +623,8 @@ MonoBehaviour:
   m_needleHitAudioSource: {fileID: 1111674902}
   m_throwAudioSource: {fileID: 1062445809}
   m_pullUpAudioSource: {fileID: 496411156}
+  m_hasRetracted: 1
+  m_maxGrapplingDistance: 10
   m_player: {fileID: 0}
 --- !u!1 &6186889958853741792
 GameObject:
