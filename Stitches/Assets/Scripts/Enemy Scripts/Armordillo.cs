@@ -12,6 +12,8 @@ public class Armordillo : MonoBehaviour
     public AudioSource m_bounceAudioSource;
     public AudioClip[] m_hurtSounds;
     public AudioSource m_hurtAudioSource;
+    public AudioClip[] m_gruntSounds;
+    public AudioSource m_gruntAudioSource;
 
     private Rigidbody2D m_RB;
     [SerializeField] private GameObject m_topPlatform;
@@ -131,6 +133,7 @@ public class Armordillo : MonoBehaviour
         m_earthLoopAudioSource.transform.position = bossPos;
         m_rollLoopAudioSource.transform.position = bossPos;
         m_hurtAudioSource.transform.position = bossPos;
+        m_gruntAudioSource.transform.position = bossPos;
 
         if (!m_bounceAudioSource.isPlaying)
             m_bounceAudioSource.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y, 0);
@@ -475,9 +478,12 @@ public class Armordillo : MonoBehaviour
             m_health -= 1;
             m_anim.SetInteger("bossHP", m_health);
 
-            // Play audio clip
+            // Play audio clips
             int randomIndex = UnityEngine.Random.Range(0, m_hurtSounds.Length);
             m_hurtAudioSource.PlayOneShot(m_hurtSounds[randomIndex]);
+
+            randomIndex = UnityEngine.Random.Range(0, m_gruntSounds.Length);
+            m_gruntAudioSource.PlayOneShot(m_gruntSounds[randomIndex]);
         }
         m_RB.constraints = RigidbodyConstraints2D.None;
         if (m_health != 0)
