@@ -14,9 +14,11 @@ public class HookController : MonoBehaviour
     public AudioClip[] m_ungrappleAbleHitSounds;
     public AudioClip[] m_needleThrowSounds;
     public AudioClip[] m_pullUpSounds;
+    public AudioClip[] m_failedHookSounds;
     public AudioSource m_needleHitAudioSource;
     public AudioSource m_throwAudioSource;
     public AudioSource m_pullUpAudioSource;
+    public AudioSource m_failedHookAudioSource;
     public bool m_hasRetracted = true;
     public float m_maxGrapplingDistance = 10f;
 
@@ -67,6 +69,7 @@ public class HookController : MonoBehaviour
     {
         HandleGrapplingHook();
         RefreshHookPosition();
+        HandleLength();
     }
 
     public void LaunchHook(Vector3 pMouseClickPosition)
@@ -360,5 +363,23 @@ public class HookController : MonoBehaviour
     public void StopPullUpSounds()
     {
         m_pullUpAudioSource.Stop();
+    }
+
+    private void HandleLength()
+    {
+        // Only check for max distance when we are not already tethered.
+        if (m_grapplingHookOut && !m_tethered)
+        {
+            float distanceBetweenPlayerAndHook = (m_hookCollider.transform.position - (m_player.transform.position + new Vector3(0, m_grapplingStartHeightOffset, 0))).magnitude;
+
+            if(distanceBetweenPlayerAndHook >= m_maxGrapplingDistance)
+            {
+                // We are at the limit of our hook. Retract.
+                RetractHook();
+
+                int randomIndex = UnityEngine.Random.Range(0, m_failedHookSounds.Length);
+                m_failedHookAudioSource.PlayOneShot(m_failedHookSounds[randomIndex]);
+            }
+        }
     }
 }
