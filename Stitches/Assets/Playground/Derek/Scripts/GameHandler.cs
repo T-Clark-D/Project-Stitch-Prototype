@@ -53,6 +53,7 @@ public class GameHandler : MonoBehaviour
                 lossIndex = 5;
                 HPSetup();
                 dead = false;
+                mTime = 0.0f;
             }
         }
     }
@@ -140,5 +141,19 @@ public class GameHandler : MonoBehaviour
         {
             currHP[j].enabled = true;
         }
+    }
+
+    public void kill()
+    {
+        resetHP();
+        for (int i = 0; i < lossHP.Length; i++)
+        {
+            lossHP[i].enabled = false;
+        }
+        for (int j = 0; j < currHP.Length; j++)
+        {
+            currHP[j].enabled = false;
+        }
+        dead = true;
     }
 }
