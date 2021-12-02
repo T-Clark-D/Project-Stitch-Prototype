@@ -1,11 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameHandler : MonoBehaviour
 {
     [SerializeField] int mHP;
     [SerializeField] float mInvulTime;
+
+    // For HP 
+    Image[] currHP;
+    int currIndex;
+    Image[] lossHP;
+    int lossIndex;
+
     float mTime;
     bool mInvul = false;
     Vector3 respawnPoint;
@@ -28,6 +36,11 @@ public class GameHandler : MonoBehaviour
         }
     }
     
+    public void addHP(int hp)
+    {
+        mHP += hp;
+    }
+
     public void takeDamage(int dmg)
     {
         if(!mInvul)

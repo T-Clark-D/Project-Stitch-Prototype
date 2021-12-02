@@ -44,11 +44,20 @@ public class Flubber : Enemy
     Vector2 mFacingDirection;
     bool mChasing;
 
+    // Animations
+    Animator mAnimator;
+    bool mAttack;
+    bool mUp;
+    bool mDown;
+    float lastY;
+
     // Start is called before the first frame update
     protected override void Start()
     {
         base.Start();
         mRigidBody2D = GetComponent<Rigidbody2D>();
+        mAnimator = GetComponentInChildren<Animator>();
+        lastY = transform.position.y;
         worldPoint = transform.position;
         currentPos = transform.position;
         /*if (m_frozen)
@@ -59,7 +68,6 @@ public class Flubber : Enemy
     protected override void Update()
     {
         base.Update();
-
         if (!m_aiIsOff)
         {
             //FlubberOne();
@@ -75,7 +83,12 @@ public class Flubber : Enemy
         }
         if (mInRange)
         {
-            GustPlayer();
+            mAttack = true;
+            mTime += Time.deltaTime;
+            if(mTime >= 0.62f)
+            {
+                GustPlayer();
+            }
         }
         if (gustShot)
         {
@@ -110,26 +123,28 @@ public class Flubber : Enemy
                 }
             }
         }
+        VerticalCheck();
+        UpdateAnimtion();
     }
 
     private void FollowPlayer()
     {
-        if ((Vector3.Distance(transform.position, mTarget.position)) <= mFollowRange && (Vector3.Distance(transform.position, mTarget.position)) >= mStopRange)
+        if ((Vector3.Distance(transform.position, mTarget.position)) <= mFollowRange && (Vector2.Distance(transform.position, mTarget.position)) >= mStopRange)
         {
-            transform.position = Vector2.MoveTowards(transform.position, mTarget.position, mFollowSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, mTarget.position, mFollowSpeed * Time.deltaTime);
             FlipDirection();
             idle = false;
             mChasing = true;
-            mTime = 0.0f;
         }
-        if ((Vector3.Distance(transform.position, mTarget.position)) <= mStopRange)
+        if ((Vector2.Distance(transform.position, mTarget.position)) <= mStopRange)
         {
             mInRange = true;
         }
-        else
+        if ((Vector3.Distance(transform.position, mTarget.position)) >= mFollowRange)
         {
             mChasing = false;
             mInRange = false;
+            mAttack = false;
         }
     }
 
@@ -137,7 +152,7 @@ public class Flubber : Enemy
     {
         gustShot = true;
         Vector2 targetPoint = mTarget.position;
-        GameObject gustObj = Instantiate(mGustPrefab, transform.position, transform.rotation);
+        GameObject gustObj = Instantiate(mGustPrefab, transform.position+(transform.forward*2), transform.rotation);
         FlubberGust gustRef = gustObj.GetComponent<FlubberGust>();
         Vector2 shootDir = (targetPoint - (Vector2)this.transform.position).normalized;
         gustRef.SetDirection(shootDir);
@@ -152,7 +167,7 @@ public class Flubber : Enemy
     private void FaceDirection(Vector2 direction)
     {
         mFacingDirection = direction;
-        GetComponent<SpriteRenderer>().flipX = direction != Vector2.right;
+        GetComponentInChildren<SpriteRenderer>().flipX = direction != Vector2.right;
     }
 
     private void FlipDirection()
@@ -228,7 +243,29 @@ public class Flubber : Enemy
         }
     }
 
+    private void VerticalCheck()
+    {
+        float currentY = transform.position.y;
+        if (currentY < lastY)
+        {
+            mDown = true;
+            mUp = false;
+        }
+        else if(currentY > lastY)
+        {
+            mUp = true;
+            mDown = false;
+        }
+        lastY = currentY;
+    }
 
+    private void UpdateAnimtion()
+    {
+        mAnimator.SetBool("Chase", mChasing);
+        mAnimator.SetBool("Up", mUp);
+        mAnimator.SetBool("Down", mDown);
+        mAnimator.SetBool("Attack", mAttack);
+    }
 
 
 
