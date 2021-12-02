@@ -89,6 +89,7 @@ public class Enemy : MonoBehaviour
 
             // Object becomes immovable.
             m_RB.constraints = RigidbodyConstraints2D.FreezePosition | RigidbodyConstraints2D.FreezeRotation;
+            
         }
 
         public void Unfreeze()
