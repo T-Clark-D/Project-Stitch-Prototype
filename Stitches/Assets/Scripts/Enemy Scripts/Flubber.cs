@@ -10,6 +10,11 @@ public class Flubber : Enemy
 
     public float force = 15;
 
+    public AudioClip[] m_blowingSounds;
+    public AudioSource m_blowingAudioSource;
+    public AudioClip[] m_flyingSounds;
+    public AudioSource m_flyingAudioSource;
+
     /// <summary>
     /// Time the enemy will stay frozen after the player unhooking from it.
     /// </summary>
@@ -135,6 +140,13 @@ public class Flubber : Enemy
             FlipDirection();
             idle = false;
             mChasing = true;
+
+            if(!m_flyingAudioSource.isPlaying)
+            {
+                // Play audio clip
+                int randomIndex = UnityEngine.Random.Range(0, m_flyingSounds.Length);
+                m_flyingAudioSource.PlayOneShot(m_flyingSounds[randomIndex]);
+            }
         }
         if ((Vector2.Distance(transform.position, mTarget.position)) <= mStopRange)
         {
@@ -162,6 +174,13 @@ public class Flubber : Enemy
         //mRigidBody2D.AddForce(force, ForceMode2D.Force);
         mRigidBody2D.velocity = -shootDir * mGustRecoil;
         mTime = 0.0f;
+
+        if(!m_blowingAudioSource.isPlaying)
+        {
+            // Play audio clip
+            int randomIndex = UnityEngine.Random.Range(0, m_blowingSounds.Length);
+            m_blowingAudioSource.PlayOneShot(m_blowingSounds[randomIndex]);
+        }
     }
 
     private void FaceDirection(Vector2 direction)
@@ -217,6 +236,13 @@ public class Flubber : Enemy
         {
             currentPos -= transform.right * Time.deltaTime * mFollowSpeed;
             transform.position = currentPos + transform.up * Mathf.Sin(Time.time * frequency) * magnitude;
+        }
+
+        if(!m_flyingAudioSource.isPlaying)
+        {
+            // Play audio clip
+            int randomIndex = UnityEngine.Random.Range(0, m_flyingSounds.Length);
+            m_flyingAudioSource.PlayOneShot(m_flyingSounds[randomIndex]);
         }
     }
 

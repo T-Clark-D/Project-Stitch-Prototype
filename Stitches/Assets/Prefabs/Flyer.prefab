@@ -267,7 +267,7 @@ GameObject:
   - component: {fileID: 6978306812249554309}
   - component: {fileID: 6978306812249554305}
   - component: {fileID: 1225735083}
-  - component: {fileID: 1225735088}
+  - component: {fileID: 922214589}
   m_Layer: 9
   m_Name: Flyer
   m_TagString: Enemy
@@ -283,8 +283,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6978306812249554304}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 20.36, y: 88.39, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children:
   - {fileID: 1824025768}
   - {fileID: 2629467708778979487}
@@ -329,8 +329,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 1260959575
-  m_SortingLayer: 4
+  m_SortingLayerID: 669225563
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 7acd7366209d00745816af7d26e96106, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -392,6 +392,8 @@ MonoBehaviour:
   flyRadius: 3
   flySpeed: 5
   agroRadius: 15
+  m_parentCollider: {fileID: 0}
+  m_collider: {fileID: 1225735083}
 --- !u!60 &1225735083
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -399,7 +401,7 @@ PolygonCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6978306812249554304}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 0
@@ -814,7 +816,7 @@ PolygonCollider2D:
       - {x: 1.09, y: 1.7199999}
       - {x: 1.09, y: 1.79}
       - {x: 1.04, y: 1.92}
---- !u!95 &1225735088
+--- !u!95 &922214589
 Animator:
   serializedVersion: 3
   m_ObjectHideFlags: 0

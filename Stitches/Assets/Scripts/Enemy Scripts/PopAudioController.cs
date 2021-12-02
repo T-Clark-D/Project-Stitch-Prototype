@@ -5,11 +5,12 @@ using UnityEngine;
 public class PopAudioController : MonoBehaviour
 {
     private AudioSource m_audioSource;
+    private bool m_hasPlayedOnce = false;
 
     private void Awake()
     {
         m_audioSource = GetComponent<AudioSource>();
-        m_audioSource.Play();
+        m_audioSource.enabled = true;
     }
 
     // Start is called before the first frame update
@@ -21,9 +22,15 @@ public class PopAudioController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(!m_audioSource.isPlaying)
+        if(!m_audioSource.isPlaying && m_hasPlayedOnce)
         {
             Destroy(gameObject);
         }
+    }
+
+    public void Play()
+    {
+        m_audioSource.Play();
+        m_hasPlayedOnce = true;
     }
 }

@@ -143,7 +143,7 @@ public class Enemy : MonoBehaviour
                 // Instantiate popping audio prefab.
                 PopAudioController popAudio = Instantiate(m_popAudioObject, transform.position, Quaternion.identity);
                 popAudio.gameObject.SetActive(true);
-
+                popAudio.Play(); 
                 
             }
         }
