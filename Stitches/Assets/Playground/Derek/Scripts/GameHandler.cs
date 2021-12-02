@@ -18,6 +18,7 @@ public class GameHandler : MonoBehaviour
     bool mInvul = false;
     float mTime;
     bool dead = false;
+    public float invulDelay;
 
     // Start is called before the first frame update
     void Start()
@@ -32,7 +33,7 @@ public class GameHandler : MonoBehaviour
         if (mInvul)
         {
             mTime += Time.deltaTime;
-            if (mTime >= 0.5f)
+            if (mTime >= invulDelay)
             {
                 mTime = 0.0f;
                 mInvul = false;
