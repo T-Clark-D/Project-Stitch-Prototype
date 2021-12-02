@@ -90,6 +90,7 @@ public class Enemy : MonoBehaviour
 
             // Object becomes immovable.
             m_RB.constraints = RigidbodyConstraints2D.FreezePosition | RigidbodyConstraints2D.FreezeRotation;
+            
         }
 
         public void Unfreeze()
@@ -138,11 +139,12 @@ public class Enemy : MonoBehaviour
                 m_explosionEffectSystem.gameObject.transform.position = this.gameObject.transform.position;
                 m_explosionEffectSystem.Play();
 
+                Destroy(this.gameObject);
                 // Instantiate popping audio prefab.
                 PopAudioController popAudio = Instantiate(m_popAudioObject, transform.position, Quaternion.identity);
                 popAudio.gameObject.SetActive(true);
 
-                Destroy(this.gameObject);
+                
             }
         }
     }

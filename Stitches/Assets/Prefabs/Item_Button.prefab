@@ -59,7 +59,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 1d2679596c77d0144b23983a5c0ca731, type: 2}
+  - {fileID: 2100000, guid: 0fbbdca8054b0a34dbb9980dfd2b9213, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -93,7 +93,7 @@ GameObject:
   - component: {fileID: 1225988225460403743}
   - component: {fileID: 2406516030084437714}
   m_Layer: 0
-  m_Name: Background_Button
+  m_Name: Item_Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -206,7 +206,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 1d2679596c77d0144b23983a5c0ca731, type: 2}
+  - {fileID: 2100000, guid: 0fbbdca8054b0a34dbb9980dfd2b9213, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

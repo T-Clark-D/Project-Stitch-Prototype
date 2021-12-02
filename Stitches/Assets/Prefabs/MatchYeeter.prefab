@@ -392,7 +392,7 @@ GameObject:
   - component: {fileID: 7577146637342077992}
   - component: {fileID: 7577146637342077994}
   - component: {fileID: 7577146637342077995}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Fire (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -603,7 +603,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 1, g: 1, b: 1, a: 1}
+      maxColor: {r: 0.2901961, g: 0.54509807, b: 0.98039216, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -5199,7 +5199,7 @@ GameObject:
   - component: {fileID: 9037147720939572324}
   - component: {fileID: 7704404452668659939}
   - component: {fileID: 504982506734379058}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: MatchYeeter
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -5268,7 +5268,7 @@ SpriteRenderer:
   m_SortingLayer: 4
   m_SortingOrder: 0
   m_Sprite: {fileID: 202569815705455356, guid: 900b3ef6de294014787aa685e1315f6d, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.4764151, g: 0.8063453, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -5392,7 +5392,7 @@ GameObject:
   - component: {fileID: 7577146638160637570}
   - component: {fileID: 7577146638160637572}
   - component: {fileID: 7577146638160637573}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Fire
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5603,7 +5603,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 1, g: 1, b: 1, a: 1}
+      maxColor: {r: 0.2901961, g: 0.54509807, b: 0.98039216, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -10196,7 +10196,7 @@ GameObject:
   - component: {fileID: 7577146638438283623}
   - component: {fileID: 7577146638438283545}
   - component: {fileID: 7577146638438283622}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Fire (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10407,7 +10407,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 1, g: 1, b: 1, a: 1}
+      maxColor: {r: 0.2901961, g: 0.54509807, b: 0.98039216, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}

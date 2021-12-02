@@ -287,6 +287,7 @@ public class PlayerController : MonoBehaviour
     public void Boost()
     {
         //m_rigidBody.AddForce(m_rigidBody.velocity.normalized * m_boostSpeed, ForceMode2D.Impulse);
+        m_rigidBody.velocity = Vector3.zero;
         m_rigidBody.AddForce(m_grapplingHookController.GetHookDirection().normalized * m_boostSpeed, ForceMode2D.Impulse);
 
         // Unhook
