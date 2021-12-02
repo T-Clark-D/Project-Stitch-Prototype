@@ -109,6 +109,9 @@ public class TongueController : MonoBehaviour
         m_attackDoneTimeElapsed = 0f;
 
         m_passedPosition = pTargetPosition;
+
+        // Play Mouth Opening sound
+        m_crawler.PlayMouthOpenSound();
     }
 
     public void LaunchTongue(Vector3 pTargetPosition)
@@ -163,6 +166,9 @@ public class TongueController : MonoBehaviour
         rotation.x = 0f;
         rotation.y = 0f;
         m_tongueTipRenderer.gameObject.transform.rotation = Quaternion.Euler(rotation.x, rotation.y, rotation.z);
+
+        // Play tongue sound
+        m_crawler.PlayTongueSound();
     }
 
     public void RetractTongue()
@@ -196,6 +202,9 @@ public class TongueController : MonoBehaviour
         m_timeElapsedAfterLaunchingTongue = 0f;
 
         m_tongueTipRenderer.enabled = false;
+
+        // Play mouth closing sound
+        m_crawler.PlayMouthCloseSound();
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
