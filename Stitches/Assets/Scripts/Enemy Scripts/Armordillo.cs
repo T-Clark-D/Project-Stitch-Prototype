@@ -22,6 +22,9 @@ public class Armordillo : MonoBehaviour
     [SerializeField] private Animator m_anim;
     [SerializeField] private SpriteRenderer m_spriteRenderer;
 
+    [SerializeField] private MeshRenderer m_roomConeRenderer;
+    [SerializeField] private MeshRenderer m_roomTorusIfYouWillRenderer;
+
     private Vector3 m_bottomPadShift = new Vector3(0, -3, 0);
     private Vector3 m_topLeftPadShift = new Vector3(3, 1, 0);
     private Vector3 m_topRightPadShift = new Vector3(-3, 1, 0);
@@ -30,6 +33,9 @@ public class Armordillo : MonoBehaviour
 
     [SerializeField] private float m_inverseBounceSpeed = 0.2f;
     [SerializeField] private float m_rollSpeed = 75f;
+    [SerializeField] private float m_roomSpeed = 0.01f;
+    [SerializeField] private float m_roomSpeed_x = 0.04f;
+    [SerializeField] private float m_roomSpeed_y = 0.1f;
 
     [SerializeField] private int m_stunLockedPosition;
     private int m_health = 3;
@@ -93,11 +99,29 @@ public class Armordillo : MonoBehaviour
         }
     }
 
+    float timeSinceLastUpdate = 0;
     // Update is called once per frame
     void Update()
     {
         MoveTowardPoint();
+
         if(!m_padsEmerging && !m_stunLocked) StartCoroutine(PadsEmerge());
+
+        m_roomConeRenderer.material.mainTextureOffset += new Vector2(Time.deltaTime * m_roomSpeed_x, Time.deltaTime * m_roomSpeed_y);
+        m_roomTorusIfYouWillRenderer.material.mainTextureOffset += new Vector2(Time.deltaTime * m_roomSpeed_x, Time.deltaTime * m_roomSpeed_y);
+        //timeSinceLastUpdate += Time.deltaTime;
+        //if(timeSinceLastUpdate >= 0.1f)
+        {
+           // timeSinceLastUpdate = 0;
+            //m_roomRenderer.material.mainTextureOffset += new Vector2(m_roomSpeed_x, m_roomSpeed_y);
+        } 
+            
+
+        if (m_roomSpeed_x == m_roomSpeed_y && m_roomSpeed_x != m_roomSpeed)
+        {
+            m_roomSpeed_x = m_roomSpeed;
+            m_roomSpeed_y = m_roomSpeed;
+        }
 
     }
 
@@ -399,32 +423,40 @@ public class Armordillo : MonoBehaviour
 
     public void Damage()
     {
-        m_stunLocked = false;
-        m_anim.SetBool("stunLocked", m_stunLocked);
-        m_rollingCollider.enabled = true;
-        m_stunnedCollider.enabled = false;
         m_health -= 1;
-        if(m_health == 0)
+        m_anim.SetInteger("bossHP", m_health);
+
+        if(m_health != 0)
         {
-            Destroy(this.gameObject);
+            m_stunLocked = false;
+            m_anim.SetBool("stunLocked", m_stunLocked);
+            m_rollingCollider.enabled = true;
+            m_stunnedCollider.enabled = false;
+
+            ToggleStunLocksAndPads(true, false);
+            m_RB.constraints = RigidbodyConstraints2D.None;
+            switch (m_stunLockedPosition)
+            {
+                case 0:
+                    m_RB.transform.localPosition -= m_bottomPadShift * 0.5f;
+                    m_RB.velocity = Vector2.right * m_rollSpeed;
+                    break;
+                case 1:
+                    m_RB.transform.localPosition -= m_topLeftPadShift * 0.5f;
+                    transform.localScale = new Vector3(1, 1, 1);
+                    m_RB.velocity = new Vector2(-1, -1).normalized * m_rollSpeed;
+                    break;
+                case 2:
+                    m_RB.transform.localPosition -= m_topRightPadShift * 0.5f;
+                    m_RB.velocity = new Vector2(1, -1).normalized * m_rollSpeed;
+                    break;
+            }
         }
-        ToggleStunLocksAndPads(true, false);
-        m_RB.constraints = RigidbodyConstraints2D.None;
-        switch (m_stunLockedPosition)
+        else
         {
-            case 0:
-                m_RB.transform.localPosition -= m_bottomPadShift * 0.5f;
-                m_RB.velocity = Vector2.right * m_rollSpeed;
-                break;
-            case 1:
-                m_RB.transform.localPosition -= m_topLeftPadShift * 0.5f;
-                transform.localScale = new Vector3(1, 1, 1);
-                m_RB.velocity = new Vector2(-1, -1).normalized * m_rollSpeed;
-                break;
-            case 2:
-                m_RB.transform.localPosition -= m_topRightPadShift * 0.5f;
-                m_RB.velocity = new Vector2(1, -1).normalized * m_rollSpeed;
-                break;
+
         }
+        //Destroy(this.gameObject);
+
     }
 }
