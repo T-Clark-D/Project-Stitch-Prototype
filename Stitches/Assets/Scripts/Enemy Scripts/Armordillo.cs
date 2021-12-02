@@ -20,10 +20,6 @@ public class Armordillo : MonoBehaviour
     [SerializeField] private CapsuleCollider2D m_rollingCollider;
     [SerializeField] private PolygonCollider2D m_stunnedCollider;
     [SerializeField] private Animator m_anim;
-    [SerializeField] private SpriteRenderer m_spriteRenderer;
-
-    [SerializeField] private MeshRenderer m_roomConeRenderer;
-    [SerializeField] private MeshRenderer m_roomTorusIfYouWillRenderer;
 
     private Vector3 m_bottomPadShift = new Vector3(0, -3, 0);
     private Vector3 m_topLeftPadShift = new Vector3(3, 1, 0);
@@ -33,12 +29,9 @@ public class Armordillo : MonoBehaviour
 
     [SerializeField] private float m_inverseBounceSpeed = 0.2f;
     [SerializeField] private float m_rollSpeed = 75f;
-    [SerializeField] private float m_roomSpeed = 0.01f;
-    [SerializeField] private float m_roomSpeed_x = 0.04f;
-    [SerializeField] private float m_roomSpeed_y = 0.1f;
 
     [SerializeField] private int m_stunLockedPosition;
-    private int m_health = 3;
+    [SerializeField] private int m_health = 1;
 
     [SerializeField] private bool m_moveToTopPlatform = false;
     [SerializeField] private bool m_moveToRightPlatform = false;
@@ -50,6 +43,7 @@ public class Armordillo : MonoBehaviour
 
     [SerializeField] private bool m_padsEmerging = false;
     [SerializeField] private bool m_stunLocked = false;
+    [SerializeField] private bool m_dead = false;
 
     [SerializeField] private bool m_padsHidden = false;
     [SerializeField] private bool m_stunLocksHidden = false;
@@ -105,24 +99,7 @@ public class Armordillo : MonoBehaviour
     {
         MoveTowardPoint();
 
-        if(!m_padsEmerging && !m_stunLocked) StartCoroutine(PadsEmerge());
-
-        m_roomConeRenderer.material.mainTextureOffset += new Vector2(Time.deltaTime * m_roomSpeed_x, Time.deltaTime * m_roomSpeed_y);
-        m_roomTorusIfYouWillRenderer.material.mainTextureOffset += new Vector2(Time.deltaTime * m_roomSpeed_x, Time.deltaTime * m_roomSpeed_y);
-        //timeSinceLastUpdate += Time.deltaTime;
-        //if(timeSinceLastUpdate >= 0.1f)
-        {
-           // timeSinceLastUpdate = 0;
-            //m_roomRenderer.material.mainTextureOffset += new Vector2(m_roomSpeed_x, m_roomSpeed_y);
-        } 
-            
-
-        if (m_roomSpeed_x == m_roomSpeed_y && m_roomSpeed_x != m_roomSpeed)
-        {
-            m_roomSpeed_x = m_roomSpeed;
-            m_roomSpeed_y = m_roomSpeed;
-        }
-
+        if(!m_padsEmerging && !m_stunLocked && !m_dead) StartCoroutine(PadsEmerge());
     }
 
     IEnumerator PadsEmerge()
@@ -169,7 +146,7 @@ public class Armordillo : MonoBehaviour
 
         if (!m_stunLocked)
         {
-            if (m_moveTo != null) transform.position = Vector3.MoveTowards(transform.position, m_moveTo.transform.position, m_inverseBounceSpeed);
+            if (m_moveTo != null) transform.position = Vector3.MoveTowards(transform.position, m_moveTo.transform.position, Time.deltaTime* m_inverseBounceSpeed);
         }
     }
 
@@ -329,7 +306,7 @@ public class Armordillo : MonoBehaviour
             case "HookCollider":
                 if (m_stunLocked)
                 {
-                    Damage();
+                    DamageOrNaw(true);
                 }
                 break;
         }
@@ -350,45 +327,66 @@ public class Armordillo : MonoBehaviour
         switch (collision.gameObject.name)
         {
             case "Top_Boost":
-                if (m_RB.velocity.x > 0)
+                if (!m_dead)
                 {
-                    m_RB.velocity = Vector2.right * m_rollSpeed;
-                }
-                else 
-                {
-                    m_RB.velocity = Vector2.left * m_rollSpeed;
+                    if (m_RB.velocity.x > 0)
+                    {
+                        m_RB.velocity = Vector2.right * m_rollSpeed;
+                    }
+                    else
+                    {
+                        m_RB.velocity = Vector2.left * m_rollSpeed;
+                    }
                 }
                 break;
             case "BottomLeft_Boost":
-                if (m_RB.velocity.x > 0)
+                if (!m_dead)
                 {
-                    m_RB.velocity = new Vector2(1, -2).normalized * m_rollSpeed;
-                }
-                else
-                {
-                    m_RB.velocity = new Vector2(-1, 1).normalized * m_rollSpeed;
+                    if (m_RB.velocity.x > 0)
+                    {
+                        m_RB.velocity = new Vector2(1, -2).normalized * m_rollSpeed;
+                    }
+                    else
+                    {
+                        m_RB.velocity = new Vector2(-1, 1).normalized * m_rollSpeed;
+                    }
                 }
                 break;
             case "BottomRight_Boost":
-                if (m_RB.velocity.x > 0)
+                if (!m_dead)
                 {
-                    m_RB.velocity = new Vector2(1, 1).normalized * m_rollSpeed;
-                }
-                else
-                {
-                    m_RB.velocity = new Vector2(-1, -2).normalized * m_rollSpeed;
+                    if (m_RB.velocity.x > 0)
+                    {
+                        m_RB.velocity = new Vector2(1, 1).normalized * m_rollSpeed;
+                    }
+                    else
+                    {
+                        m_RB.velocity = new Vector2(-1, -2).normalized * m_rollSpeed;
+                    }
                 }
                 break;
             case "StunLock_Bottom":
                 StunLock(new Vector3(0.568f, -0.065f, 0), 0);
+                StartCoroutine(DoTheThing());
                 break;
             case "StunLock_TopLeft":
                 StunLock(new Vector3(0.335f, 0.4f, 0), 1);
+                StartCoroutine(DoTheThing());
                 break;
             case "StunLock_TopRight":
                 StunLock(new Vector3(7.47f, -0.71f, 0), 2);
+                StartCoroutine(DoTheThing());
                 break;
 
+        }
+    }
+
+    IEnumerator DoTheThing()
+    {
+        yield return new WaitForSeconds(2);
+        if (m_stunLocked)
+        {
+            DamageOrNaw(false);
         }
     }
 
@@ -421,12 +419,15 @@ public class Armordillo : MonoBehaviour
         ResetMoveToBooleans();
     }
 
-    public void Damage()
+    public void DamageOrNaw(bool damageYe)
     {
-        m_health -= 1;
-        m_anim.SetInteger("bossHP", m_health);
-
-        if(m_health != 0)
+        if (damageYe)
+        {
+            m_health -= 1;
+            m_anim.SetInteger("bossHP", m_health);
+        }
+        m_RB.constraints = RigidbodyConstraints2D.None;
+        if (m_health != 0)
         {
             m_stunLocked = false;
             m_anim.SetBool("stunLocked", m_stunLocked);
@@ -434,7 +435,7 @@ public class Armordillo : MonoBehaviour
             m_stunnedCollider.enabled = false;
 
             ToggleStunLocksAndPads(true, false);
-            m_RB.constraints = RigidbodyConstraints2D.None;
+            
             switch (m_stunLockedPosition)
             {
                 case 0:
@@ -454,9 +455,27 @@ public class Armordillo : MonoBehaviour
         }
         else
         {
-
+            m_stunLocked = false;
+            m_dead = true;
+            switch (m_stunLockedPosition)
+            {
+                case 1:
+                    m_RB.velocity = new Vector2(-1, -1).normalized * m_rollSpeed;
+                    break;
+                case 2:
+                    m_RB.velocity = new Vector2(1, -1).normalized * m_rollSpeed;
+                    break;
+            }
+            StartCoroutine(DisableCollidersInSeconds());
         }
-        //Destroy(this.gameObject);
 
+    }
+
+    IEnumerator DisableCollidersInSeconds()
+    {
+        yield return new WaitForSeconds(5);
+        m_RB.constraints = RigidbodyConstraints2D.FreezeAll;
+        m_rollingCollider.enabled = false;
+        m_stunnedCollider.enabled = false;
     }
 }
