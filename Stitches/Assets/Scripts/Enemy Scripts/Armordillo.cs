@@ -4,6 +4,13 @@ using UnityEngine;
 
 public class Armordillo : MonoBehaviour
 {
+    public AudioClip[] m_earthLoopSounds;
+    public AudioSource m_earthLoopAudioSource;
+    public AudioClip[] m_rollLoopSounds;
+    public AudioSource m_rollLoopAudioSource;
+    public AudioClip[] m_bounceSounds;
+    public AudioSource m_bounceAudioSource;
+
     private Rigidbody2D m_RB;
     [SerializeField] private GameObject m_topPlatform;
     [SerializeField] private GameObject m_leftPlatform;
@@ -59,6 +66,18 @@ public class Armordillo : MonoBehaviour
         m_RB = GetComponent<Rigidbody2D>();
         m_RB.velocity = new Vector2(1,-1) * 10;
         ToggleStunLocksAndPads(true, true);
+
+        // Play earth loop clip
+        int randomIndex = UnityEngine.Random.Range(0, m_earthLoopSounds.Length);
+        m_earthLoopAudioSource.clip = m_earthLoopSounds[randomIndex];
+        m_earthLoopAudioSource.loop = true;
+        m_earthLoopAudioSource.Play();
+
+        // Play roll loop clip
+        randomIndex = UnityEngine.Random.Range(0, m_rollLoopSounds.Length);
+        m_rollLoopAudioSource.clip = m_rollLoopSounds[randomIndex];
+        m_rollLoopAudioSource.loop = true;
+        m_rollLoopAudioSource.Play();
     }
 
     private void ToggleStunLocksAndPads(bool hideStunLocks, bool hidePads)
@@ -100,6 +119,17 @@ public class Armordillo : MonoBehaviour
         MoveTowardPoint();
 
         if(!m_padsEmerging && !m_stunLocked && !m_dead) StartCoroutine(PadsEmerge());
+
+        UpdateAudioSourcesPosition();
+    }
+
+    private void UpdateAudioSourcesPosition()
+    {      
+        m_earthLoopAudioSource.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y, 0);
+        m_rollLoopAudioSource.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y, 0);
+
+        if(!m_bounceAudioSource.isPlaying)
+            m_bounceAudioSource.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y, 0);
     }
 
     IEnumerator PadsEmerge()
@@ -157,8 +187,8 @@ public class Armordillo : MonoBehaviour
 
     private void HandleCollisions(Collision2D collision)
     {
-        
 
+        int randomIndex;
         switch (collision.gameObject.name)
         {
             case "Bounce_Pad_Bottom":
@@ -180,6 +210,10 @@ public class Armordillo : MonoBehaviour
                     m_hitFromLeft = false;
                 }
                 m_RB.velocity = Vector3.zero;
+
+                // Play audio clip
+                randomIndex = UnityEngine.Random.Range(0, m_bounceSounds.Length);
+                m_bounceAudioSource.PlayOneShot(m_bounceSounds[randomIndex]);
                 break;
             case "Bounce_Pad_TopRight":
                 ResetMoveToBooleans();
@@ -201,6 +235,10 @@ public class Armordillo : MonoBehaviour
                 }
 
                 m_RB.velocity = Vector3.zero;
+
+                // Play audio clip
+                randomIndex = UnityEngine.Random.Range(0, m_bounceSounds.Length);
+                m_bounceAudioSource.PlayOneShot(m_bounceSounds[randomIndex]);
                 break;
             case "Bounce_Pad_TopLeft":
                 ResetMoveToBooleans();
@@ -221,6 +259,10 @@ public class Armordillo : MonoBehaviour
                     m_hitFromLeft = false;
                 }
                 m_RB.velocity = Vector3.zero;
+
+                // Play audio clip
+                randomIndex = UnityEngine.Random.Range(0, m_bounceSounds.Length);
+                m_bounceAudioSource.PlayOneShot(m_bounceSounds[randomIndex]);
                 break;
             case "Top_Platform":
                 ResetMoveToBooleans();
@@ -417,6 +459,9 @@ public class Armordillo : MonoBehaviour
         m_stunnedCollider.enabled = true;
         m_RB.constraints = RigidbodyConstraints2D.FreezeAll;
         ResetMoveToBooleans();
+
+        m_rollLoopAudioSource.Stop();
+        m_earthLoopAudioSource.Stop();
     }
 
     public void DamageOrNaw(bool damageYe)
@@ -469,6 +514,8 @@ public class Armordillo : MonoBehaviour
             StartCoroutine(DisableCollidersInSeconds());
         }
 
+        m_rollLoopAudioSource.Play();
+        m_earthLoopAudioSource.Play();
     }
 
     IEnumerator DisableCollidersInSeconds()
