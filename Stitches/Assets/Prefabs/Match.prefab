@@ -138,7 +138,7 @@ GameObject:
   - component: {fileID: 6260393984996859539}
   - component: {fileID: 6753983512415499668}
   - component: {fileID: 7903559970515298133}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Fire
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -349,7 +349,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 1, g: 1, b: 1, a: 1}
+      maxColor: {r: 0.29156283, g: 0.54316866, b: 0.9811321, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -5070,8 +5070,7 @@ GameObject:
   - component: {fileID: 9172180707857165579}
   - component: {fileID: 9172180707857165578}
   - component: {fileID: 314576415627122442}
-  - component: {fileID: -9074914904103290536}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Match
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5132,8 +5131,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1260959575
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_Sprite: {fileID: 107493944108430913, guid: deb634e9b71dc0d4f8c3db9592288c61, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -5159,8 +5158,8 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
+  m_LinearDrag: 0.27
+  m_AngularDrag: 0
   m_GravityScale: 1
   m_Material: {fileID: 0}
   m_Interpolate: 0

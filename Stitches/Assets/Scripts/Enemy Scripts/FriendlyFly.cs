@@ -31,8 +31,12 @@ public class FriendlyFly : Enemy
     protected override void Update()
     {
         base.Update();
-        transform.position = m_startPosition + new Vector2(Mathf.Sin(circleFlyAngle), Mathf.Cos(circleFlyAngle)) * flyRadius;
-        circleFlyAngle -= Time.deltaTime * flySpeed;
-        if (circleFlyAngle <= 0) circleFlyAngle = 360;
+
+        if(!m_frozen)
+        {
+            transform.position = m_startPosition + new Vector2(Mathf.Sin(circleFlyAngle), Mathf.Cos(circleFlyAngle)) * flyRadius;
+            circleFlyAngle -= Time.deltaTime * flySpeed;
+            if (circleFlyAngle <= 0) circleFlyAngle = 360;
+        }
     }
 }

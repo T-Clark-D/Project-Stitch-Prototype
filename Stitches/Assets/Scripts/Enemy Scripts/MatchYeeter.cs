@@ -56,7 +56,7 @@ public class MatchYeeter : Enemy
         {
             GameObject m_match = Instantiate(match,this.transform.position ,Quaternion.identity);
             m_match.GetComponent<Rigidbody2D>().AddForce(new Vector2(mod*1,1)* throwForce, ForceMode2D.Impulse);
-            m_match.GetComponent<Rigidbody2D>().AddForceAtPosition(Vector2.right, new Vector2(-2.77f, -3.51f), ForceMode2D.Impulse);
+            //m_match.GetComponent<Rigidbody2D>().AddForceAtPosition(Vector2.right, new Vector2(-2.77f, -3.51f), ForceMode2D.Impulse);
             lastYeet = Time.timeSinceLevelLoad;
             m_match.GetComponent<MatchController>().PassPlayerObject(player);
             StartCoroutine(DestroyMatch(m_match));
