@@ -33,6 +33,8 @@ public class HookController : MonoBehaviour
     private Enemy m_lastEnemyHooked;
     private SpriteRenderer m_needleSpriteRenderer;
     private Collider2D m_lastCollision;
+    private Vector3 m_platformHitLocationOffset;
+    private GameObject m_lastPlatformHit;
 
     // Start is called before the first frame update
     void Start()
@@ -195,6 +197,11 @@ public class HookController : MonoBehaviour
             // Play audio clip
             int randomIndex = UnityEngine.Random.Range(0, m_platformHitSounds.Length);
             m_needleHitAudioSource.PlayOneShot(m_platformHitSounds[randomIndex]);
+
+            Vector2 point = collision.GetContact(0).point;
+            Vector3 collisionPoint = new Vector3(point.x, point.y, 0);
+            m_platformHitLocationOffset = collisionPoint - collision.gameObject.transform.position;
+            m_lastPlatformHit = collision.gameObject;
         }
         else if(collision.gameObject.CompareTag("Enemy"))
         {
@@ -286,6 +293,18 @@ public class HookController : MonoBehaviour
             }
             else if(m_tethered)
             {
+                if( m_lastPlatformHit != null && 
+                    m_lastPlatformHit.CompareTag("Platform") && 
+                    m_lastPlatformHit.GetComponent<Rigidbody2D>() != null)
+                {
+                    Vector3 newRotatedOffset = m_lastPlatformHit.transform.rotation * m_platformHitLocationOffset;
+                    Vector3 newPosition = m_lastPlatformHit.transform.position + newRotatedOffset;
+
+                    // We have hit a moving platform. Updating hook position constantly.
+                    m_hookCollider.transform.position = newPosition;
+                    m_distJoint.connectedAnchor = newPosition;
+                }
+
                 Vector3 secondPointPosition = m_hookCollider.transform.position;
                 secondPointPosition.z = 0;
                 m_grapplingHookRenderer.SetPosition(1, secondPointPosition);
