@@ -39,12 +39,15 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private GameObject m_grapplingHookObject;
     private HookController m_grapplingHookController;
     private Rigidbody2D m_rigidBody;
+    private CircleCollider2D m_circleCollider;
+    private BoxCollider2D m_bodyCollider;
     private Vector3 m_hookDirection;
     private DistanceJoint2D m_distJoint;
     private SpriteRenderer[] m_SR;
     [SerializeField] private DustController m_referenceDustSystem;
     private DustController m_currentDustSystem;
 
+    private bool m_invulnerable = false;
     private bool m_spawnDust = false;
 
     // Start is called before the first frame update
@@ -54,6 +57,8 @@ public class PlayerController : MonoBehaviour
         m_grapplingHookController = m_grapplingHookObject.GetComponent<HookController>();
         m_distJoint = GetComponent<DistanceJoint2D>();
         m_rigidBody = GetComponent<Rigidbody2D>();
+        m_circleCollider = GetComponent<CircleCollider2D>();
+        m_bodyCollider = GetComponentInChildren<BoxCollider2D>();
 
         m_rigidBody.mass = m_baseMass;
         m_rigidBody.gravityScale = m_baseGravityScale;
@@ -226,9 +231,25 @@ public class PlayerController : MonoBehaviour
             m_currentDustSystem.gameObject.SetActive(true);
         }
 
+        if (pCollision.collider.CompareTag("Enemy") || pCollision.collider.CompareTag("Boss"))
+        {
+            StartCoroutine(InvulnerableFrames(pCollision.collider));
+        }
+
         // Playing body collision sound
         int randomIndex = UnityEngine.Random.Range(0, m_bodyThudsSounds.Length);
         m_bodyThudsSFXAudioSource.PlayOneShot(m_bodyThudsSounds[randomIndex]);
+    }
+
+    IEnumerator InvulnerableFrames(Collider2D collider)
+    {
+        m_invulnerable = true;
+        Physics2D.IgnoreCollision(m_circleCollider, collider, true);
+        Physics2D.IgnoreCollision(m_bodyCollider, collider, true);
+        yield return new WaitForSeconds(1);
+        m_invulnerable = false;
+        Physics2D.IgnoreCollision(m_circleCollider, collider, false);
+        Physics2D.IgnoreCollision(m_bodyCollider, collider, false);
     }
 
     public void ResetGravity()
