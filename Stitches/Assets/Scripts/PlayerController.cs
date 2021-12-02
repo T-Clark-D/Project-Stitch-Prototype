@@ -24,11 +24,13 @@ public class PlayerController : MonoBehaviour
     public AudioSource m_bodyThudsSFXAudioSource;
     public AudioSource m_LifeSFXAudioSource;
     public AudioSource m_boostSFXAudioSource;
+    public AudioSource m_lowLifeSFXAudioSource;
 
     public AudioClip[] m_bodyThudsSounds;
     public AudioClip m_lowLifeSound;
     public AudioClip m_lifePickupSound;
     public AudioClip m_boostSound;
+    public AudioClip m_hurtSound;
 
     public AudioSource m_backgroundMusicSource;
 
@@ -312,4 +314,33 @@ public class PlayerController : MonoBehaviour
     {
         m_backgroundMusicSource.Stop();
     }
+
+    public void PlayHurtSound()
+    {
+        m_LifeSFXAudioSource.PlayOneShot(m_hurtSound);
+    }
+
+    public void PlayLifePickup()
+    {
+        m_LifeSFXAudioSource.PlayOneShot(m_lifePickupSound);
+    }
+
+    public void StartLowLifeLoop()
+    {
+        // Play heartbeat loop clip
+        m_lowLifeSFXAudioSource.clip = m_lowLifeSound;
+        m_lowLifeSFXAudioSource.loop = true;
+        m_lowLifeSFXAudioSource.Play();
+    }
+    public void StopLowLifeLoop()
+    {
+        // Stop heartbeat loop clip
+        m_lowLifeSFXAudioSource.Stop();
+    }
+
+    public bool GetLowLifeLoopState()
+    {
+        return m_lowLifeSFXAudioSource.isPlaying;
+    }
+
 }

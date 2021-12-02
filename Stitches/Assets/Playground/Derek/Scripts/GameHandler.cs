@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class GameHandler : MonoBehaviour
 {
     [SerializeField] GameObject mPlayer;
+    PlayerController mPlayerController;
     [SerializeField] GameObject mGrappleHook;
     Vector3 respawnPoint;
     // For HP 
@@ -25,6 +26,8 @@ public class GameHandler : MonoBehaviour
     {
         HPSetup();
         mHook = mGrappleHook.GetComponent<HookController>();
+
+        mPlayerController = mPlayer.GetComponent<PlayerController>();
     }
 
     // Update is called once per frame
@@ -72,6 +75,8 @@ public class GameHandler : MonoBehaviour
             lossHP[lossIndex].enabled = true;
         }
 
+
+        mPlayerController.PlayLifePickup();
     }
 
     public void takeDamage()
@@ -100,6 +105,23 @@ public class GameHandler : MonoBehaviour
                 lossHP[lossIndex].enabled = true;
             }
             mInvul = true;
+
+            mPlayerController.PlayHurtSound();
+
+            if(lossIndex >= 7)
+            {
+                if(!mPlayerController.GetLowLifeLoopState())
+                {
+                    mPlayerController.StartLowLifeLoop();
+                }
+            }
+            else
+            {
+                if (mPlayerController.GetLowLifeLoopState())
+                {
+                    mPlayerController.StopLowLifeLoop();
+                }
+            }
         }
     }
 
