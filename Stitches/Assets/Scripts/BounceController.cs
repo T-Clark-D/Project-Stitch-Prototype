@@ -22,6 +22,15 @@ public class BounceController : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         // Play audio clip
+
+        m_bounceAudioSource.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y, 0);
+        int randomIndex = UnityEngine.Random.Range(0, m_bounceSounds.Length);
+        m_bounceAudioSource.PlayOneShot(m_bounceSounds[randomIndex]);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        // Play audio clip
         int randomIndex = UnityEngine.Random.Range(0, m_bounceSounds.Length);
         m_bounceAudioSource.PlayOneShot(m_bounceSounds[randomIndex]);
     }
