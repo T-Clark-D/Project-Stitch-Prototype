@@ -511,7 +511,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 10
-  MaxDistance: 30
+  MaxDistance: 40
   Pan2D: 0
   rolloffMode: 1
   BypassEffects: 0
@@ -1753,6 +1753,8 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 6640749b0f4e30549acee1b0f667ceb5, type: 3}
   - {fileID: 8300000, guid: 621a45deeddfa32459d2d3a74a035f1f, type: 3}
   m_gruntAudioSource: {fileID: 791962792}
+  m_breathingLoopSounds:
+  - {fileID: 8300000, guid: b408bd67b4a8c6d4193b27ba832cccc8, type: 3}
   m_topPlatform: {fileID: 2118006307}
   m_leftPlatform: {fileID: 2106296912}
   m_rightPlatform: {fileID: 1936057541}
@@ -2525,7 +2527,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 10
-  MaxDistance: 30
+  MaxDistance: 40
   Pan2D: 0
   rolloffMode: 1
   BypassEffects: 0

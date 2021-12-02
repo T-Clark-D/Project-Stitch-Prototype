@@ -14,6 +14,7 @@ public class Armordillo : MonoBehaviour
     public AudioSource m_hurtAudioSource;
     public AudioClip[] m_gruntSounds;
     public AudioSource m_gruntAudioSource;
+    public AudioClip[] m_breathingLoopSounds;
 
     private Rigidbody2D m_RB;
     [SerializeField] private GameObject m_topPlatform;
@@ -469,6 +470,12 @@ public class Armordillo : MonoBehaviour
 
         m_rollLoopAudioSource.Stop();
         m_earthLoopAudioSource.Stop();
+
+        // Play breathing loop clip
+        int randomIndex = UnityEngine.Random.Range(0, m_breathingLoopSounds.Length);
+        m_gruntAudioSource.clip = m_breathingLoopSounds[randomIndex];
+        m_gruntAudioSource.loop = true;
+        m_gruntAudioSource.Play();
     }
 
     public void DamageOrNaw(bool damageYe)
@@ -483,6 +490,7 @@ public class Armordillo : MonoBehaviour
             m_hurtAudioSource.PlayOneShot(m_hurtSounds[randomIndex]);
 
             randomIndex = UnityEngine.Random.Range(0, m_gruntSounds.Length);
+            m_gruntAudioSource.loop = false;
             m_gruntAudioSource.PlayOneShot(m_gruntSounds[randomIndex]);
         }
         m_RB.constraints = RigidbodyConstraints2D.None;
@@ -530,6 +538,9 @@ public class Armordillo : MonoBehaviour
 
         m_rollLoopAudioSource.Play();
         m_earthLoopAudioSource.Play();
+
+        if(m_gruntAudioSource.loop)
+            m_gruntAudioSource.Stop();
     }
 
     IEnumerator DisableCollidersInSeconds()
