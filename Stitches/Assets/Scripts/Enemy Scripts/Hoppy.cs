@@ -30,6 +30,8 @@ public class Hoppy : Enemy
     private float counter = 0;
     private RaycastHit2D onGround;
 
+    float mTime;
+
     protected override void Start()
     {
         m_RB = GetComponent<Rigidbody2D>();
@@ -42,7 +44,12 @@ public class Hoppy : Enemy
         distance = Vector2.Distance(transform.position, player.position);   // Check distance between hoppy and player.
         onGround = Physics2D.Raycast(groundDetection.position, Vector2.down, 0.5f);   // Check if hoppy is on the ground before jumping again.
 
-        checkIfGrounded();
+        checkIfGrounded(); // setting up anim 
+        mTime += Time.deltaTime;
+        if (mTime >= 0.4f)
+        {
+            
+        }
         rangeCheck();                                                       // If in range then is able to attack, else hoppy must patrol.
         coolDownCheck();                                                    // Check if the jump cooldown is finished.
 
@@ -58,12 +65,12 @@ public class Hoppy : Enemy
         {
             attack();
         }
-        else if(patrolling)
+        else if (patrolling)
         {
             patrol();
         }
 
-  
+
     }
 
     void attack()
@@ -114,7 +121,7 @@ public class Hoppy : Enemy
 
     void coolDownCheck()                // Check if hoppy can jump again.
     {
- 
+
         if (coolDown <= 0 && !canJump)
         {
             canJump = true;
@@ -173,7 +180,7 @@ public class Hoppy : Enemy
     void lookAtPlayer()     // Flip the sprite to look in the player's direction.
     {
 
-        
+
         if (transform.position.x > player.position.x && m_isFacingRight)
         {
             flip();
@@ -190,8 +197,8 @@ public class Hoppy : Enemy
     void hop()
     {
         float offset = Random.Range(1, 5);
-        float hopDist = Random.Range(minHopDist,maxHopDist);
-        if(m_isFacingRight == false)
+        float hopDist = Random.Range(minHopDist, maxHopDist);
+        if (m_isFacingRight == false)
         {
             hopDist *= -1;
         }
@@ -205,13 +212,13 @@ public class Hoppy : Enemy
 
     void checkIfGrounded()
     {
-        if(onGround.collider == true)
+        if (onGround.collider == true)
         {
-            m_anim.SetBool("Jump", false);               
+            m_anim.SetBool("Jump", false);
         }
-        else if(onGround.collider == false)
+        else if (onGround.collider == false)
         {
-           m_anim.SetBool("Jump", true);
+            m_anim.SetBool("Jump", true);
         }
     }
     void jumpToPlayer()
@@ -223,7 +230,7 @@ public class Hoppy : Enemy
         {
             distance = maxJumpHeight;
         }
-        else if(distance < 5)
+        else if (distance < 5)
         {
             distance = 5;
         }
