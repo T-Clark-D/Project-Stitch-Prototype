@@ -554,8 +554,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 273ddadb9f665184697fff596a766caf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mInvulTime: 2
   mPlayer: {fileID: 1352530431}
+  mGrappleHook: {fileID: 1357044490}
   currHP:
   - {fileID: 1116681658}
   - {fileID: 806819425}
@@ -8995,7 +8995,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 980718827547145024, guid: dd30bfae70c8f7a4eae01c5817c63572, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -13.24
+      value: -27.1
       objectReference: {fileID: 0}
     - target: {fileID: 980718827547145024, guid: dd30bfae70c8f7a4eae01c5817c63572, type: 3}
       propertyPath: m_LocalPosition.y
