@@ -21,8 +21,7 @@ public class GameHandler : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log(currIndex);
-        Debug.Log(lossIndex);
+        HPSetup();
     }
 
     // Update is called once per frame
@@ -46,13 +45,10 @@ public class GameHandler : MonoBehaviour
             if(mTime >= 2.0f)
             {
                 Respawn();
+                resetHP();
                 currIndex = 2;
                 lossIndex = 5;
-                for(int i = 0; i <= currIndex; i++)
-                {
-                    currHP[currIndex].enabled = true;
-                }
-                lossHP[lossIndex].enabled = true;
+                HPSetup();
                 dead = false;
             }
         }
@@ -64,16 +60,12 @@ public class GameHandler : MonoBehaviour
         {
             currIndex++;
             currHP[currIndex].enabled = true;
-            Debug.Log("Added Button " + currIndex);
-
         }
         if(lossIndex > 0)
         {
             lossHP[lossIndex].enabled = false;
-            Debug.Log("Removed lossButton at " + lossIndex);
             lossIndex--;
             lossHP[lossIndex].enabled = true;
-            Debug.Log("Added lossButton at " + lossIndex);
         }
 
     }
@@ -115,7 +107,34 @@ public class GameHandler : MonoBehaviour
 
     public void setRespawnPoint(Vector3 worldPoint)
     {
-        Debug.Log("Respawn Set");
         respawnPoint = worldPoint;
+    }
+
+    public void HPSetup()
+    {
+        for (int i = 0; i < lossHP.Length; i++)
+        {
+            if (i == lossIndex)
+            {
+                continue;
+            }
+            lossHP[i].enabled = false;
+        }
+        for (int j = currHP.Length - 1; j > currIndex; j--)
+        {
+            currHP[j].enabled = false;
+        }
+    }
+
+    public void resetHP()
+    {
+        for (int i = 0; i < lossHP.Length; i++)
+        {
+            lossHP[i].enabled = true;
+        }
+        for (int j = 0; j < currHP.Length; j++)
+        {
+            currHP[j].enabled = true;
+        }
     }
 }
