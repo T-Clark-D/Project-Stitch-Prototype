@@ -38,6 +38,13 @@ public class PlayerBodyController : MonoBehaviour
 
             m_currentDustSystem.PlayAndDestroy();
         }
+
+        if (transform.parent == null)
+        {
+            transform.SetParent(m_player.transform);
+            transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, 0);
+        }   
+               
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
