@@ -6,6 +6,9 @@ public class ButtonHP : MonoBehaviour
 {
     GameHandler GH;
     bool hpUP = false;
+
+    [SerializeField] private GameObject m_parent;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -18,7 +21,7 @@ public class ButtonHP : MonoBehaviour
         {
             GH.addHP();
             hpUP = false;
-            Destroy(gameObject);
+            Destroy(m_parent);
         }
     }
 
