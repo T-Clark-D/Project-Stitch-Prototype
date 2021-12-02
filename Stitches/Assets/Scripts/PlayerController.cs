@@ -30,6 +30,8 @@ public class PlayerController : MonoBehaviour
     public AudioClip m_lifePickupSound;
     public AudioClip m_boostSound;
 
+    public AudioSource m_backgroundMusicSource;
+
     private bool m_firstTimePullingUp = true;
     // Set to true when we boost.
     private bool m_justBoosted = false;
@@ -304,5 +306,10 @@ public class PlayerController : MonoBehaviour
     {
         m_grapplingHookController.RetractHook();
         m_firstTimePullingUp = true;
+    }
+
+    public void StopMusic()
+    {
+        m_backgroundMusicSource.Stop();
     }
 }

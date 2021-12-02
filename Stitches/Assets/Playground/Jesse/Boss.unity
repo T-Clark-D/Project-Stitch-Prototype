@@ -523,6 +523,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2626167280790291262, guid: 15e24d1fdb600b848ad082d1a27c7988, type: 3}
+      propertyPath: m_audioClip
+      value: 
+      objectReference: {fileID: 8300000, guid: 9ff70ab782f281b4ebe1bd73b20fac28, type: 3}
     - target: {fileID: 3415570424691253312, guid: 15e24d1fdb600b848ad082d1a27c7988, type: 3}
       propertyPath: m_referenceDustSystem
       value: 
@@ -901,7 +905,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 489488456}
-  - component: {fileID: 489488455}
   - component: {fileID: 489488454}
   m_Layer: 0
   m_Name: Virtual Camera
@@ -945,14 +948,6 @@ MonoBehaviour:
         m_Calls: []
   m_LegacyBlendHint: 0
   m_ComponentOwner: {fileID: 192894002}
---- !u!81 &489488455
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 489488453}
-  m_Enabled: 1
 --- !u!4 &489488456
 Transform:
   m_ObjectHideFlags: 0
