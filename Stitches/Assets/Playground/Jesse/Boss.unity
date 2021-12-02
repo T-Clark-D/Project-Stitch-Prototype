@@ -261,7 +261,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 337116571}
-  m_RootOrder: 11
+  m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!108 &138055869
 Light:
@@ -354,7 +354,7 @@ Transform:
   m_LocalScale: {x: 2.404569, y: 2.0038073, z: 2.0038073}
   m_Children: []
   m_Father: {fileID: 337116571}
-  m_RootOrder: 16
+  m_RootOrder: 18
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!58 &156505037
 CircleCollider2D:
@@ -857,10 +857,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7601226680800833775, guid: c80645b481c985748b517d6f47ba7503, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 8616a24b700e2a641b1a55a04c3b2e11, type: 2}
     - target: {fileID: -7511558181221131132, guid: c80645b481c985748b517d6f47ba7503, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 30759bb8b172e4644a452690393eed0b, type: 2}
+      objectReference: {fileID: 2100000, guid: f86d251ff4489b245906785acf90363f, type: 2}
+    - target: {fileID: -2840353837668916004, guid: c80645b481c985748b517d6f47ba7503, type: 3}
+      propertyPath: m_RootOrder
+      value: 22
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: c80645b481c985748b517d6f47ba7503, type: 3}
       propertyPath: m_Name
       value: Boss Room
@@ -869,6 +877,14 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Ungrapplable
       objectReference: {fileID: 0}
+    - target: {fileID: 1300264252759386080, guid: c80645b481c985748b517d6f47ba7503, type: 3}
+      propertyPath: m_RootOrder
+      value: 21
+      objectReference: {fileID: 0}
+    - target: {fileID: 7709588666960792001, guid: c80645b481c985748b517d6f47ba7503, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: f86d251ff4489b245906785acf90363f, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c80645b481c985748b517d6f47ba7503, type: 3}
 --- !u!4 &337116571 stripped
@@ -981,7 +997,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 337116571}
-  m_RootOrder: 12
+  m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 29.269, y: 180, z: 0}
 --- !u!108 &495589447
 Light:
@@ -1147,7 +1163,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 337116571}
-  m_RootOrder: 15
+  m_RootOrder: 17
   m_LocalEulerAnglesHint: {x: -30.604, y: 180, z: 0}
 --- !u!108 &783548079
 Light:
@@ -1333,7 +1349,7 @@ Transform:
   m_LocalScale: {x: 5, y: 5, z: 5}
   m_Children: []
   m_Father: {fileID: 337116571}
-  m_RootOrder: 8
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &921773258
 BoxCollider2D:
@@ -1390,7 +1406,7 @@ Transform:
   m_LocalScale: {x: 2.404569, y: 2.0038073, z: 2.0038073}
   m_Children: []
   m_Father: {fileID: 337116571}
-  m_RootOrder: 17
+  m_RootOrder: 19
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!58 &943526411
 CircleCollider2D:
@@ -1442,7 +1458,7 @@ Transform:
   m_LocalScale: {x: 5, y: 5, z: 5}
   m_Children: []
   m_Father: {fileID: 337116571}
-  m_RootOrder: 9
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &1009293423
 BoxCollider2D:
@@ -1590,7 +1606,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 337116571}
-  m_RootOrder: 14
+  m_RootOrder: 16
   m_LocalEulerAnglesHint: {x: 0, y: -180, z: 1.458}
 --- !u!50 &1049760334
 Rigidbody2D:
@@ -1638,8 +1654,13 @@ MonoBehaviour:
   m_stunnedCollider: {fileID: 1049760336}
   m_anim: {fileID: 1049760330}
   m_spriteRenderer: {fileID: 1049760331}
+  m_roomConeRenderer: {fileID: 1798944952}
+  m_roomTorusIfYouWillRenderer: {fileID: 1865815831}
   m_inverseBounceSpeed: 0.2
   m_rollSpeed: 50
+  m_roomSpeed: 0.01
+  m_roomSpeed_x: 0.04
+  m_roomSpeed_y: 0.1
   m_stunLockedPosition: 0
   m_moveToTopPlatform: 0
   m_moveToRightPlatform: 0
@@ -2174,7 +2195,7 @@ Transform:
   m_LocalScale: {x: 5, y: 5, z: 5}
   m_Children: []
   m_Father: {fileID: 337116571}
-  m_RootOrder: 19
+  m_RootOrder: 21
   m_LocalEulerAnglesHint: {x: 0, y: -180, z: 60}
 --- !u!61 &1248492918
 BoxCollider2D:
@@ -2247,7 +2268,7 @@ Transform:
   m_LocalScale: {x: 5, y: 5, z: 5}
   m_Children: []
   m_Father: {fileID: 337116571}
-  m_RootOrder: 10
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &1504869677
 BoxCollider2D:
@@ -2304,7 +2325,7 @@ Transform:
   m_LocalScale: {x: 5, y: 5, z: 5}
   m_Children: []
   m_Father: {fileID: 337116571}
-  m_RootOrder: 20
+  m_RootOrder: 22
   m_LocalEulerAnglesHint: {x: 0, y: -180, z: 0}
 --- !u!61 &1553944288
 BoxCollider2D:
@@ -2433,7 +2454,7 @@ Transform:
   m_LocalScale: {x: 5, y: 5, z: 5}
   m_Children: []
   m_Father: {fileID: 337116571}
-  m_RootOrder: 18
+  m_RootOrder: 20
   m_LocalEulerAnglesHint: {x: 0, y: -180, z: -60}
 --- !u!61 &1751615103
 BoxCollider2D:
@@ -2461,6 +2482,11 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!23 &1798944952 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7601226680800833775, guid: c80645b481c985748b517d6f47ba7503, type: 3}
+  m_PrefabInstance: {fileID: 337116570}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1820225703
 GameObject:
   m_ObjectHideFlags: 0
@@ -2490,7 +2516,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 337116571}
-  m_RootOrder: 13
+  m_RootOrder: 15
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!108 &1820225705
 Light:
@@ -2554,6 +2580,11 @@ Light:
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+--- !u!23 &1865815831 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 7709588666960792001, guid: c80645b481c985748b517d6f47ba7503, type: 3}
+  m_PrefabInstance: {fileID: 337116570}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1936057541
 GameObject:
   m_ObjectHideFlags: 0
