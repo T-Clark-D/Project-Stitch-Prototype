@@ -15,6 +15,7 @@ public class Armordillo : MonoBehaviour
     public AudioClip[] m_gruntSounds;
     public AudioSource m_gruntAudioSource;
     public AudioClip[] m_breathingLoopSounds;
+    public AudioClip[] m_deathSounds;
 
     private Rigidbody2D m_RB;
     [SerializeField] private GameObject m_topPlatform;
@@ -534,6 +535,11 @@ public class Armordillo : MonoBehaviour
                     break;
             }
             StartCoroutine(DisableCollidersInSeconds());
+
+            // Play death audio
+            // Play audio clip
+            int randomIndex = UnityEngine.Random.Range(0, m_deathSounds.Length);
+            m_gruntAudioSource.PlayOneShot(m_deathSounds[randomIndex]);
         }
 
         m_rollLoopAudioSource.Play();
