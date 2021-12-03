@@ -100,7 +100,12 @@ public class Flyer : Enemy
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        
+        if(collision.collider.CompareTag("Needle"))
+        {
+            // If the player shot us, retract its needle.
+            collision.collider.gameObject.GetComponentInParent<HookController>().RetractHook();
+        }
+
         m_flyerExplosion.gameObject.transform.position = this.gameObject.transform.position;
         m_flyerExplosion.Play();
         Destroy(this.gameObject);
