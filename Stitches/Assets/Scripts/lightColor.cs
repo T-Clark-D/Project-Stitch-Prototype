@@ -12,6 +12,7 @@ public class lightColor : MonoBehaviour
     public Color startColor;
     public Color endColor;
     private float tick;
+    public bool switcharoo = false;
 
     float startTime;
 
@@ -24,14 +25,29 @@ public class lightColor : MonoBehaviour
 
 
     void Update()
-    { 
-
+    {
+        
+        // Change color when player enters trigger event.
         if (changeColors)
         {
-
+            SwitchColor();
             tick += Time.deltaTime * colorSpeed;
             myLight.color = Color.Lerp(startColor, endColor, tick);
 
+        }
+    }
+
+    // Switch the start and end colors on exit event.
+    public void SwitchColor()
+    {
+        // Check if the light has completely changed color before making the switch and that player has exited the trigger.
+        if(myLight.color == endColor && switcharoo)
+        {
+            tick = 0;
+            Color temp = startColor;
+            startColor = endColor;
+            endColor = temp;
+            switcharoo = false;
         }
     }
 
