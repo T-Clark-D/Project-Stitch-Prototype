@@ -23,14 +23,6 @@ public class LevelChanger : MonoBehaviour
         anim.SetTrigger("FadeOut");
     }
 
-    private void OnTriggerEnter2D(Collider2D col)
-    {
-        if(col.tag == "Player")
-        {
-            changeLevel = true;
-        }
-    }
-
     public void OnFadeComplete()
     {
         SceneManager.LoadScene(levelToLoad);
