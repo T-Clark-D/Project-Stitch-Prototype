@@ -1,3 +1,4 @@
+//using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,45 +6,117 @@ using UnityEngine.UI;
 
 public class TextWriter : MonoBehaviour
 {
-    private Text uiText;
-    private string text;
-    private int charIndex;
-    private float timePerChara;
-    private float mTime;
+    private static TextWriter instance;
+    private List<SingleTextWriter> singleTextWriterList;
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        
+        instance = this;
+        singleTextWriterList = new List<SingleTextWriter>();
+    }
+
+    public SingleTextWriter AddWriter(Text posText, string textToWrite, float timePerChar) //Action onComplete
+    {
+        SingleTextWriter singleTextWriter = new SingleTextWriter(posText, textToWrite, timePerChar); 
+        singleTextWriterList.Add(singleTextWriter);
+        return singleTextWriter;
+    }
+
+    public static SingleTextWriter AddWriter_Static(Text posText, string textToWrite, float timePerChar ) //Action onComplete
+    {
+        instance.RemoveWriter(posText);
+        return instance.AddWriter(posText, textToWrite, timePerChar);
+    }
+
+    private void RemoveWriter(Text uiText)
+    {
+        for (int i = 0; i < singleTextWriterList.Count; i++)
+        {
+            if(singleTextWriterList[i].getUiText() == uiText)
+            {
+                singleTextWriterList.RemoveAt(i);
+                i--;
+            }
+        }
+
+    }
+
+    public static void RemoveWriter_Static(Text uiText)
+    {
+        instance.RemoveWriter(uiText);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (uiText != null)
+        for (int i = 0; i < singleTextWriterList.Count; i++)
         {
-            mTime += Time.deltaTime;
-            while(mTime <= 0f)
+            bool destroyInstance = singleTextWriterList[i].Update();
+            if (destroyInstance)
+            {
+                singleTextWriterList.RemoveAt(i);
+                i--;
+            }
+        }
+    }
+
+    public class SingleTextWriter
+    {
+        private Text uiText;
+        private string textToWrite;
+        private int charIndex;
+        private float timePerChara;
+        private float mTime;
+        //private Action onComplete;
+
+        public SingleTextWriter(Text posText, string textToWrite, float timePerChar) //Action onComplete
+        {
+            uiText = posText;
+            this.textToWrite = textToWrite;
+            timePerChara = timePerChar;
+            charIndex = 0;
+            //this.onComplete = onComplete;
+        }
+
+        public bool Update()
+        {
+
+            mTime -= Time.deltaTime;
+            while (mTime <= 0f)
             {
                 // display next character
                 mTime += timePerChara;
                 charIndex++;
-                uiText.text = text.Substring(0, charIndex);
+                string text = textToWrite.Substring(0, charIndex);
+                text += "<color=#00000000>" + textToWrite.Substring(charIndex) + "</color>";
+                uiText.text = text;
 
-                if(charIndex >= text.Length)
+                if (charIndex >= textToWrite.Length)
                 {
-                    text = null;
-                    return;
+                    // Entire string is displayed
+                    //if(onComplete != null) onComplete();
+                    return true;
                 }
             }
+            return false;
         }
-    }
-    
-    public void AddWriter(Text posText, string textToWrite, float timePerChar)
-    {
-        uiText = posText;
-        text = textToWrite;
-        timePerChara = timePerChar;
-        charIndex = 0;
+
+        public Text getUiText()
+        {
+            return uiText;
+        }
+
+        public bool isActive()
+        {
+            return charIndex < textToWrite.Length;
+        }
+
+        public void WriteAllAndDestroy()
+        {
+            uiText.text = textToWrite;
+            charIndex = textToWrite.Length;
+            //if(onComplete != null) onComplete();
+            TextWriter.RemoveWriter_Static(uiText);
+        }
     }
 }
