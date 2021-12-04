@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Bonfire : MonoBehaviour
 {
+    public AudioClip[] m_fireLoopSounds;
+    public AudioSource m_fireAudioSource;
+
     [SerializeField] GameObject fire;
     Vector3 worldPoint;
     bool lit;
@@ -24,6 +27,12 @@ public class Bonfire : MonoBehaviour
             fire.SetActive(true);
             GH.setRespawnPoint(worldPoint);
             lit = true;
+
+            // Play audio clip
+            int randomIndex = UnityEngine.Random.Range(0, m_fireLoopSounds.Length);
+            m_fireAudioSource.clip = m_fireLoopSounds[randomIndex];
+            m_fireAudioSource.loop = true;
+            m_fireAudioSource.Play();
         }
     }
 

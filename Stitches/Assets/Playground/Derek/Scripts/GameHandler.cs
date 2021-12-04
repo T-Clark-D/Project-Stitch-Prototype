@@ -108,7 +108,7 @@ public class GameHandler : MonoBehaviour
 
             mPlayerController.PlayHurtSound();
 
-            if(lossIndex >= 7)
+            if(lossIndex >= 8)
             {
                 if(!mPlayerController.GetLowLifeLoopState())
                 {
