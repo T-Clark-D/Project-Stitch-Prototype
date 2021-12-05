@@ -129,7 +129,7 @@ public class GameHandler : MonoBehaviour
     {
         mPlayer.SetActive(true);
         // can maybe instantiate some particle effects for respawn
-        mPlayer.transform.position = respawnPoint + transform.forward * 2;
+        mPlayer.transform.position = respawnPoint;
     }
 
     public void setRespawnPoint(Vector3 worldPoint)
