@@ -25,7 +25,7 @@ public class Bonfire : MonoBehaviour
         if(!lit && col.tag == "Player")
         {
             fire.SetActive(true);
-            GH.setRespawnPoint(worldPoint);
+            GH.setRespawnPoint(new Vector3(worldPoint.x, worldPoint.y, 0));
             lit = true;
 
             // Play audio clip
