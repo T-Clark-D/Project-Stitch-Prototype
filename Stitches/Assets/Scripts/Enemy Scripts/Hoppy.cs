@@ -14,155 +14,145 @@ public class Hoppy : Enemy
     [SerializeField] Transform player;
     [SerializeField] float jumpCooldown;
     [SerializeField] float agroRange;
-    //[SerializeField] float moveSpeed;
     [SerializeField] Transform groundDetection;
     [SerializeField] float minHopDist;
     [SerializeField] float maxHopDist;
     [SerializeField] float hopJumpHeight;
-    private float patrolTimer = 7;
-    private float patrolCooldown;
-    private float coolDown;
-    private bool canJump;
-    private float distance;
-    private bool inRange;
-    private bool patrolling = true;
-    //private bool start;
-    private float counter = 0;
-    private RaycastHit2D onGround;
 
-    float mTime;
+    private float m_patrolTimer = 7;
+    private float m_pCooldown;
+    private bool m_patrolling = true;
+
+    private float m_coolDown;
+    private bool m_isGrounded;
+    private float m_distance;
+    private RaycastHit2D m_onGround;
+    private bool m_jumping;
+    private CapsuleCollider2D m_legHitBox;
 
     protected override void Start()
     {
+        m_legHitBox = GetComponent<CapsuleCollider2D>();
         m_RB = GetComponent<Rigidbody2D>();
         m_SR = GetComponent<SpriteRenderer>();
         m_anim = GetComponent<Animator>();
-        coolDown = jumpCooldown;
+        m_coolDown = jumpCooldown;
+        m_legHitBox.enabled = false;
     }
     protected override void Update()
     {
-        distance = Vector2.Distance(transform.position, player.position);   // Check distance between hoppy and player.
-        onGround = Physics2D.Raycast(groundDetection.position, Vector2.down, 0.5f);   // Check if hoppy is on the ground before jumping again.
-
-        checkIfGrounded(); // setting up anim 
-        mTime += Time.deltaTime;
-        if (mTime >= 0.4f)
+        m_distance = Vector2.Distance(transform.position, player.position);   // Check distance between hoppy and player.
+        m_onGround = Physics2D.Raycast(groundDetection.position, Vector2.down, 0.1f);   // Check if hoppy is on the ground before jumping again.
+        if (m_distance < agroRange)
         {
-            
+            lookAtPlayer();     // Sprite will flip towards the player's direction.
         }
-        rangeCheck();                                                       // If in range then is able to attack, else hoppy must patrol.
-        coolDownCheck();                                                    // Check if the jump cooldown is finished.
 
-
-        //if (inRange)
-        //{
-        //    transform.Rotate(0, 0, 0 + (300 * Time.deltaTime), Space.Self);
-        //}
+        
     }
     void FixedUpdate()
     {
-        if (inRange)
+        // Toggle ai on and off
+        if(m_aiIsOff)
         {
-            attack();
-        }
-        else if (patrolling)
-        {
-            patrol();
-        }
-
-
-    }
-
-    void attack()
-    {
-        lookAtPlayer();     // Sprite will flip towards the player's direction.
-
-        if (canJump && onGround.collider == true)
-        {
-            jumpToPlayer();     // If the jump cooldown is zero and hoppy is grounded, then jump.     
-            canJump = false;
+            return;
         }
         else
         {
-            inRange = false;
+            // Check if on ground before jumping
+            CheckIfGrounded();
+
+            // If player in range and the cooldown for jumping is zero then jump
+            if (InRangeCheck() && JumpCooldown())
+            {
+                m_patrolling = false;
+                if (m_isGrounded && !m_jumping)
+                {
+                    m_jumping = true;
+                    m_anim.SetBool("Jumping", true);
+                    m_legHitBox.enabled = true;
+                }
+                else if (m_isGrounded && m_jumping)
+                {
+                    m_jumping = false;
+                    m_anim.SetBool("Jumping", false);
+                    m_legHitBox.enabled = false;
+                }
+            }
+            else if (!InRangeCheck() && m_isGrounded)   // Start patrolling if player is not in range
+            {
+                m_patrolling = true;
+                m_jumping = false;
+                m_anim.SetBool("Jumping", false);
+                m_legHitBox.enabled = false;
+            }
+
+            // Patrol jumping
+            if (m_patrolling && PatrolCooldown())
+            {
+                if (m_isGrounded && !m_jumping)
+                {
+                    m_jumping = true;
+                    m_anim.SetBool("Jumping", true);
+                }
+                else if (m_isGrounded && m_jumping)
+                {
+                    m_jumping = false;
+                    m_anim.SetBool("Jumping", false);
+                }
+            }
         }
+        
+
     }
 
-    void patrol()
+    // Check if player in range
+    bool InRangeCheck()
     {
-        // transform.Translate(Vector2.right * moveSpeed * Time.deltaTime);        // hoppy's patrol movement.
-        if (canJump && onGround.collider == true)
+        if (m_distance < agroRange)       // In attack mode if in agro range.
         {
-            hop();    // If the jump cooldown is zero and hoppy is grounded, then jump.
-            flip();
-            canJump = false;
+            return true;
         }
-
-        RaycastHit2D isGrounded = Physics2D.Raycast(groundDetection.position, Vector2.down, 2);     // Check if hoppy reached the edge of a platform before moving in the opposite direction.
-        if (isGrounded.collider == false && onGround.collider == true)
-        {
-            flip();
-        }
+        return false;
     }
 
-    void rangeCheck()
+    // Time before next jump is allowed
+    bool JumpCooldown()                // Check if hoppy can jump again.
     {
-        if (distance < agroRange)       // In attack mode if in agro range.
+
+        if (m_coolDown <= 0)
         {
-            inRange = true;
-            patrolling = false;
+            m_coolDown = jumpCooldown;
+            return true;
         }
         else
         {
-            inRange = false;            // If not in attack mode, then in patrol mode.
-            patrolCoolDownCheck();
+            m_coolDown -= Time.deltaTime;
+
         }
+
+        return false;
     }
 
-    void coolDownCheck()                // Check if hoppy can jump again.
+    // Time before next jump while patrolling
+    bool PatrolCooldown()                // Check if hoppy can jump again.
     {
 
-        if (coolDown <= 0 && !canJump)
+        if (m_pCooldown <= 0)
         {
-            canJump = true;
-            coolDown = jumpCooldown;
+            m_pCooldown = m_patrolTimer;
+            return true;
         }
         else
         {
-            coolDown -= Time.deltaTime;
+            m_pCooldown -= Time.deltaTime;
 
         }
+
+        return false;
     }
 
-    void hadJumpedCheck()                // Check if hoppy can jump again.
-    {
-        counter += Time.deltaTime;
-
-        if (counter < 2)
-        {
-            m_anim.SetBool("HasJumped", true);
-        }
-        else
-        {
-            counter = 0;
-
-        }
-    }
-
-    void patrolCoolDownCheck()          // Check if hoppy can start patrolling again or be on the lookout for the player getting in range again.
-    {
-        if (patrolCooldown <= 0 && !patrolling)
-        {
-            patrolCooldown = patrolTimer;
-            patrolling = true;
-        }
-        else
-        {
-            patrolCooldown -= Time.deltaTime;
-
-        }
-    }
-
+    // Flip sprite depending on the direction it's facing
     void flip()     // Flip the sprite when the edge of the platform is reached or is looking at the player in attack mode.
     {
         if (m_isFacingRight)
@@ -177,71 +167,92 @@ public class Hoppy : Enemy
         }
     }
 
+    // Sprite will face the player while in range
     void lookAtPlayer()     // Flip the sprite to look in the player's direction.
     {
-
-
         if (transform.position.x > player.position.x && m_isFacingRight)
         {
             flip();
-            m_isFacingRight = false;
         }
         else if (transform.position.x < player.position.x && !m_isFacingRight)
         {
             flip();
-            m_isFacingRight = true;
         }
 
     }
 
-    void hop()
+    void CheckIfGrounded()
     {
-        float offset = Random.Range(1, 5);
-        float hopDist = Random.Range(minHopDist, maxHopDist);
-        if (m_isFacingRight == false)
+        if (m_onGround.collider == true)
         {
-            hopDist *= -1;
+            m_isGrounded = true;
+
+        }
+        else if (m_onGround.collider == false)
+        {
+            m_isGrounded = false;
         }
 
-        m_RB.AddForce(new Vector2(hopDist, hopJumpHeight), ForceMode2D.Impulse);
-
-        // Play audio clip
-        int randomIndex = UnityEngine.Random.Range(0, m_jumpSounds.Length);
-        m_jumpAudioSource.PlayOneShot(m_jumpSounds[randomIndex]);
     }
 
-    void checkIfGrounded()
-    {
-        if (onGround.collider == true)
-        {
-            m_anim.SetBool("Jump", false);
-        }
-        else if (onGround.collider == false)
-        {
-            m_anim.SetBool("Jump", true);
-        }
-    }
-    void jumpToPlayer()
+    // Jump to player if in range or hop if patrolling
+    void JumpToPlayer()
     {
         float distanceToPlayer = player.position.x - transform.position.x;
-        float offset = Random.Range(1, 5);
+        float offset = Random.Range(1, 3);
+        float jumpHeight = m_distance;
 
-        if (distance > maxJumpHeight)
+        if (m_distance > maxJumpHeight)
         {
-            distance = maxJumpHeight;
-        }
-        else if (distance < 5)
-        {
-            distance = 5;
+            m_distance = maxJumpHeight;
         }
 
+        if (m_patrolling)
+        {
+            float direction = Random.Range(0, 3);
+            distanceToPlayer = Random.Range(minHopDist, maxHopDist);
+            jumpHeight = hopJumpHeight;
+            if(direction > 0 && m_isFacingRight)
+            {
+                distanceToPlayer *= -1;
+                flip();
+            }
+            else if(direction == 0 && !m_isFacingRight)
+            {
+                flip();
+            }
 
-        m_RB.AddForce(new Vector2(distanceToPlayer, distance + offset), ForceMode2D.Impulse);
+            
+        }
 
-        //hadJumpedCheck();
+        m_RB.AddForce(new Vector2(distanceToPlayer, jumpHeight), ForceMode2D.Impulse);          // Jump Attacking Enemy AI in Unity 2D Part 2: https://youtu.be/fviU0V6nivs
+        PlayJumpSound();
 
+
+
+    }
+
+    // Play jump sound
+    void PlayJumpSound()
+    {
         // Play audio clip
         int randomIndex = UnityEngine.Random.Range(0, m_jumpSounds.Length);
         m_jumpAudioSource.PlayOneShot(m_jumpSounds[randomIndex]);
+    }
+    // Play attack sounds
+    void PlayAttackSounds()
+    {
+        int randomIndex = UnityEngine.Random.Range(0, m_attackSounds.Length);
+        m_attackAudioSource.PlayOneShot(m_attackSounds[randomIndex]);
+    }
+
+    // Take HP away from player if the collide with hoppy
+    private void OnTriggerEnter2D(Collider2D col)
+    {
+        if(col.tag == "Player")
+        {
+            GameHandler gh = FindObjectOfType<GameHandler>();
+            gh.takeDamage();
+        }
     }
 }
