@@ -130,6 +130,11 @@ public class PlayerController : MonoBehaviour
 
     void HandleMovement()
     {
+        if(GameManager.m_instance.m_isPaused)
+        {
+            return;
+        }
+
         if(Input.GetMouseButtonDown(0))
         {
             if(m_grapplingHookController.m_hasRetracted)
