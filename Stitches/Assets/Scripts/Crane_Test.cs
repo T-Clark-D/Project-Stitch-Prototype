@@ -37,7 +37,7 @@ public class Crane_Test : MonoBehaviour
 
         if (m_doneMoving)
         {
-            m_Player.transform.SetParent(null);
+            if(m_Player != null) m_Player.transform.SetParent(null);
             
             m_Player.transform.position = new Vector3(m_Player.transform.position.x, m_Player.transform.position.y, 0);
 

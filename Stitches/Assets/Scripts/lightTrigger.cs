@@ -4,10 +4,18 @@ using UnityEngine;
 
 public class lightTrigger : MonoBehaviour
 {
-    lightColor lightCol;
+    
+    private lightColor m_lightCol;
+    [SerializeField] private Color m_switchColor;
+    [SerializeField] private bool m_ignoreColor = false;
+    [SerializeField] private bool m_ignorePoint = false;
+    [SerializeField] private Animator m_lightAnim;
+
+    private bool m_firstPass = true;
+
     void Start()
     {
-        lightCol = FindObjectOfType<lightColor>();
+        m_lightCol = FindObjectOfType<lightColor>();
     }
 
     private void OnTriggerEnter2D(Collider2D col)
@@ -15,16 +23,21 @@ public class lightTrigger : MonoBehaviour
         // Can trigger color change when the player enters the trigger box.
         if(col.tag == "Player")
         {
-            lightCol.changeColors = true;
+            if (m_switchColor != null && !m_ignoreColor) m_lightCol.SwitchColor(m_switchColor);
+            if (!m_ignorePoint)
+            {
+                if (m_firstPass) 
+                {
+                    m_lightAnim.SetInteger("lightState", m_lightAnim.GetInteger("lightState") + 1);
+                } 
+                else
+                {
+                    m_lightAnim.SetInteger("lightState", m_lightAnim.GetInteger("lightState") - 1);
+                }
+                m_firstPass = !m_firstPass;
+            }
+            
         }
-    }
-    private void OnTriggerExit2D(Collider2D col)
-    {
-        // Switch the end and start color in lightColor script when exit.
-        if (col.tag == "Player")
-        {
-            lightCol.changeColors = false;
-            lightCol.switcharoo = true;
-        }
+        
     }
 }

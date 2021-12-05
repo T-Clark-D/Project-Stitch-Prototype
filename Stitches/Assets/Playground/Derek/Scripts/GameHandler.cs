@@ -6,6 +6,8 @@ using UnityEngine.UI;
 public class GameHandler : MonoBehaviour
 {
     [SerializeField] GameObject mPlayer;
+    [SerializeField] AllIn1Shader m_headShader;
+    [SerializeField] AllIn1Shader m_bodyShader;
     PlayerController mPlayerController;
     [SerializeField] GameObject mGrappleHook;
     Vector3 respawnPoint;
@@ -81,6 +83,7 @@ public class GameHandler : MonoBehaviour
 
     public void takeDamage()
     {
+        m_headShader.enabled = false;
         if (!mInvul)
         {
             mHook.RetractHook();
