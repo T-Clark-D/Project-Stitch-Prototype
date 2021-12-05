@@ -1,4 +1,4 @@
-//using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,17 +15,17 @@ public class TextWriter : MonoBehaviour
         singleTextWriterList = new List<SingleTextWriter>();
     }
 
-    public SingleTextWriter AddWriter(Text posText, string textToWrite, float timePerChar) //Action onComplete
+    public SingleTextWriter AddWriter(Text posText, string textToWrite, float timePerChar, Action onComplete) //Action onComplete
     {
-        SingleTextWriter singleTextWriter = new SingleTextWriter(posText, textToWrite, timePerChar); 
+        SingleTextWriter singleTextWriter = new SingleTextWriter(posText, textToWrite, timePerChar, onComplete); 
         singleTextWriterList.Add(singleTextWriter);
         return singleTextWriter;
     }
 
-    public static SingleTextWriter AddWriter_Static(Text posText, string textToWrite, float timePerChar ) //Action onComplete
+    public static SingleTextWriter AddWriter_Static(Text posText, string textToWrite, float timePerChar, Action onComplete) //Action onComplete
     {
         instance.RemoveWriter(posText);
-        return instance.AddWriter(posText, textToWrite, timePerChar);
+        return instance.AddWriter(posText, textToWrite, timePerChar, onComplete);
     }
 
     private void RemoveWriter(Text uiText)
@@ -67,15 +67,15 @@ public class TextWriter : MonoBehaviour
         private int charIndex;
         private float timePerChara;
         private float mTime;
-        //private Action onComplete;
+        private Action onComplete;
 
-        public SingleTextWriter(Text posText, string textToWrite, float timePerChar) //Action onComplete
+        public SingleTextWriter(Text posText, string textToWrite, float timePerChar, Action onComplete) //Action onComplete
         {
             uiText = posText;
             this.textToWrite = textToWrite;
             timePerChara = timePerChar;
             charIndex = 0;
-            //this.onComplete = onComplete;
+            this.onComplete = onComplete;
         }
 
         public bool Update()
@@ -94,7 +94,7 @@ public class TextWriter : MonoBehaviour
                 if (charIndex >= textToWrite.Length)
                 {
                     // Entire string is displayed
-                    //if(onComplete != null) onComplete();
+                    if(onComplete != null) onComplete();
                     return true;
                 }
             }
@@ -115,7 +115,7 @@ public class TextWriter : MonoBehaviour
         {
             uiText.text = textToWrite;
             charIndex = textToWrite.Length;
-            //if(onComplete != null) onComplete();
+            if(onComplete != null) onComplete();
             TextWriter.RemoveWriter_Static(uiText);
         }
     }
