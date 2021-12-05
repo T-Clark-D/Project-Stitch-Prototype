@@ -6,9 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Playground/Clark/Freeplay.unity
-    guid: 6437fca2501d5a64283384cc4a20de24
+    path: Assets/Scenes/MainLevel.unity
+    guid: 90c1dc0bf01b822409a1c7a56f2bfbe4
   - enabled: 1
-    path: Assets/Playground/Jesse/Boss.unity
-    guid: d096b072336bf534ebc23c5a2e38e16e
+    path: Assets/Scenes/Boss Scene.unity
+    guid: e9cac043f9a347341a5519f53a33fdf4
   m_configObjects: {}

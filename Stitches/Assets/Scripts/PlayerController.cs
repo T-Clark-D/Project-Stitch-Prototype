@@ -106,6 +106,12 @@ public class PlayerController : MonoBehaviour
 
             m_currentDustSystem.PlayAndDestroy();
         }
+
+        // Handle pause menu
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            GameManager.m_instance.PauseGame();
+        }
     }
 
     private void FixedUpdate()

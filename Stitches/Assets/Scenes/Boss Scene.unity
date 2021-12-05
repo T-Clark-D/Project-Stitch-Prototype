@@ -2580,6 +2580,8 @@ MonoBehaviour:
   m_gruntAudioSource: {fileID: 791962792}
   m_breathingLoopSounds:
   - {fileID: 8300000, guid: b408bd67b4a8c6d4193b27ba832cccc8, type: 3}
+  m_deathSounds:
+  - {fileID: 8300000, guid: cbfc5131b50a4954d93e5a9774dfe3df, type: 3}
   m_topPlatform: {fileID: 2118006307}
   m_leftPlatform: {fileID: 2106296912}
   m_rightPlatform: {fileID: 1936057541}
