@@ -77,6 +77,8 @@ public class GameManager : MonoBehaviour
         //m_hudManager = FindObjectOfType<HUDManager>();
 
         //m_hudManager.ResetHUD();
+
+        m_pausePanel = FindObjectOfType<PauseController>(true);
     }
 
     /// <summary>

@@ -106,6 +106,12 @@ public class PlayerController : MonoBehaviour
 
             m_currentDustSystem.PlayAndDestroy();
         }
+
+        // Handle pause menu
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            GameManager.m_instance.PauseGame();
+        }
     }
 
     private void FixedUpdate()
@@ -124,6 +130,11 @@ public class PlayerController : MonoBehaviour
 
     void HandleMovement()
     {
+        if(GameManager.m_instance.m_isPaused)
+        {
+            return;
+        }
+
         if(Input.GetMouseButtonDown(0))
         {
             if(m_grapplingHookController.m_hasRetracted)
