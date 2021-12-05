@@ -15,12 +15,12 @@ public class NPC : MonoBehaviour
     private TextWriter.SingleTextWriter singleTextWriter;
 
     // for talking sound
-    //private AudioSource talkingAudioSource;
+    private AudioSource talkingAudioSource;
 
     void Awake()
     {
         dialogueText = transform.Find("Dialogues").Find("DialogueText").GetComponent<Text>();
-        //talkingAudioSource = transform.Find("TalkingSound").GetComponent<AudioSource>();
+        talkingAudioSource = transform.Find("TalkingSound").GetComponent<AudioSource>();
         messageArray = new string[]
       {
             "Oh?",
@@ -57,8 +57,8 @@ public class NPC : MonoBehaviour
         }
         else
         {
-            //StartTalkingSound();
-            singleTextWriter = TextWriter.AddWriter_Static(dialogueText, dialogue, 0.03f); //StopTalkingSound()
+            StartTalkingSound();
+            singleTextWriter = TextWriter.AddWriter_Static(dialogueText, dialogue, 0.03f, StopTalkingSound); //StopTalkingSound()
             if (dialogueIndex == messageArray.Length - 1 && !dialogueOver)
             {
                 dialogueOver = true;
@@ -75,13 +75,13 @@ public class NPC : MonoBehaviour
         }
     }
 
-   /* private void StartTalkingSound()
+    private void StartTalkingSound()
     {
         talkingAudioSource.Play();
-    }*/
+    }
 
-   /* private void StopTalkingSound()
+    private void StopTalkingSound()
     {
         talkingAudioSource.Stop();
-    }*/
+    }
 }
