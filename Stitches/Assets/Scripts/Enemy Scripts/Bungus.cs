@@ -2,15 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Bungus : Enemy
+public class Bungus : MonoBehaviour
 {
     public AudioClip[] m_bounceSounds;
     public AudioSource m_bounceAudioSource;
+    private Rigidbody2D m_RB;
+    private Animator m_anim;
 
     new void Start()
     {
-        base.Start();
-        print("bitch");
+        m_RB = GetComponent<Rigidbody2D>();
+        m_anim = GetComponent<Animator>();
     }
 
     public void OnCollisionEnter2D(Collision2D collision)
