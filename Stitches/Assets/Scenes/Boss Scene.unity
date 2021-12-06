@@ -1913,6 +1913,66 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &724963049
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 724963052}
+  - component: {fileID: 724963051}
+  - component: {fileID: 724963050}
+  m_Layer: 0
+  m_Name: BossDoorLevelChangeCollider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &724963050
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 724963049}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a005f0f4c8c0cae45a66d17c0e786f2b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!58 &724963051
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 724963049}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.5
+--- !u!4 &724963052
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 724963049}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.01, y: -17, z: 0}
+  m_LocalScale: {x: 17.184, y: 17.184, z: 17.184}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &747827530
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3139,6 +3199,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29949af7726b5a84f896fa5180f00f4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  creditsCollider: {fileID: 724963049}
   m_earthLoopSounds:
   - {fileID: 8300000, guid: f7ed8fa91f203af4186e1ce679a14de2, type: 3}
   m_earthLoopAudioSource: {fileID: 193479674}
@@ -3174,7 +3235,7 @@ MonoBehaviour:
   m_inverseBounceSpeed: 10
   m_rollSpeed: 50
   m_stunLockedPosition: 0
-  m_health: 3
+  m_health: 1
   m_moveToTopPlatform: 0
   m_moveToRightPlatform: 0
   m_moveToLeftPlatform: 0
@@ -3911,6 +3972,14 @@ PrefabInstance:
     - target: {fileID: 5258867631604913854, guid: f0ec30c391b67c448bd01b88b3800bd1, type: 3}
       propertyPath: m_Name
       value: LevelChanger 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5258867632383394017, guid: f0ec30c391b67c448bd01b88b3800bd1, type: 3}
+      propertyPath: changeLevel
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5258867632383394017, guid: f0ec30c391b67c448bd01b88b3800bd1, type: 3}
+      propertyPath: levelToLoad
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f0ec30c391b67c448bd01b88b3800bd1, type: 3}

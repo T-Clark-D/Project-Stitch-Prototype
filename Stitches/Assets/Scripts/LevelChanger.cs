@@ -8,12 +8,12 @@ public class LevelChanger : MonoBehaviour
 {
     public Animator anim;
     public bool changeLevel;
-    private int levelToLoad;
+    [SerializeField] private int levelToLoad;
     void Update()
     {
         if(changeLevel)
         {
-            FadeToLevel(1);
+            FadeToLevel(levelToLoad);
         }
     }
 

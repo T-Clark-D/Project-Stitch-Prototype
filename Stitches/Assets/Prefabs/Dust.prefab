@@ -4818,3 +4818,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_timeBeforeDeath: 0.5
+  m_dustSounds: []

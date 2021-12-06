@@ -141,7 +141,7 @@ public class Enemy : MonoBehaviour
                 //player.Boost();
 
                 // Trigger the particle effect
-                (Instantiate(m_explosionEffectSystem, this.gameObject.transform)).Play();
+                (Instantiate(m_explosionEffectSystem, this.gameObject.transform.position, Quaternion.identity)).Play();
                 //m_explosionEffectSystem.gameObject.transform.position = this.gameObject.transform.position;
                 //m_explosionEffectSystem.Play();
 
