@@ -16,10 +16,15 @@ public class Crane_Test : MonoBehaviour
 
     private bool m_startMoving = false;
     private bool m_doneMoving = false;
+
+    private AudioListener m_listener;
+    private AudioListener m_playerListener;
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        m_listener = GetComponentInParent<AudioListener>();
+        m_listener.enabled = false;
     }
 
     // Update is called once per frame
@@ -28,7 +33,10 @@ public class Crane_Test : MonoBehaviour
         if (m_startMoving)
         {
             m_CraneBody.transform.position += Vector3.right * m_moveSpeed * Time.deltaTime;
-            if (m_Player != null) m_Player.transform.position = Vector3.MoveTowards(m_Player.transform.position, m_CraneCenter.position, 10 * Time.deltaTime);
+            if (m_Player != null)
+            {
+                m_Player.transform.position = Vector3.MoveTowards(m_Player.transform.position, m_CraneCenter.position, 10 * Time.deltaTime);
+            }         
         }
         if(GetComponentInParent<Transform>().position.x >= 200)
         {
@@ -50,6 +58,9 @@ public class Crane_Test : MonoBehaviour
 
                 m_Player.m_movementDisabled = false;
                 m_Player = null;
+
+                m_playerListener.enabled = true;
+                m_listener.enabled = false;
             }          
         }
     }
@@ -72,6 +83,10 @@ public class Crane_Test : MonoBehaviour
                 Physics2D.IgnoreCollision(m_PolyCollider, collision.collider);
 
                 m_Player.m_movementDisabled = true;
+
+                m_playerListener = m_Player.GetComponent<AudioListener>();
+                m_playerListener.enabled = false;
+                m_listener.enabled = true;
             }
                 
         }
