@@ -12,7 +12,7 @@ public class Enemy : MonoBehaviour
     protected bool m_thawing = false;
     protected float m_vulnerabilityElapsedTime = 0f;
     protected bool m_vulnerabilityIsOnTimer = false;
-    protected ParticleSystem m_explosionEffectSystem;
+    public ParticleSystem m_explosionEffectSystem;
     public float m_freezeTime = 1f;
     public float m_vulnerabilityTime = 2f;
     public PopAudioController m_popAudioObject;
@@ -25,7 +25,7 @@ public class Enemy : MonoBehaviour
 
     protected virtual void Start()
     {
-        m_explosionEffectSystem =  GameObject.Find("ExplosionEffect").GetComponent<ParticleSystem>();
+        //m_explosionEffectSystem =  GameObject.Find("ExplosionEffect").GetComponent<ParticleSystem>();
         m_SR = GetComponent<SpriteRenderer>();
         m_RB = GetComponent<Rigidbody2D>();
         m_anim = GetComponent<Animator>();
@@ -141,8 +141,9 @@ public class Enemy : MonoBehaviour
                 //player.Boost();
 
                 // Trigger the particle effect
-                m_explosionEffectSystem.gameObject.transform.position = this.gameObject.transform.position;
-                m_explosionEffectSystem.Play();
+                (Instantiate(m_explosionEffectSystem, this.gameObject.transform)).Play();
+                //m_explosionEffectSystem.gameObject.transform.position = this.gameObject.transform.position;
+                //m_explosionEffectSystem.Play();
 
                 Destroy(this.gameObject);
                 // Instantiate popping audio prefab.
