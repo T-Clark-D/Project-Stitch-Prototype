@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Armordillo : MonoBehaviour
 {
+    public GameObject creditsCollider;
+
     public AudioClip[] m_earthLoopSounds;
     public AudioSource m_earthLoopAudioSource;
     public AudioClip[] m_rollLoopSounds;
@@ -525,6 +527,7 @@ public class Armordillo : MonoBehaviour
         {
             m_stunLocked = false;
             m_dead = true;
+            creditsCollider.SetActive(true);
             switch (m_stunLockedPosition)
             {
                 case 1:

@@ -22,6 +22,7 @@ public class GameHandler : MonoBehaviour
     bool dead = false;
     public float invulDelay;
 
+
     // Start is called before the first frame update
     void Start()
     {

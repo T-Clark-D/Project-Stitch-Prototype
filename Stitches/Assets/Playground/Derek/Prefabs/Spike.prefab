@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8469980651269823307}
   - component: {fileID: 8469980651269823306}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Untitled-Artwork (15)_4 (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -92,7 +92,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8469980651800872039}
   - component: {fileID: 8469980651800872038}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Untitled-Artwork (15)_4 (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -176,9 +176,9 @@ GameObject:
   - component: {fileID: 8469980652225299878}
   - component: {fileID: 8469980652225299879}
   - component: {fileID: 8469980652225299877}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Spike
-  m_TagString: Untagged
+  m_TagString: Ungrapplable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

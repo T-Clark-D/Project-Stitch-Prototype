@@ -359,6 +359,7 @@ MonoBehaviour:
   m_isVulnerable: 0
   m_aiIsOff: 0
   m_frozen: 1
+  m_explosionEffectSystem: {fileID: 5827045110724693434, guid: cc45d36f7e6932c4f943c8f0398dd404, type: 3}
   m_freezeTime: 2
   m_vulnerabilityTime: 2
   m_popAudioObject: {fileID: 2629467708994444223}

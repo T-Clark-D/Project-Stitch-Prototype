@@ -32,15 +32,14 @@ public class Hoppy : Enemy
 
     protected override void Start()
     {
+        base.Start();
         m_legHitBox = GetComponent<CapsuleCollider2D>();
-        m_RB = GetComponent<Rigidbody2D>();
-        m_SR = GetComponent<SpriteRenderer>();
-        m_anim = GetComponent<Animator>();
         m_coolDown = jumpCooldown;
         m_legHitBox.enabled = false;
     }
-    protected override void Update()
+    public void Update()
     {
+        base.Update();
         m_distance = Vector2.Distance(transform.position, player.position);   // Check distance between hoppy and player.
         m_onGround = Physics2D.Raycast(groundDetection.position, Vector2.down, 0.1f);   // Check if hoppy is on the ground before jumping again.
         if (m_distance < agroRange)
@@ -53,7 +52,7 @@ public class Hoppy : Enemy
     void FixedUpdate()
     {
         // Toggle ai on and off
-        if(m_aiIsOff)
+        if(m_frozen)
         {
             return;
         }
@@ -71,12 +70,14 @@ public class Hoppy : Enemy
                     m_jumping = true;
                     m_anim.SetBool("Jumping", true);
                     m_legHitBox.enabled = true;
+                    GetComponent<Spike>().enabled = true;
                 }
                 else if (m_isGrounded && m_jumping)
                 {
                     m_jumping = false;
                     m_anim.SetBool("Jumping", false);
                     m_legHitBox.enabled = false;
+                    GetComponent<Spike>().enabled = false;
                 }
             }
             else if (!InRangeCheck() && m_isGrounded)   // Start patrolling if player is not in range
@@ -247,7 +248,7 @@ public class Hoppy : Enemy
     }
 
     // Take HP away from player if the collide with hoppy
-    private void OnTriggerEnter2D(Collider2D col)
+    private void OnCollisonEnter2D(Collider2D col)
     {
         if(col.tag == "Player")
         {

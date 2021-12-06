@@ -21,11 +21,12 @@ public class lightColor : MonoBehaviour
     {
         myLight = GetComponent<Light>();
         m_newColor = myLight.color;
+        SetPoint(new Vector3(570, 740, -35));
     }
 
     void Update()
     {
-        FacePlayer();
+        //FacePlayer();
         // Change color when player enters trigger event.
         tick += Time.deltaTime * colorSpeed;
         myLight.color = Color.Lerp(m_oldColor, m_newColor, tick);

@@ -34,6 +34,10 @@ public class PlayerController : MonoBehaviour
 
     public AudioSource m_backgroundMusicSource;
 
+    public bool m_movementDisabled = false;
+
+    public Transform m_cameraTarget;
+
     private bool m_firstTimePullingUp = true;
     // Set to true when we boost.
     private bool m_justBoosted = false;
@@ -87,7 +91,8 @@ public class PlayerController : MonoBehaviour
             }
         }
      
-        HandleMovement();
+        if(!m_movementDisabled)
+            HandleMovement();
 
         if(m_gravityIsOffAndOnTimer)
             m_gravityOffTimeElapsed += Time.deltaTime;
@@ -289,8 +294,12 @@ public class PlayerController : MonoBehaviour
         Physics2D.IgnoreCollision(m_bodyCollider, collider, true);
         yield return new WaitForSeconds(1);
         m_invulnerable = false;
-        Physics2D.IgnoreCollision(m_circleCollider, collider, false);
-        Physics2D.IgnoreCollision(m_bodyCollider, collider, false);
+
+        if(collider != null)
+        {
+            Physics2D.IgnoreCollision(m_circleCollider, collider, false);
+            Physics2D.IgnoreCollision(m_bodyCollider, collider, false);
+        }
     }
 
     public void ResetGravity()
