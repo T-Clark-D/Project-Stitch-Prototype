@@ -21,6 +21,18 @@ public class FriendlyFlySpawner : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-       
+       for(int i = 0; i <3 ; i++){
+            if(friendlyFlyArray[i] == null)
+            {
+                Wait(i);
+            }
+        }
+    }
+    IEnumerator Wait(int i)
+    {
+        friendlyFlyArray[i] = Instantiate(friendlyFly, FriendlyFlyPositions[i].position, Quaternion.identity);
+        friendlyFlyArray[i].SetActive(false);
+        yield return new WaitForSeconds(3);
+        friendlyFlyArray[i].SetActive(true);
     }
 }
