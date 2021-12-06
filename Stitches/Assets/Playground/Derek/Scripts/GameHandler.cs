@@ -6,8 +6,7 @@ using UnityEngine.UI;
 public class GameHandler : MonoBehaviour
 {
     [SerializeField] GameObject mPlayer;
-    [SerializeField] AllIn1Shader m_headShader;
-    [SerializeField] AllIn1Shader m_bodyShader;
+    private Animator m_playerAnim;
     PlayerController mPlayerController;
     [SerializeField] GameObject mGrappleHook;
     Vector3 respawnPoint;
@@ -28,6 +27,8 @@ public class GameHandler : MonoBehaviour
     {
         HPSetup();
         mHook = mGrappleHook.GetComponent<HookController>();
+
+        m_playerAnim = mPlayer.GetComponent<Animator>();
 
         mPlayerController = mPlayer.GetComponent<PlayerController>();
     }
@@ -81,9 +82,17 @@ public class GameHandler : MonoBehaviour
         mPlayerController.PlayLifePickup();
     }
 
+    IEnumerator DamageFlash()
+    {
+        m_playerAnim.SetTrigger("damageFlash");
+        yield return new WaitForSeconds(0.33f);
+        m_playerAnim.SetTrigger("damageFlash");
+        yield return new WaitForSeconds(0.33f);
+        m_playerAnim.SetTrigger("damageFlash");
+    }
+
     public void takeDamage()
     {
-        m_headShader.enabled = false;
         if (!mInvul)
         {
             mHook.RetractHook();
@@ -109,6 +118,7 @@ public class GameHandler : MonoBehaviour
             }
             mInvul = true;
 
+            StartCoroutine(DamageFlash());
             mPlayerController.PlayHurtSound();
 
             if(lossIndex >= 8)
