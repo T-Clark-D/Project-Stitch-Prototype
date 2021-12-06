@@ -500,6 +500,11 @@ MonoBehaviour:
 
 
 
+    Artists
+
+
+
+
     Sound Design
 
 
@@ -878,8 +883,8 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: "Tomas Clark Dumoulin\n\n\nDerek Lam\nFlorin Dumitrescu\nJesse Serre\nJo\xEBl
-    Lajoie-Corriveau\nTomas Clark Dumoulin\n\n\nJo\xEBl Lajoie-Corriveau\n\n\nMohamed-Yasser
-    Houssein"
+    Lajoie-Corriveau\nTomas Clark Dumoulin\n\n\nTomas Clark Dumoulin\nJesse Serre\n\n\nJo\xEBl
+    Lajoie-Corriveau\n\n\nMohamed-Yasser Houssein"
 --- !u!222 &864439668
 CanvasRenderer:
   m_ObjectHideFlags: 0
