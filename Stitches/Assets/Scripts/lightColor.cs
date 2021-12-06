@@ -26,7 +26,7 @@ public class lightColor : MonoBehaviour
 
     void Update()
     {
-        FacePlayer();
+        //FacePlayer();
         // Change color when player enters trigger event.
         tick += Time.deltaTime * colorSpeed;
         myLight.color = Color.Lerp(m_oldColor, m_newColor, tick);
