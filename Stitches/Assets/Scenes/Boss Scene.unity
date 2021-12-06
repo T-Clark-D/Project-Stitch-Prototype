@@ -3235,7 +3235,7 @@ MonoBehaviour:
   m_inverseBounceSpeed: 10
   m_rollSpeed: 50
   m_stunLockedPosition: 0
-  m_health: 1
+  m_health: 3
   m_moveToTopPlatform: 0
   m_moveToRightPlatform: 0
   m_moveToLeftPlatform: 0
