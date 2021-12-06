@@ -9,7 +9,8 @@ public class Crane_Test : MonoBehaviour
     [SerializeField] private BoxCollider2D m_LandCollider;
     [SerializeField] private Transform m_CraneCenter;
 
-    private GameObject m_Player = null;
+    private PlayerController m_Player = null;
+
 
     [SerializeField] private float m_moveSpeed = 2.5f;
 
@@ -37,14 +38,19 @@ public class Crane_Test : MonoBehaviour
 
         if (m_doneMoving)
         {
-            if(m_Player != null) m_Player.transform.SetParent(null);
-            
-            m_Player.transform.position = new Vector3(m_Player.transform.position.x, m_Player.transform.position.y, 0);
+            if(m_Player != null)
+            {
+                m_Player.transform.SetParent(null);
 
-            Physics2D.IgnoreCollision(m_LandCollider, m_Player.GetComponent<Collider2D>(), false);
-            Physics2D.IgnoreCollision(m_PolyCollider, m_Player.GetComponent<Collider2D>(), false);
-            m_Player.GetComponent<Rigidbody2D>().gravityScale = 1;
-            m_Player = null;
+                m_Player.transform.position = new Vector3(m_Player.transform.position.x, m_Player.transform.position.y, 0);
+
+                Physics2D.IgnoreCollision(m_LandCollider, m_Player.GetComponent<Collider2D>(), false);
+                Physics2D.IgnoreCollision(m_PolyCollider, m_Player.GetComponent<Collider2D>(), false);
+                m_Player.GetComponent<Rigidbody2D>().gravityScale = 1;
+
+                m_Player.m_movementDisabled = false;
+                m_Player = null;
+            }          
         }
     }
 
@@ -56,7 +62,7 @@ public class Crane_Test : MonoBehaviour
             {
                 m_startMoving = true;
 
-                m_Player = collision.gameObject;
+                m_Player = collision.gameObject.GetComponent<PlayerController>();
                 m_Player.transform.SetParent(this.transform);
                 m_Player.GetComponent<Rigidbody2D>().gravityScale = 0;
                 //m_Player.transform.localPosition = new Vector3(-15, collision.gameObject.transform.localPosition.y, 0);
@@ -64,6 +70,8 @@ public class Crane_Test : MonoBehaviour
                 m_PolyCollider.enabled = true;
                 Physics2D.IgnoreCollision(m_LandCollider, collision.collider);
                 Physics2D.IgnoreCollision(m_PolyCollider, collision.collider);
+
+                m_Player.m_movementDisabled = true;
             }
                 
         }
