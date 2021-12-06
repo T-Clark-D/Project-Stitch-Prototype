@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Crane_Test : MonoBehaviour
 {
+    public float m_cameraYOffset = 20f;
+
     [SerializeField] private CharacterController m_CraneBody;
     [SerializeField] private PolygonCollider2D m_PolyCollider;
     [SerializeField] private BoxCollider2D m_LandCollider;
@@ -57,6 +59,11 @@ public class Crane_Test : MonoBehaviour
                 m_Player.GetComponent<Rigidbody2D>().gravityScale = 1;
 
                 m_Player.m_movementDisabled = false;
+
+                m_Player.m_cameraTarget.transform.position = new Vector3(m_Player.m_cameraTarget.transform.position.x,
+                    m_Player.m_cameraTarget.transform.position.y - m_cameraYOffset,
+                    m_Player.m_cameraTarget.transform.position.z);
+
                 m_Player = null;
 
                 m_playerListener.enabled = true;
@@ -87,6 +94,11 @@ public class Crane_Test : MonoBehaviour
                 m_playerListener = m_Player.GetComponent<AudioListener>();
                 m_playerListener.enabled = false;
                 m_listener.enabled = true;
+
+                m_Player.m_cameraTarget.transform.position = new Vector3(m_Player.m_cameraTarget.transform.position.x, 
+                    m_Player.m_cameraTarget.transform.position.y + m_cameraYOffset, 
+                    m_Player.m_cameraTarget.transform.position.z);
+
             }
                 
         }

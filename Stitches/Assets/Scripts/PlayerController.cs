@@ -36,6 +36,8 @@ public class PlayerController : MonoBehaviour
 
     public bool m_movementDisabled = false;
 
+    public Transform m_cameraTarget;
+
     private bool m_firstTimePullingUp = true;
     // Set to true when we boost.
     private bool m_justBoosted = false;
