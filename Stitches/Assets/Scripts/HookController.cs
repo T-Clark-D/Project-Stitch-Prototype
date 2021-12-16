@@ -56,9 +56,9 @@ public class HookController : MonoBehaviour
         m_tethered = false;
         m_needleSpriteRenderer.enabled = false;
 
-        m_currentPosition = new Vector3(0, 0, 0);
-        m_clickPosition = new Vector3(0, 0, 0);
-        m_directionUnitVector = new Vector3(0, 0, 0);
+        m_currentPosition = Vector3.zero;
+        m_clickPosition = Vector3.zero;
+        m_directionUnitVector = Vector3.zero;
     }
 
     // Update is called once per frame
@@ -88,22 +88,20 @@ public class HookController : MonoBehaviour
             // Changing Z value of mouse pos to a positive value, to avoid the object showing behind the near clip plane of the camera.
             pMouseClickPosition.z = 1;
 
-            Vector3 worldPosition = Camera.main.ScreenToWorldPoint(pMouseClickPosition);
+            Vector3 mouseClickWorldPosition = Camera.main.ScreenToWorldPoint(pMouseClickPosition);
 
             // Setting worldpos z to 1 so it doesnt draw behind the background.
-            worldPosition.z = 0;
+            mouseClickWorldPosition.z = 0;
 
             // Calculating direction vector
-            Vector3 direction = worldPosition - (m_player.transform.position + new Vector3(0, m_grapplingStartHeightOffset, 0));
-            m_directionUnitVector = direction / direction.magnitude;
+            m_directionUnitVector = (mouseClickWorldPosition - (m_player.transform.position + new Vector3(0, m_grapplingStartHeightOffset, 0))).normalized;
 
-            m_clickPosition = worldPosition;
+            m_clickPosition = mouseClickWorldPosition;
             m_currentPosition = m_player.transform.position + new Vector3(0, m_grapplingStartHeightOffset, 0);
 
             m_grapplingHookOut = true;
 
-            Vector3 position = m_player.transform.position + new Vector3(0, m_grapplingStartHeightOffset, 0);
-            m_hookCollider.gameObject.transform.position = new Vector3(position.x, position.y, 0);
+            m_hookCollider.gameObject.transform.position = new Vector3(m_currentPosition.x, m_currentPosition.y, 0);
             m_hookCollider.radius = m_hookColliderSize;
 
             m_hookCollider.enabled = true;
@@ -115,9 +113,7 @@ public class HookController : MonoBehaviour
 
             // Angling the needle
             var rotation = Quaternion.FromToRotation(transform.up, m_directionUnitVector).eulerAngles;
-            rotation.x = 0f;
-            rotation.y = 0f;
-            m_needleSpriteRenderer.gameObject.transform.rotation = Quaternion.Euler(rotation.x, rotation.y, rotation.z);
+            m_needleSpriteRenderer.gameObject.transform.rotation = Quaternion.Euler(0, 0, rotation.z);
 
             // Play audio clip
             int randomIndex = UnityEngine.Random.Range(0, m_needleThrowSounds.Length);
@@ -131,14 +127,15 @@ public class HookController : MonoBehaviour
 
         // Reset hook display
         m_grapplingHookRenderer.positionCount = 0;
-        m_currentPosition = new Vector3(0, 0, 0);
-        m_clickPosition = new Vector3(0, 0, 0);
+        m_currentPosition = Vector3.zero;
+        m_clickPosition = Vector3.zero;
 
         // Retracting hook
         m_grapplingHookOut = false;
 
         Vector3 position = m_player.transform.position + new Vector3(0, m_grapplingStartHeightOffset, 0);
-        m_hookCollider.gameObject.transform.position = new Vector3(position.x, position.y, 0);
+        position.z = 0;
+        m_hookCollider.gameObject.transform.position = position;
 
         m_tethered = false;
         m_distJoint.enabled = false;
@@ -154,7 +151,6 @@ public class HookController : MonoBehaviour
             m_enemy = null;
         }
 
-        m_enemyHitLocationOffset = new Vector3();
         m_isHookedToAnEnemy = false;
 
         m_needleSpriteRenderer.enabled = false;
@@ -173,6 +169,9 @@ public class HookController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Platform"))
         {
+            // Freeze position.
+            m_hookCollider.attachedRigidbody.constraints = RigidbodyConstraints2D.FreezeAll;
+
             m_lastCollision = collision.collider;
             //Debug.Log("Hit!");
             m_tethered = true;
@@ -182,9 +181,6 @@ public class HookController : MonoBehaviour
 
             m_distJoint.distance = GetHookDirection(false).magnitude;
 
-            // Freeze position.
-            m_hookCollider.attachedRigidbody.constraints = RigidbodyConstraints2D.FreezeAll;
-
             // Prevent pushing
             //Physics2D.IgnoreCollision(m_hookCollider, m_lastCollision, true);
 
@@ -192,8 +188,8 @@ public class HookController : MonoBehaviour
             int randomIndex = UnityEngine.Random.Range(0, m_platformHitSounds.Length);
             m_needleHitAudioSource.PlayOneShot(m_platformHitSounds[randomIndex]);
 
-            Vector2 point = collision.GetContact(0).point;
-            Vector3 collisionPoint = new Vector3(point.x, point.y, 0);
+            Vector3 collisionPoint = collision.GetContact(0).point;
+            collisionPoint.z = 0;
             m_platformHitLocationOffset = collisionPoint - collision.gameObject.transform.position;
             m_lastPlatformHit = collision.gameObject;
         }
