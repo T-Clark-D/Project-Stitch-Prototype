@@ -58,11 +58,11 @@ TagManager:
   - name: Backround Smoke
     uniqueID: 1359096513
     locked: 0
-  - name: GameArea
-    uniqueID: 1260959575
-    locked: 0
   - name: ambient occlusion
     uniqueID: 131433523
+    locked: 0
+  - name: GameAre
+    uniqueID: 1260959575
     locked: 0
   - name: GameAreaOnTop
     uniqueID: 669225563
@@ -78,4 +78,37 @@ TagManager:
     locked: 0
   - name: FireFromMatches
     uniqueID: 2393125079
+    locked: 0
+  - name: Sketch
+    uniqueID: 1593441235
+    locked: 0
+  - name: BluredBackground
+    uniqueID: 3638499905
+    locked: 0
+  - name: BackgroundScene
+    uniqueID: 789834331
+    locked: 0
+  - name: BackgroundObject
+    uniqueID: 91569633
+    locked: 0
+  - name: BackroundParticleEffect
+    uniqueID: 1040826591
+    locked: 0
+  - name: GameAreaBack
+    uniqueID: 680839403
+    locked: 0
+  - name: Actors
+    uniqueID: 4266083851
+    locked: 0
+  - name: GameArea
+    uniqueID: 4278750021
+    locked: 0
+  - name: Foreground
+    uniqueID: 947748553
+    locked: 0
+  - name: ForeGroundParticleEffect
+    uniqueID: 1026887111
+    locked: 0
+  - name: Hud
+    uniqueID: 3178564569
     locked: 0
