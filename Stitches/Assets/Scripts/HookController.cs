@@ -251,18 +251,16 @@ public class HookController : MonoBehaviour
             m_currentPosition = m_currentPosition + (new Vector3(m_directionUnitVector.x, m_directionUnitVector.y, 0) * m_grappleSpeed * Time.fixedDeltaTime);
 
             // Handle Hook Collider
-            Vector3 position = new Vector3(m_currentPosition.x, m_currentPosition.y, 0);
-            m_hookCollider.attachedRigidbody.MovePosition(position);
+            m_currentPosition.z = 0;
+            m_hookCollider.attachedRigidbody.MovePosition(m_currentPosition);
 
-            Vector3 secondPointPosition = position;
+            Vector3 secondPointPosition = m_currentPosition;
             m_grapplingHookRenderer.SetPosition(1, secondPointPosition);
 
             // Angling the needle
             Vector3 firstPointPosition = m_player.transform.position + new Vector3(0, m_grapplingStartHeightOffset, 0);
             var rotation = Quaternion.FromToRotation(transform.up, m_currentPosition - firstPointPosition).eulerAngles;
-            rotation.x = 0f;
-            rotation.y = 0f;
-            m_needleSpriteRenderer.gameObject.transform.rotation = Quaternion.Euler(rotation.x, rotation.y, rotation.z);
+            m_needleSpriteRenderer.gameObject.transform.rotation = Quaternion.Euler(0, 0, rotation.z);
 
             //m_needleSpriteRenderer.transform.position = secondPointPosition;
         }
@@ -296,8 +294,7 @@ public class HookController : MonoBehaviour
                     m_lastPlatformHit.CompareTag("Platform") && 
                     m_lastPlatformHit.GetComponent<Rigidbody2D>() != null)
                 {
-                    Vector3 newRotatedOffset = m_lastPlatformHit.transform.rotation * m_platformHitLocationOffset;
-                    Vector3 newPosition = m_lastPlatformHit.transform.position + newRotatedOffset;
+                    Vector3 newPosition = m_lastPlatformHit.transform.position + m_lastPlatformHit.transform.rotation * m_platformHitLocationOffset;
 
                     // We have hit a moving platform. Updating hook position constantly.
                     m_hookCollider.transform.position = newPosition;
