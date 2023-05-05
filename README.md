@@ -19,4 +19,5 @@
 ![image](https://user-images.githubusercontent.com/53094076/236560317-07cb7b50-fffe-4fe0-b8b5-b1d9a1ef821f.png)
 ### Defeat a final boss and save your brother's soul.
 ![image](https://user-images.githubusercontent.com/53094076/236560418-7f0d32b4-55d9-4448-ab70-bcf46983b3ca.png)
+![image](https://user-images.githubusercontent.com/53094076/236562161-e5ac78be-9b2d-4110-a672-e9d0188e5fd1.png)
 Full release of new version in development!
