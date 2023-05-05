@@ -1,4 +1,5 @@
 # Project Stitch Prototype
+Developed in C# using Unity. Game art created in Procreate.
 ### Play as a ragdoll who can only control a needle and thread.
 ![image](https://user-images.githubusercontent.com/53094076/236558144-0b7ff595-6b5e-4397-aa10-76bdc182c365.png)
 ### Swing around the level at high speeds!
